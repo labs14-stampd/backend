@@ -1,6 +1,7 @@
 const graphql = require('graphql');
 const User = require('../models/userModel.js');
-const { UserType } = require('./types.js');
+const Schools = require('../models/schoolModel.js');
+const { UserType, SchoolDetailsType } = require('./types.js');
 
 const { GraphQLObjectType, GraphQLList, GraphQLID } = graphql;
 
@@ -46,6 +47,41 @@ const RootQuery = new GraphQLObjectType({
         }
       }
     },
+    getAllSchoolDetails: {
+      type: new GraphQLList(SchoolDetailsType),
+      description: 'Gets all schools',
+      resolve(parent, args) {
+        return Schools.find()
+          .then(res => {
+            if (res.length) {
+              return res;
+            } else {
+              return new Error('No schools could be found.');
+            }
+          })
+          .catch(err => {
+            return new Error('There was an error completing your request.');
+          });
+      }
+    },
+    getSchoolDetailsBySchoolId: {
+      type: SchoolDetailsType,
+      description: 'Gets school by school ID',
+      args: { id: { type: GraphQLID } },
+      resolve(parent, args) {
+        return Schools.findById(args.id)
+          .then(res => {
+            if (res) {
+              return res;
+            } else {
+              return new Error('No schools could be found');
+            }
+          })
+          .catch(err => {
+            return new Error('there was an error completing your request.');
+          });
+      }
+    }
   }
 });
 

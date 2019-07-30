@@ -23,13 +23,57 @@ const RoleType = new GraphQLObjectType({
       type: new GraphQLList(UserType),
       description: 'Returns all users of specific role',
       resolve(parent) {
-        return Users.findBy({roleId: parent.id})
+        return Users.findBy({ roleId: parent.id });
       }
     }
   })
 });
 
-// const SchoolDetailsType = new GraphQLObjectType({});
+const SchoolDetailsType = new GraphQLObjectType({
+  name: 'SchoolDetails',
+  fields: () => ({
+    id: { type: GraphQLID, description: 'The unique ID of the school' },
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The unique name of the school'
+    },
+    taxId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The unique tax ID of the school'
+    },
+    street1: {
+      type: GraphQLString,
+      description: "Street line 1 of the school's address"
+    },
+    street2: {
+      type: GraphQLString,
+      description: "Street line 2 of the school's address"
+    },
+    city: { type: GraphQLString, description: 'The city of the school' },
+    state: { type: GraphQLString, description: 'The state of the school' },
+    zip: { type: GraphQLString, description: 'The zip code of the school' },
+    type: { type: GraphQLString, description: 'The type of the school' },
+    phone: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The phone number of the school'
+    },
+    url: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The website url of the school'
+    },
+    userId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The ID of the user associated with the school'
+    },
+    user: {
+      type: UserType,
+      description: 'The user associated with the school',
+      resolve(parent) {
+        return Users.findById(parent.userId);
+      }
+    }
+  })
+});
 
 // const CredentialsType = new GraphQLObjectType({});
 
@@ -51,7 +95,7 @@ const UserType = new GraphQLObjectType({
     },
     role: {
       type: RoleType,
-      description: 'List of roles for a user',
+      description: 'The role associated with the user',
       resolve(parent) {
         return Roles.findById(parent.roleId);
       }
@@ -61,7 +105,8 @@ const UserType = new GraphQLObjectType({
 
 module.exports = {
   UserType,
-  RoleType
+  RoleType,
+  SchoolDetailsType
 };
 
 // firstName: {
@@ -77,16 +122,3 @@ module.exports = {
 //   type: new GraphQLNonNull(GraphQLString),
 //   description: 'The unique email of the user'
 // },
-
-// phone: { type: GraphQLString, description: 'The phone number of the user' },
-// street1: {
-//   type: GraphQLString,
-//   description: "Street line 1 of the user's address"
-// },
-// street2: {
-//   type: GraphQLString,
-//   description: "Street line 2 of the user's address"
-// },
-// city: { type: GraphQLString, description: 'The city of the user' },
-// state: { type: GraphQLString, description: 'The state of the user' },
-// zip: { type: GraphQLString, description: 'The zip code of the user' },
