@@ -6,7 +6,7 @@ exports.up = function(knex) {
       .unique()
       .notNull();
     tbl
-      .string('email', 256)
+      .string('email', 128)
       .unique()
       .notNull();
     tbl
