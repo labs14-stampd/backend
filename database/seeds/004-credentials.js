@@ -1,13 +1,23 @@
-exports.seed = function(knex) {
-  // Deletes ALL existing entries
-  return knex('table_name')
-    .del()
+const faker = require('faker');
+const moment = require('moment');
+
+exports.seed = function(knex, Promise) {
+  return knex('credentials')
+    .truncate()
     .then(function() {
-      // Inserts seed entries
-      return knex('table_name').insert([
-        { id: 1, colName: 'rowValue1' },
-        { id: 2, colName: 'rowValue2' },
-        { id: 3, colName: 'rowValue3' }
+      return knex('credentials').insert([
+        {
+          name: 'Masters in Gravitational Engineering',
+          description:
+            'Certifies that this person is capable of engineering while in a gravitational field',
+          txHash: '',
+          type: 'Masters',
+          studentEmail: faker.fake('{{internet.email}}'),
+          imageUrl: '',
+          criteria: 'Complete Engineering of a gavitational field',
+          issuedOn: moment('2016-01-01', 'YYYY-MM-DD'),
+          schoolId: 4 //This is actually the id from 'users' table
+        }
       ]);
     });
 };
