@@ -1,6 +1,6 @@
 exports.up = function(knex) {
   return knex.schema.createTable('roles', tbl => {
-    tbl.increments();
+    tbl.increments('id');
     tbl.string('type', 128);
   });
 };
