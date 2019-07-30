@@ -1,8 +1,12 @@
 const server = require('./api/server.js');
-require('dotenv').config(); // Config .env
+const Sentry = require('@sentry/node');
+require('dotenv').config();
 
-const port = process.env.PORT || 8000; // Dynamic port assignment via .env
+Sentry.init({
+  dsn: process.env.NODE_SERVER_SENTRY
+});
 
+const port = process.env.PORT || 8000;
 server.listen(port, () =>
   console.log(`
 --------------------------------------------------------------

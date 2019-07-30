@@ -1,9 +1,9 @@
 const express = require('express');
 const applyMiddleware = require('./middleware.js');
-const graphqlHTTP = require('express-graphql'); // Express connecting package and naming convention
+const graphqlHTTP = require('express-graphql');
 const schema = require('../schema/schema.js');
 const expressPlayground = require('graphql-playground-middleware-express')
-  .default; // Custom middleware replacement of Graphiql with GraphQL Playground
+  .default;
 const server = express();
 
 applyMiddleware(server);
@@ -14,7 +14,6 @@ server.get('/', (req, res) => {
   res.send('The Stampd Server is alive and well 🎉');
 });
 
-// Server use GraphQL with /graphql endpoint
 server.use(
   '/graphql',
   graphqlHTTP({
