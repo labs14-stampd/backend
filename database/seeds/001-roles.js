@@ -1,6 +1,6 @@
 exports.seed = function(knex) {
   return knex('roles')
-    .truncate()
+    .del()
     .then(function() {
       return knex('roles').insert([
         { id: 1, type: 'admin' },

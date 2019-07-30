@@ -3,10 +3,11 @@ const moment = require('moment');
 
 exports.seed = function(knex, Promise) {
   return knex('credentials')
-    .truncate()
+    .del()
     .then(function() {
       return knex('credentials').insert([
         {
+          id: 1,
           name: 'Masters in Gravitational Engineering',
           description:
             'Certifies that this person is capable of engineering while in a gravitational field',

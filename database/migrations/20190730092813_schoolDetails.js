@@ -6,7 +6,7 @@ exports.up = function(knex) {
       .unique()
       .notNull();
     tbl
-      .string('taxid', 256)
+      .string('taxId', 256)
       .unique()
       .notNull();
     tbl.string('street1', 256);
@@ -14,6 +14,7 @@ exports.up = function(knex) {
     tbl.string('city', 256);
     tbl.string('state', 50);
     tbl.string('zip', 128);
+    tbl.string('type', 128);
     tbl.string('phone', 256).notNull();
     tbl.string('url', 256).notNull();
     tbl

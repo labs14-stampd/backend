@@ -13,7 +13,8 @@ exports.up = function(knex) {
       .integer('roleId')
       .unsigned()
       .references('id')
-      .inTable('roles');
+      .inTable('roles')
+      .onDelete('CASCADE');
   });
 };
 
