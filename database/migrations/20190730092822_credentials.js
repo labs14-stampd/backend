@@ -14,7 +14,7 @@ exports.up = function(knex) {
       .integer('schoolId')
       .unsigned()
       .references('id')
-      .inTable('user'); // Need to reference id in "users" => schoolDetails
+      .inTable('users'); // Need to reference id in "users" => schoolDetails
   });
 };
 
