@@ -1,75 +1,59 @@
 const graphql = require('graphql');
-const User = require('../models/userModel.js');
-const Wallet = require('../models/walletModel.js');
+const Users = require('../models/userModel.js');
+const Roles = require('../models/roleModel');
 
 const {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
   GraphQLList,
+  GraphQLID,
   GraphQLNonNull
 } = graphql;
 
-const UserType = new GraphQLObjectType({
-  name: 'User',
+const RoleType = new GraphQLObjectType({
+  name: 'Role',
   fields: () => ({
-    id: { type: GraphQLInt, description: 'The unique ID of the user' },
-    username: {
+    id: { type: GraphQLID, description: 'The unique ID of the role' },
+    type: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The unique username of the user'
     },
-    firstName: {
-      type: GraphQLString,
-      description: 'The first name of the user'
-    },
-    middleName: {
-      type: GraphQLString,
-      description: 'The middle name of the user'
-    },
-    lastName: { type: GraphQLString, description: 'The last name of the user' },
-    email: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The unique email of the user'
-    },
-    phone: { type: GraphQLString, description: 'The phone number of the user' },
-    street1: {
-      type: GraphQLString,
-      description: "Street line 1 of the user's address"
-    },
-    street2: {
-      type: GraphQLString,
-      description: "Street line 2 of the user's address"
-    },
-    city: { type: GraphQLString, description: 'The city of the user' },
-    state: { type: GraphQLString, description: 'The state of the user' },
-    zip: { type: GraphQLString, description: 'The zip code of the user' },
-    wallets: {
-      type: new GraphQLList(WalletType),
-      description: 'The list of wallets belonging to the user',
-      resolve(parent, args) {
-        return Wallet.findByUserId(parent.id);
+    users: {
+      type: new GraphQLList(UserType),
+      description: 'Returns all users of specific role',
+      resolve(parent) {
+        return Users.findBy({roleId: parent.id})
       }
     }
   })
 });
 
-const WalletType = new GraphQLObjectType({
-  name: 'Wallet',
+// const SchoolDetailsType = new GraphQLObjectType({});
+
+// const CredentialsType = new GraphQLObjectType({});
+
+const UserType = new GraphQLObjectType({
+  name: 'User',
   fields: () => ({
-    id: { type: GraphQLInt, desciption: 'The unique ID of the wallet' },
-    walletAddress: {
+    id: { type: GraphQLID, description: 'The unique ID of the user' },
+    username: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The unique address of the wallet'
+      description: 'The unique username of the user'
     },
-    userId: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: 'The foreign key of the associated user'
+    email: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The unique email of the user'
     },
-    user: {
-      type: UserType,
-      description: 'The user associated with the wallet',
-      resolve(parent, args) {
-        return User.findById(parent.userId);
+    roleId: {
+      type: GraphQLID,
+      description: 'The id for the role of the user'
+    },
+    role: {
+      type: RoleType,
+      description: 'List of roles for a user',
+      resolve(parent) {
+        return Roles.findById(parent.roleId);
       }
     }
   })
@@ -77,5 +61,32 @@ const WalletType = new GraphQLObjectType({
 
 module.exports = {
   UserType,
-  WalletType
+  RoleType
 };
+
+// firstName: {
+//   type: GraphQLString,
+//   description: 'The first name of the user'
+// },
+// middleName: {
+//   type: GraphQLString,
+//   description: 'The middle name of the user'
+// },
+// lastName: { type: GraphQLString, description: 'The last name of the user' },
+// email: {
+//   type: new GraphQLNonNull(GraphQLString),
+//   description: 'The unique email of the user'
+// },
+
+// phone: { type: GraphQLString, description: 'The phone number of the user' },
+// street1: {
+//   type: GraphQLString,
+//   description: "Street line 1 of the user's address"
+// },
+// street2: {
+//   type: GraphQLString,
+//   description: "Street line 2 of the user's address"
+// },
+// city: { type: GraphQLString, description: 'The city of the user' },
+// state: { type: GraphQLString, description: 'The state of the user' },
+// zip: { type: GraphQLString, description: 'The zip code of the user' },
