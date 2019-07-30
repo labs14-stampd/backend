@@ -75,7 +75,54 @@ const SchoolDetailsType = new GraphQLObjectType({
   })
 });
 
-// const CredentialsType = new GraphQLObjectType({});
+const CredentialType = new GraphQLObjectType({
+  name: 'Credential',
+  fields: () => ({
+    id: { type: GraphQLID, description: 'The unique ID of a credentail' },
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Name of the credential'
+    },
+    description: {
+      type: GraphQLString,
+      description: 'Description of the credential'
+    },
+    txHash: {
+      type: GraphQLString,
+      description: 'Ethereum transaction hash for the credential'
+    },
+    type: { type: GraphQLString, description: 'Type of credential' },
+
+    studentEmail: {
+      type: GraphQLString,
+      description: 'Student email associated with credential'
+    },
+    imageUrl: {
+      type: GraphQLString,
+      description: 'Image URL associated with credential'
+    },
+    criteria: {
+      type: GraphQLString,
+      description: 'Criteria required to complete credential'
+    },
+    issuedOn: {
+      type: GraphQLString,
+      description: 'Date credential was issued'
+    },
+    schoolId: {
+      type: GraphQLID,
+      description: 'USER id associated with the school issuing the credential'
+      // ^^^ This is the id in the 'users' table
+    },
+    schoolsUserInfo: {
+      type: UserType,
+      description: 'The user associated with the school',
+      resolve(parent) {
+        return Users.findById(parent.schoolId);
+      }
+    }
+  })
+});
 
 const UserType = new GraphQLObjectType({
   name: 'User',
@@ -106,7 +153,8 @@ const UserType = new GraphQLObjectType({
 module.exports = {
   UserType,
   RoleType,
-  SchoolDetailsType
+  SchoolDetailsType,
+  CredentialType
 };
 
 // firstName: {
