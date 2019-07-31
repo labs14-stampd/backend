@@ -1,4 +1,10 @@
-exports.seed = function(knex) {
+exports.seed = async function(knex) {
+  await knex('credentials').del();
+  await knex.raw('ALTER SEQUENCE credentials_id_seq RESTART WITH 1')
+  await knex('schoolDetails').del();
+  await knex.raw('ALTER SEQUENCE "schoolDetails_id_seq" RESTART WITH 1')
+  await knex('users').del();
+  await knex.raw('ALTER SEQUENCE users_id_seq RESTART WITH 1')
   return knex('roles')
     .del()
     .then(function() {

@@ -1,6 +1,9 @@
 exports.up = function(knex) {
   return knex.schema.createTable('roles', tbl => {
-    tbl.increments('id');
+    tbl
+      .increments('id')
+      .unsigned()
+      .primary();
     tbl.string('type', 128);
   });
 };
