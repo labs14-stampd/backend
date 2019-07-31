@@ -1,9 +1,16 @@
 const graphql = require('graphql');
 const User = require('../models/userModel.js');
 const School = require('../models/schoolModel.js');
+const yup = require('yup');
 const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
 
-const { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLID } = graphql;
+const {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLID,
+  GraphQLInt
+} = graphql;
 
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
@@ -24,15 +31,15 @@ const Mutation = new GraphQLObjectType({
           type: GraphQLID
         }
       },
-      async resolve(parent, args) {
-        const user = await User.findBy({ email: parent.email })
-        if(user && user.username) return user;
-        
-        return User.insert({ ...args })
-          .then(res => res)
-          .catch(err => {
-            return new Error(err);
-          });
+      resolve(parent, args) {
+        return User.findBy({ email: args.email }).then(user => {
+          if(user[0] && user[0].email) return user[0];
+          return User.insert({ ...args })
+            .then(res => res)
+            .catch(err => {
+              return new Error(err);
+            });
+        });
       }
     }, // Add User
     updateUser: {
@@ -213,7 +220,7 @@ const Mutation = new GraphQLObjectType({
             });
         }
       }
-    }, //Update School Detail
+    } //Update School Detail
   })
 });
 
