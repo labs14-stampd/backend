@@ -30,7 +30,7 @@ const Mutation = new GraphQLObjectType({
           type: GraphQLID
         }
       },
-      async resolve(parent, args) {
+      async resolve(parent, args, context, info) {
         try {
           if (!args.username || !args.email) {
             throw new Error(

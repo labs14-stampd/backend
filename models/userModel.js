@@ -31,9 +31,7 @@ function findByUsername(username) {
 }
 
 async function insert(creds) {
-  console.log('creds', creds);
   const [id] = await db('users').insert(creds, 'id');
-  console.log('id', id);
   return findById(id);
 }
 
