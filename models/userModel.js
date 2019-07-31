@@ -15,7 +15,7 @@ function find() {
 }
 
 function findBy(filter) {
-  return db('users').where(filter)
+  return db('users').where(filter);
 }
 
 function findById(id) {
@@ -30,8 +30,11 @@ function findByUsername(username) {
     .first();
 }
 
-function insert(creds) {
-  return db('users').insert(creds);
+async function insert(creds) {
+  console.log('creds', creds);
+  const [id] = await db('users').insert(creds, 'id');
+  console.log('id', id);
+  return findById(id);
 }
 
 function update(id, changes) {

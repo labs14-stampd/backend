@@ -1,6 +1,9 @@
 exports.up = function(knex) {
   return knex.schema.createTable('schoolDetails', tbl => {
-    tbl.increments('id');
+    tbl
+      .increments('id')
+      .unsigned()
+      .primary();
     tbl
       .string('name', 256)
       .unique()

@@ -1,6 +1,9 @@
 exports.up = function(knex) {
   return knex.schema.createTable('credentials', tbl => {
-    tbl.increments('id');
+    tbl
+      .increments('id')
+      .unsigned()
+      .primary();
     tbl.string('name', 256).notNull();
     tbl.text('description');
     tbl.string('txHash', 64);
