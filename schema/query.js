@@ -1,7 +1,8 @@
 const graphql = require('graphql');
 const User = require('../models/userModel.js');
-const Wallet = require('../models/walletModel.js');
-const { UserType, WalletType } = require('./types.js');
+const Schools = require('../models/schoolModel.js');
+const Credentials = require('../models/credentialModel.js');
+const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
 
 const { GraphQLObjectType, GraphQLList, GraphQLID } = graphql;
 
@@ -47,16 +48,16 @@ const RootQuery = new GraphQLObjectType({
         }
       }
     },
-    getAllWallets: {
-      type: new GraphQLList(WalletType),
-      description: 'Gets all wallets',
+    getAllSchoolDetails: {
+      type: new GraphQLList(SchoolDetailsType),
+      description: 'Gets all schools',
       resolve(parent, args) {
-        return Wallet.find()
+        return Schools.find()
           .then(res => {
-            if (res) {
+            if (res.length) {
               return res;
             } else {
-              return new Error('The users could not be found.');
+              return new Error('No schools could be found.');
             }
           })
           .catch(err => {
@@ -64,53 +65,62 @@ const RootQuery = new GraphQLObjectType({
           });
       }
     },
-    getWalletByWalletId: {
-      type: WalletType,
-      description: 'Gets a wallet by wallet ID',
+    getSchoolDetailsBySchoolId: {
+      type: SchoolDetailsType,
+      description: 'Gets school by school ID',
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        if (!args.id) {
-          return new Error('Please include a wallet ID and try again.');
-        } else {
-          return Wallet.findById(args.id)
-            .then(res => {
-              if (res) {
-                return res;
-              } else {
-                return new Error(
-                  'No wallet with that wallet ID could be found.'
-                );
-              }
-            })
-            .catch(err => {
-              return new Error('There was an error completing your request.');
-            });
-        }
+        return Schools.findById(args.id)
+          .then(res => res)
+          .catch(err => {
+            return new Error('there was an error completing your request.');
+          });
+      }
+    },
+    getAllCredentials: {
+      type: new GraphQLList(CredentialType),
+      description: 'Gets all credentials',
+      resolve() {
+        return Credentials.find()
+          .then(res => {
+            if (res.length) {
+              return res;
+            } else {
+              return new Error('No credentials could be found');
+            }
+          })
+          .catch(
+            err => new Error('there was an error completing your request.')
+          );
+      }
+    },
+    getCredentialById: {
+      type: CredentialType,
+      description: 'Get a credential by ID',
+      args: { id: { type: GraphQLID } },
+      resolve(parent, args) {
+        return Credentials.findById(args.id)
+          .then(res => {
+            if (res) {
+              return res;
+            } else {
+              return new Error('Credential with that ID could not be found');
+            }
+          })
+          .catch(err => new Error('there was an error completing your request.'));
+      }
+    },
+    getCredentialsBySchoolId: {
+      type: new GraphQLList(CredentialType),
+      description: 'Get all of a schools credentials',
+      args: { id: { type: GraphQLID } },
+      resolve(parent, args) {
+        return Credentials.findBy({schoolId: args.id})
+          .then(res => res)
+          .catch(err => new Error('there was an error completing your request.'));
       }
     }
-    // getAllWalletsByUserId: {
-    //   type: WalletType,
-    //   description: "Gets all wallets by user ID",
-    //   args: { userId: { type: GraphQLID } },
-    //   resolve(parent, args) {
-    //     if (!args.userId) {
-    //       return new Error("Please include a wallet ID and try again.");
-    //     } else {
-    //       return Wallet.findByUserId(args.userId)
-    //         .then(res => {
-    //           if (res.length) {
-    //             return res;
-    //           } else {
-    //             return new Error("No wallets for that user ID could be found.");
-    //           }
-    //         })
-    //         .catch(err => {
-    //           return new Error("There was an error completing your request.");
-    //         });
-    //     }
-    //   }
-    // }
-  }
+  } // fields
 });
 
 module.exports = {
