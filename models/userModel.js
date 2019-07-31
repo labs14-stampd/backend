@@ -35,10 +35,11 @@ async function insert(creds) {
   return findById(id);
 }
 
-function update(id, changes) {
-  return db('users')
+async function update(id, changes) {
+  await db('users')
     .where({ id })
     .update(changes);
+  return findById(id);
 }
 
 function remove(id) {

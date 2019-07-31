@@ -42,21 +42,25 @@ const Mutation = new GraphQLObjectType({
       type: UserType,
       description: 'Updates an existing user by user ID',
       args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The unique ID of the user'
+        },
         username: {
           type: GraphQLString,
-          description: 'The username of the new user'
+          description: 'The new username of the user'
         },
         email: {
           type: GraphQLString,
-          description: 'The unique email of the new user'
+          description: 'The new unique email of the user'
         },
         roleId: {
-          type: GraphQLID
+          type: GraphQLID,
+          description: 'The new roleId of the user'
         }
       },
       resolve(parent, args) {
-        const userChanges = { ...args };
-        return User.update(args.id, userChanges)
+        return User.update(args.id, args)
           .then(res => {
             if (res) {
               return User.findById(args.id)
@@ -82,8 +86,8 @@ const Mutation = new GraphQLObjectType({
       description: 'Deletes an existing user by user ID',
       args: {
         id: {
-          type: GraphQLNonNull(GraphQLID),
-          description: 'The unique ID of the user'
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The unique ID of the user to be deleted'
         }
       },
       resolve(parent, args) {
