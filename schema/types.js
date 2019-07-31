@@ -156,6 +156,10 @@ const CredentialType = new GraphQLObjectType({
       type: GraphQLString,
       description: 'Date credential was issued'
     },
+    expirationDate: {
+      type: GraphQLString,
+      description: 'Date that the credential will expire'
+    },
     schoolId: {
       type: GraphQLID,
       description: 'USER id associated with the school issuing the credential'
