@@ -1,16 +1,9 @@
 const graphql = require('graphql');
 const User = require('../models/userModel.js');
 const School = require('../models/schoolModel.js');
-const yup = require('yup');
 const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
 
-const {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLInt
-} = graphql;
+const { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLID } = graphql;
 
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
@@ -152,14 +145,14 @@ const Mutation = new GraphQLObjectType({
         userId: {
           type: new GraphQLNonNull(GraphQLID),
           description: 'The ID of the user associated with the school'
-        },
-        resolve(parent, args) {
-          return School.insert(args)
-            .then(res => res)
-            .catch(err => {
-              return new Error(err);
-            });
         }
+      },
+      resolve(parent, args) {
+        return School.insert(args)
+          .then(res => res)
+          .catch(err => {
+            return new Error(err);
+          });
       }
     }, // Add School Detail
     updateSchoolDetail: {

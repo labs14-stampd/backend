@@ -9,7 +9,8 @@ const {
   GraphQLString,
   GraphQLList,
   GraphQLID,
-  GraphQLNonNull
+  GraphQLNonNull,
+  GraphQLBoolean
 } = graphql;
 
 const RoleType = new GraphQLObjectType({
@@ -147,9 +148,17 @@ const CredentialType = new GraphQLObjectType({
       type: GraphQLString,
       description: 'Criteria required to complete credential'
     },
+    valid: {
+      type: GraphQLBoolean,
+      description: 'A boolean flag indicating if the credential is still valid'
+    },
     issuedOn: {
       type: GraphQLString,
       description: 'Date credential was issued'
+    },
+    expirationDate: {
+      type: GraphQLString,
+      description: 'Date that the credential will expire'
     },
     schoolId: {
       type: GraphQLID,
