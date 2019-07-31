@@ -10,8 +10,10 @@ exports.up = function(knex) {
     tbl.string('type', 128);
     tbl.string('studentEmail', 128);
     tbl.string('imageUrl', 256);
+    tbl.bool('valid').defaultTo(true);
     tbl.text('criteria');
     tbl.string('issuedOn', 128);
+    tbl.string('expirationDate', 128);
     tbl.timestamps(true, true);
     tbl
       .integer('schoolId')
