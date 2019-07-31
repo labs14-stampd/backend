@@ -35,7 +35,7 @@ const UserType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID, description: 'The unique ID of the user' },
     username: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: 'The unique username of the user'
     },
     email: {

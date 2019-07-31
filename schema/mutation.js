@@ -19,7 +19,7 @@ const Mutation = new GraphQLObjectType({
       description: 'Adds a new user',
       args: {
         username: {
-          type: GraphQLNonNull(GraphQLString),
+          type: GraphQLString,
           description: 'The username of the new user'
         },
         email: {
@@ -30,68 +30,29 @@ const Mutation = new GraphQLObjectType({
           type: GraphQLID
         }
       },
-      async resolve(parent, args, context, info) {
-        try {
-          if (!args.username || !args.email) {
-            throw new Error(
-              'Please include the required credentials and try again.'
-            );
-          } else {
-            const newUser = await User.insert({ ...args });
-            if (newUser) {
-              return newUser;
-            } else {
-              throw new Error('The new user could not be created.');
-            }
-          }
-        } catch (error) {
-          return error;
-        }
+      resolve(parent, args, context, info) {
+        return User.insert({ ...args })
+          .then(res => res)
+          .catch(err => {
+            return new Error('There was an error completing your request.');
+          });
       }
     },
     updateUser: {
       type: UserType,
       description: 'Updates an existing user by user ID',
       args: {
-        id: {
-          type: GraphQLNonNull(GraphQLID),
-          description: 'The unique ID of the user'
-        },
         username: {
           type: GraphQLString,
-          description: 'The unique username of the user'
-        },
-        firstName: {
-          type: GraphQLString,
-          description: 'The first name of the user'
-        },
-        middleName: {
-          type: GraphQLString,
-          description: 'The middle name of the user'
-        },
-        lastName: {
-          type: GraphQLString,
-          description: 'The last name of the user'
+          description: 'The username of the new user'
         },
         email: {
           type: GraphQLString,
-          description: 'The unique email of the user'
+          description: 'The unique email of the new user'
         },
-        phone: {
-          type: GraphQLString,
-          description: 'The phone number of the user'
-        },
-        street1: {
-          type: GraphQLString,
-          description: "Street line 1 of the user's address"
-        },
-        street2: {
-          type: GraphQLString,
-          description: "Street line 2 of the user's address"
-        },
-        city: { type: GraphQLString, description: 'The city of the user' },
-        state: { type: GraphQLString, description: 'The state of the user' },
-        zip: { type: GraphQLString, description: 'The zip code of the user' }
+        roleId: {
+          type: GraphQLID
+        }
       },
       resolve(parent, args) {
         const userChanges = { ...args };
