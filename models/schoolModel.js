@@ -34,10 +34,11 @@ function insert(creds) {
   return db('schoolDetails').insert(creds);
 }
 
-function update(id, changes) {
-  return db('schoolDetails')
+async function update(id, changes) {
+  await db('schoolDetails')
     .where({ id })
     .update(changes);
+  return findById(id);
 }
 
 function remove(id) {
