@@ -1,11 +1,12 @@
 const graphql = require('graphql');
 const Users = require('../models/userModel.js');
-const Roles = require('../models/roleModel');
+const Roles = require('../models/roleModel.js');
+const Schools = require('../models/schoolModel.js');
+const Credentials = require('../models/credentialModel.js');
 
 const {
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInt,
   GraphQLList,
   GraphQLID,
   GraphQLNonNull
@@ -24,6 +25,39 @@ const RoleType = new GraphQLObjectType({
       description: 'Returns all users of specific role',
       resolve(parent) {
         return Users.findBy({ roleId: parent.id });
+      }
+    }
+  })
+});
+
+const UserType = new GraphQLObjectType({
+  name: 'User',
+  fields: () => ({
+    id: { type: GraphQLID, description: 'The unique ID of the user' },
+    username: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The unique username of the user'
+    },
+    email: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The unique email of the user'
+    },
+    roleId: {
+      type: GraphQLID,
+      description: 'The id for the role of the user'
+    },
+    role: {
+      type: RoleType,
+      description: 'The role associated with the user',
+      resolve(parent) {
+        return Roles.findById(parent.roleId);
+      }
+    },
+    schoolDetails: {
+      type: SchoolDetailsType,
+      description: 'The school details associated with the user',
+      resolve(parent) {
+        return Schools.findByUserId(parent.id);
       }
     }
   })
@@ -70,6 +104,14 @@ const SchoolDetailsType = new GraphQLObjectType({
       description: 'The user associated with the school',
       resolve(parent) {
         return Users.findById(parent.userId);
+      }
+    },
+    credentials: {
+      type: new GraphQLList(CredentialType),
+      description: 'The credentials associated with the school',
+      resolve(parent) {
+        return Credentials.findBySchoolId(parent.userId);
+        // This is the user ID of the corresponding school account
       }
     }
   })
@@ -124,49 +166,9 @@ const CredentialType = new GraphQLObjectType({
   })
 });
 
-const UserType = new GraphQLObjectType({
-  name: 'User',
-  fields: () => ({
-    id: { type: GraphQLID, description: 'The unique ID of the user' },
-    username: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The unique username of the user'
-    },
-    email: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The unique email of the user'
-    },
-    roleId: {
-      type: GraphQLID,
-      description: 'The id for the role of the user'
-    },
-    role: {
-      type: RoleType,
-      description: 'The role associated with the user',
-      resolve(parent) {
-        return Roles.findById(parent.roleId);
-      }
-    }
-  })
-});
-
 module.exports = {
   UserType,
   RoleType,
   SchoolDetailsType,
   CredentialType
 };
-
-// firstName: {
-//   type: GraphQLString,
-//   description: 'The first name of the user'
-// },
-// middleName: {
-//   type: GraphQLString,
-//   description: 'The middle name of the user'
-// },
-// lastName: { type: GraphQLString, description: 'The last name of the user' },
-// email: {
-//   type: new GraphQLNonNull(GraphQLString),
-//   description: 'The unique email of the user'
-// },

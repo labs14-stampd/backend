@@ -3,7 +3,8 @@ const db = require('../database/dbConfig.js');
 module.exports = {
   find,
   findBy,
-  findById
+  findById,
+  findBySchoolId
 };
 
 function find() {
@@ -18,4 +19,8 @@ function findById(id) {
   return db('credentials')
     .where({ id })
     .first();
+}
+
+function findBySchoolId(schoolId) {
+  return db('credentials').where({ schoolId });
 }
