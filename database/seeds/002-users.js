@@ -6,51 +6,51 @@ exports.seed = function(knex, Promise) {
     .then(function() {
       return knex('users').insert([
         {
-          id: 1,
+          // id: 1,
           username: 'admin',
           email: 'teamstampd@gmail.com',
           roleId: 1
         },
         {
-          id: 2,
+          // id: 2,
           username: 'admin2',
           email: 'stampdteam@gmail.com',
           roleId: 1
         },
         // These are the school accounts
         {
-          id: 3,
+          // id: 3,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
           roleId: 2
         },
         {
-          id: 4,
+          // id: 4,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
           roleId: 2
         },
         {
-          id: 5,
+          // id: 5,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
           roleId: 2
         },
         // These are the student accounts
         {
-          id: 6,
+          // id: 6,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
           roleId: 3
         },
         {
-          id: 7,
+          // id: 7,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
           roleId: 3
         },
         {
-          id: 8,
+          // id: 8,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
           roleId: 3
