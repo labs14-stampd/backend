@@ -60,25 +60,29 @@ const Mutation = new GraphQLObjectType({
         }
       },
       resolve(parent, args) {
-        return User.update(args.id, args)
-          .then(res => {
-            if (res) {
-              return User.findById(args.id)
-                .then(res => {
-                  return res;
-                })
-                .catch(err => {
-                  return new Error(
-                    'There was an error completing your request.'
-                  );
-                });
-            } else {
-              return new Error('The user could not be updated.');
-            }
-          })
-          .catch(err => {
-            return new Error('There was an error completing your request.');
-          });
+        if (!args.id || isNaN(args.id)) {
+          return new Error('Please include a user ID and try again.');
+        } else {
+          return User.update(args.id, args)
+            .then(res => {
+              if (res) {
+                return User.findById(args.id)
+                  .then(res => {
+                    return res;
+                  })
+                  .catch(err => {
+                    return new Error(
+                      'There was an error completing your request.'
+                    );
+                  });
+              } else {
+                return new Error('The user could not be updated.');
+              }
+            })
+            .catch(err => {
+              return new Error('There was an error completing your request.');
+            });
+        }
       }
     },
     deleteUser: {
@@ -91,7 +95,7 @@ const Mutation = new GraphQLObjectType({
         }
       },
       resolve(parent, args) {
-        if (!args.id) {
+        if (!args.id || isNaN(args.id)) {
           return new Error('Please include a user ID and try again.');
         } else {
           return User.remove(args.id)
@@ -103,7 +107,7 @@ const Mutation = new GraphQLObjectType({
               }
             })
             .catch(err => {
-              return new Error('There was an error completing your request.');
+              return { error: err };
             });
         }
       }
