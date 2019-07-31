@@ -4,10 +4,7 @@ exports.up = function(knex) {
       .increments('id')
       .unsigned()
       .primary();
-    tbl
-      .string('username', 256)
-      .unique()
-      .notNull();
+    tbl.string('username', 256).unique();
     tbl
       .string('email', 128)
       .unique()

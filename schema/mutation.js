@@ -23,7 +23,7 @@ const Mutation = new GraphQLObjectType({
           description: 'The username of the new user'
         },
         email: {
-          type: GraphQLNonNull(GraphQLString),
+          type: new GraphQLNonNull(GraphQLString),
           description: 'The unique email of the new user'
         },
         roleId: {
@@ -34,7 +34,7 @@ const Mutation = new GraphQLObjectType({
         return User.insert({ ...args })
           .then(res => res)
           .catch(err => {
-            return new Error('There was an error completing your request.');
+            return new Error(err);
           });
       }
     },
