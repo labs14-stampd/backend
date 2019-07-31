@@ -31,7 +31,10 @@ const Mutation = new GraphQLObjectType({
           type: GraphQLID
         }
       },
-      resolve(parent, args, context, info) {
+      async resolve(parent, args) {
+        const user = await User.findBy({ email: parent.email })
+        if(user && user.username) return user;
+        
         return User.insert({ ...args })
           .then(res => res)
           .catch(err => {
@@ -217,7 +220,7 @@ const Mutation = new GraphQLObjectType({
             });
         }
       }
-    } //Update School Detail
+    }, //Update School Detail
   })
 });
 
