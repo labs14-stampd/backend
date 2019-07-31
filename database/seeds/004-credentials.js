@@ -7,7 +7,7 @@ exports.seed = function(knex, Promise) {
     .then(function() {
       return knex('credentials').insert([
         {
-          id: 1,
+          // id: 1,
           name: 'Masters in Gravitational Engineering',
           description:
             'Certifies that this person is capable of engineering while in a gravitational field',
@@ -22,7 +22,7 @@ exports.seed = function(knex, Promise) {
           schoolId: 4 //This is actually the id from 'users' table
         },
         {
-          id: 2,
+          // id: 2,
           name: 'B.A. in Classical Horsemanship',
           description:
             'Certifies that this person is capable of handling horses in a classical fashion',
@@ -37,7 +37,7 @@ exports.seed = function(knex, Promise) {
           schoolId: 5 //This is actually the id from 'users' table
         },
         {
-          id: 3,
+          // id: 3,
           name: 'PhD in Underwater Blow Torching',
           description:
             'Certifies that this person is capable of handling a blow torch underwater',

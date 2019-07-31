@@ -127,25 +127,27 @@ const CredentialType = new GraphQLObjectType({
       description: 'Name of the credential'
     },
     description: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'Description of the credential'
     },
     txHash: {
       type: GraphQLString,
       description: 'Ethereum transaction hash for the credential'
     },
-    type: { type: GraphQLString, description: 'Type of credential' },
-
+    type: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Type of credential'
+    },
     studentEmail: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'Student email associated with credential'
     },
     imageUrl: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'Image URL associated with credential'
     },
     criteria: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'Criteria required to complete credential'
     },
     valid: {
@@ -153,7 +155,7 @@ const CredentialType = new GraphQLObjectType({
       description: 'A boolean flag indicating if the credential is still valid'
     },
     issuedOn: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'Date credential was issued'
     },
     expirationDate: {
@@ -161,7 +163,7 @@ const CredentialType = new GraphQLObjectType({
       description: 'Date that the credential will expire'
     },
     schoolId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'USER id associated with the school issuing the credential'
       // ^^^ This is the id in the 'users' table
     },

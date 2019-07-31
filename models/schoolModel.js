@@ -30,8 +30,9 @@ function findByUserId(userId) {
     .first();
 }
 
-function insert(creds) {
-  return db('schoolDetails').insert(creds);
+async function insert(creds) {
+  const [id] = await db('schoolDetails').insert(creds, 'id');
+  return findById(id);
 }
 
 async function update(id, changes) {

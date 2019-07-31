@@ -4,7 +4,8 @@ module.exports = {
   find,
   findBy,
   findById,
-  findBySchoolId
+  findBySchoolId,
+  insert
 };
 
 function find() {
@@ -23,4 +24,9 @@ function findById(id) {
 
 function findBySchoolId(schoolId) {
   return db('credentials').where({ schoolId });
+}
+
+async function insert(credential) {
+  const [id] = await db('credentials').insert(credential, 'id');
+  return findById(id);
 }
