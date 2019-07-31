@@ -213,7 +213,7 @@ const Mutation = new GraphQLObjectType({
               if (res) {
                 return res;
               } else {
-                return new Error('The user could not be updated.');
+                return new Error('The School could not be updated.');
               }
             })
             .catch(err => {
@@ -290,7 +290,81 @@ const Mutation = new GraphQLObjectType({
             return new Error(err);
           });
       }
-    }
+    }, // add new credential
+    updateCredential: {
+      type: CredentialType,
+      description: 'Updates a credential',
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The unique ID of the user to be deleted'
+        },
+        name: {
+          type: GraphQLString,
+          description: 'Name of the new credential'
+        },
+        description: {
+          type: GraphQLString,
+          description: 'Description of the new credential'
+        },
+        txHash: {
+          type: GraphQLString,
+          description: 'Ethereum transaction hash for the new credential'
+        },
+        type: {
+          type: GraphQLString,
+          description: 'Type of new credential'
+        },
+        studentEmail: {
+          type: GraphQLString,
+          description: 'Student email associated with new credential'
+        },
+        imageUrl: {
+          type: GraphQLString,
+          description: 'Image URL associated with new credential'
+        },
+        criteria: {
+          type: GraphQLString,
+          description: 'Criteria required to complete new credential'
+        },
+        valid: {
+          type: GraphQLBoolean,
+          description:
+            'A boolean flag indicating if the new credential is still valid'
+        },
+        issuedOn: {
+          type: GraphQLString,
+          description: 'Date new credential was issued'
+        },
+        expirationDate: {
+          type: GraphQLString,
+          description: 'Date that the new credential will expire'
+        },
+        schoolId: {
+          type: GraphQLID,
+          description:
+            'USER id associated with the school issuing the new credential'
+          // ^^^ This is the id in the 'users' table
+        }
+      },
+      resolve(parent, args) {
+        if (!args.id || isNaN(args.id)) {
+          return new Error('Please include a Credential ID and try again.');
+        } else {
+          return Credential.update(args.id, args)
+            .then(res => {
+              if (res) {
+                return res;
+              } else {
+                return new Error('The credential could not be updated.');
+              }
+            })
+            .catch(err => {
+              return new Error('There was an error completing your request.');
+            });
+        }
+      }
+    }, // Update Credential
   })
 });
 
