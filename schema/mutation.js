@@ -1,5 +1,6 @@
 const graphql = require('graphql');
 const User = require('../models/userModel.js');
+const School = require('../models/schoolModel.js');
 const yup = require('yup');
 const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
 
@@ -37,7 +38,7 @@ const Mutation = new GraphQLObjectType({
             return new Error(err);
           });
       }
-    },
+    }, // Add User
     updateUser: {
       type: UserType,
       description: 'Updates an existing user by user ID',
@@ -58,7 +59,7 @@ const Mutation = new GraphQLObjectType({
           type: GraphQLID,
           description: 'The new roleId of the user'
         }
-      },
+      }, // Update User
       resolve(parent, args) {
         if (!args.id || isNaN(args.id)) {
           return new Error('Please include a user ID and try again.');
@@ -84,7 +85,7 @@ const Mutation = new GraphQLObjectType({
             });
         }
       }
-    },
+    }, //Update User
     deleteUser: {
       type: UserType,
       description: 'Deletes an existing user by user ID',
@@ -111,7 +112,53 @@ const Mutation = new GraphQLObjectType({
             });
         }
       }
-    }
+    }, // Delete User
+    //************ School Details ************/
+    addSchoolDetail: {
+      type: SchoolDetailsType,
+      description: 'Adds school details to an existing user',
+      args: {
+        name: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'The unique name of the school'
+        },
+        taxId: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'The unique tax ID of the school'
+        },
+        street1: {
+          type: GraphQLString,
+          description: "Street line 1 of the school's address"
+        },
+        street2: {
+          type: GraphQLString,
+          description: "Street line 2 of the school's address"
+        },
+        city: { type: GraphQLString, description: 'The city of the school' },
+        state: { type: GraphQLString, description: 'The state of the school' },
+        zip: { type: GraphQLString, description: 'The zip code of the school' },
+        type: { type: GraphQLString, description: 'The type of the school' },
+        phone: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'The phone number of the school'
+        },
+        url: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'The website url of the school'
+        },
+        userId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The ID of the user associated with the school'
+        },
+        resolve(parent, args) {
+          return School.insert(args)
+            .then(res => res)
+            .catch(err => {
+              return new Error(err);
+            });
+        }
+      }
+    } // Add School Detail
   })
 });
 
