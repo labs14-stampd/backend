@@ -365,6 +365,33 @@ const Mutation = new GraphQLObjectType({
         }
       }
     }, // Update Credential
+    removeCredential: {
+      type: CredentialType,
+      description: 'Removes a credential',
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The unique ID of the credential to be deleted'
+        },
+      },
+      resolve(parent, args) {
+        if (!args.id || isNaN(args.id)) {
+          return new Error('Please include a credential ID and try again.');
+        } else {
+          return Credential.remove(args.id)
+            .then(res => {
+              if (res) {
+                return { id: args.id };
+              } else {
+                return new Error('The credential could not be deleted.');
+              }
+            })
+            .catch(err => {
+              return { error: err };
+            });
+        }
+      }
+    } // Remove Credential
   })
 });
 

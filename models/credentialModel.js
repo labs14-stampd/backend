@@ -6,7 +6,8 @@ module.exports = {
   findById,
   findBySchoolId,
   insert,
-  update
+  update,
+  remove
 };
 
 function find() {
@@ -37,4 +38,10 @@ async function update(id, changes) {
     .where({ id })
     .update(changes);
   return findById(id);
+}
+
+function remove(id) {
+  return db('credentials')
+    .where({ id })
+    .del();
 }
