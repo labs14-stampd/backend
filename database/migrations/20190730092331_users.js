@@ -10,6 +10,11 @@ exports.up = function(knex) {
       .unique()
       .notNull();
     tbl
+      .string('authToken', 128)
+      .unique()
+      .notNull();
+    tbl.string('profilePicture', 256);
+    tbl
       .integer('roleId')
       .unsigned()
       .references('id')
