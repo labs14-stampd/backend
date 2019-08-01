@@ -41,11 +41,20 @@ const Mutation = new GraphQLObjectType({
         return User.findBy({ email: args.email }).then(user => {
           if (user[0] && user[0].email) {
             token = jwt.sign(
-              { userId: user.id, email: user.email, roleId: user.roleId },
+              {
+                userId: user[0].id,
+                email: user[0].email,
+                roleId: user[0].roleId
+              },
               privateKey,
               { expiresIn: '12h' }
             );
-            return { id: user[0].id, email: user[0].email, token };
+            return {
+              id: user[0].id,
+              email: user[0].email,
+              roleId: user[0].roleId,
+              token
+            };
           }
           return User.insert({ ...args })
             .then(res => {
@@ -58,7 +67,12 @@ const Mutation = new GraphQLObjectType({
                 privateKey,
                 { expiresIn: '12h' }
               );
-              return { id: res.data.id, email: res.data.email, token };
+              return {
+                id: res.data.id,
+                email: res.data.email,
+                roleId: user[0].roleId,
+                token
+              };
             })
             .catch(err => {
               return new Error(err);
