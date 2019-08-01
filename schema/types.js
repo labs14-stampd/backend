@@ -44,6 +44,10 @@ const UserType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The unique email of the user'
     },
+    profilePicture: {
+      type: GraphQLString,
+      description: 'The profile picture URL for the user'
+    },
     roleId: {
       type: GraphQLID,
       description: 'The id for the role of the user'

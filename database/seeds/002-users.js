@@ -9,14 +9,16 @@ exports.seed = function(knex, Promise) {
           // id: 1,
           username: 'admin',
           email: 'teamstampd@gmail.com',
-          sub: '',
+          authToken: 'test1',
+          profilePicture: '',
           roleId: 1
         },
         {
           // id: 2,
           username: 'admin2',
           email: 'stampdteam@gmail.com',
-          sub: '',
+          authToken: 'test2',
+          profilePicture: '',
           roleId: 1
         },
         // These are the school accounts
@@ -24,21 +26,24 @@ exports.seed = function(knex, Promise) {
           // id: 3,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
-          sub: '',
+          authToken: 'test8',
+          profilePicture: '',
           roleId: 2
         },
         {
           // id: 4,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
-          sub: '',
+          authToken: 'test3',
+          profilePicture: '',
           roleId: 2
         },
         {
           // id: 5,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
-          sub: '',
+          authToken: 'test4',
+          profilePicture: '',
           roleId: 2
         },
         // These are the student accounts
@@ -46,21 +51,24 @@ exports.seed = function(knex, Promise) {
           // id: 6,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
-          sub: '',
+          authToken: 'test5',
+          profilePicture: '',
           roleId: 3
         },
         {
           // id: 7,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
-          sub: '',
+          authToken: 'test6',
+          profilePicture: '',
           roleId: 3
         },
         {
           // id: 8,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
-          sub: '',
+          authToken: 'test7',
+          profilePicture: '',
           roleId: 3
         }
       ]);

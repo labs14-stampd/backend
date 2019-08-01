@@ -11,7 +11,6 @@ const {
   GraphQLString,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLInt,
   GraphQLBoolean
 } = graphql;
 
@@ -30,8 +29,17 @@ const Mutation = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLString),
           description: 'The unique email of the new user'
         },
+        authToken: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'The unique Auth0 token of the new user'
+        },
+        profilePicture: {
+          type: GraphQLString,
+          description: 'The profile picture URL for the user'
+        },
         roleId: {
-          type: GraphQLID
+          type: GraphQLID,
+          description: 'The role associated with the new user'
         }
       },
       resolve(parent, args) {
@@ -53,14 +61,12 @@ const Mutation = new GraphQLObjectType({
           return User.insert({ ...args })
             .then(res => {
               token = jwt({
-                userId: res.data.id,
-                email: res.data.email,
+                userId: res.id,
+                email: res.email,
                 roleId: user.roleId
               });
               return {
-                id: res.data.id,
-                email: res.data.email,
-                roleId: user[0].roleId,
+                ...res,
                 token
               };
             })
