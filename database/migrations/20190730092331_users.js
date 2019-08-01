@@ -10,6 +10,7 @@ exports.up = function(knex) {
       .unique()
       .notNull();
     tbl.string('profilePicture', 256);
+    tbl.string('sub', 128);
     tbl
       .integer('roleId')
       .unsigned()
