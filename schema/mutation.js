@@ -30,7 +30,7 @@ const Mutation = new GraphQLObjectType({
           description: 'The unique email of the new user'
         },
         authToken: {
-          type: new GraphQLNonNull(GraphQLString),
+          type: GraphQLString,
           description: 'The unique Auth0 token of the new user'
         },
         profilePicture: {
@@ -44,6 +44,7 @@ const Mutation = new GraphQLObjectType({
       },
       resolve(parent, args) {
         let token;
+        const { authToken, ...restArgs } = args;
         return User.findBy({ email: args.email }).then(user => {
           if (user[0] && user[0].email) {
             token = jwt({
@@ -58,7 +59,7 @@ const Mutation = new GraphQLObjectType({
               token
             };
           }
-          return User.insert({ ...args })
+          return User.insert({ ...restArgs })
             .then(res => {
               token = jwt({
                 userId: res.id,
