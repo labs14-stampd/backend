@@ -1,12 +1,10 @@
 const graphql = require('graphql');
-const jwt = require('jsonwebtoken');
+const jwt = require('../api/tokenService.js');
 
 const User = require('../models/userModel.js');
 const School = require('../models/schoolModel.js');
 const Credential = require('../models/credentialModel.js');
 const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
-
-const privateKey = process.env.PK;
 
 const {
   GraphQLObjectType,
@@ -40,15 +38,11 @@ const Mutation = new GraphQLObjectType({
         let token;
         return User.findBy({ email: args.email }).then(user => {
           if (user[0] && user[0].email) {
-            token = jwt.sign(
-              {
-                userId: user[0].id,
-                email: user[0].email,
-                roleId: user[0].roleId
-              },
-              privateKey,
-              { expiresIn: '12h' }
-            );
+            token = jwt({
+              userId: user[0].id,
+              email: user[0].email,
+              roleId: user[0].roleId
+            });
             return {
               id: user[0].id,
               email: user[0].email,
@@ -58,15 +52,11 @@ const Mutation = new GraphQLObjectType({
           }
           return User.insert({ ...args })
             .then(res => {
-              token = jwt.sign(
-                {
-                  userId: res.data.id,
-                  email: res.data.email,
-                  roleId: user.roleId
-                },
-                privateKey,
-                { expiresIn: '12h' }
-              );
+              token = jwt({
+                userId: res.data.id,
+                email: res.data.email,
+                roleId: user.roleId
+              });
               return {
                 id: res.data.id,
                 email: res.data.email,
