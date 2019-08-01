@@ -93,6 +93,10 @@ const Mutation = new GraphQLObjectType({
           type: GraphQLString,
           description: 'The new unique email of the user'
         },
+        sub: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'Unique identifier returned by Auth0'
+        },
         roleId: {
           type: GraphQLID,
           description: 'The new roleId of the user'
