@@ -9,10 +9,6 @@ exports.up = function(knex) {
       .string('email', 128)
       .unique()
       .notNull();
-    tbl
-      .string('authToken', 128)
-      .unique()
-      .notNull();
     tbl.string('profilePicture', 256);
     tbl
       .integer('roleId')

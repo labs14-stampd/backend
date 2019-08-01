@@ -9,7 +9,6 @@ exports.seed = function(knex, Promise) {
           // id: 1,
           username: 'admin',
           email: 'teamstampd@gmail.com',
-          authToken: 'test1',
           profilePicture: '',
           roleId: 1
         },
@@ -17,7 +16,6 @@ exports.seed = function(knex, Promise) {
           // id: 2,
           username: 'admin2',
           email: 'stampdteam@gmail.com',
-          authToken: 'test2',
           profilePicture: '',
           roleId: 1
         },
@@ -26,7 +24,6 @@ exports.seed = function(knex, Promise) {
           // id: 3,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
-          authToken: 'test8',
           profilePicture: '',
           roleId: 2
         },
@@ -34,7 +31,6 @@ exports.seed = function(knex, Promise) {
           // id: 4,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
-          authToken: 'test3',
           profilePicture: '',
           roleId: 2
         },
@@ -42,7 +38,6 @@ exports.seed = function(knex, Promise) {
           // id: 5,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
-          authToken: 'test4',
           profilePicture: '',
           roleId: 2
         },
@@ -51,7 +46,6 @@ exports.seed = function(knex, Promise) {
           // id: 6,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
-          authToken: 'test5',
           profilePicture: '',
           roleId: 3
         },
@@ -59,7 +53,6 @@ exports.seed = function(knex, Promise) {
           // id: 7,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
-          authToken: 'test6',
           profilePicture: '',
           roleId: 3
         },
@@ -67,7 +60,6 @@ exports.seed = function(knex, Promise) {
           // id: 8,
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
-          authToken: 'test7',
           profilePicture: '',
           roleId: 3
         }
