@@ -10,7 +10,8 @@ const {
   GraphQLList,
   GraphQLID,
   GraphQLNonNull,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLInt
 } = graphql;
 
 const RoleType = new GraphQLObjectType({
@@ -47,6 +48,8 @@ const UserType = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The id for the role of the user'
     },
+    token: { type: GraphQLString, description: 'JWT token for user' },
+    tokenExpiration: { type: GraphQLInt, description: 'Token expiration time' },
     role: {
       type: RoleType,
       description: 'The role associated with the user',
