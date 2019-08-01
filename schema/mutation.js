@@ -1,4 +1,6 @@
 const graphql = require('graphql');
+const jwt = require('../api/tokenService.js');
+
 const User = require('../models/userModel.js');
 const School = require('../models/schoolModel.js');
 const Credential = require('../models/credentialModel.js');
@@ -9,7 +11,6 @@ const {
   GraphQLString,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLInt,
   GraphQLBoolean
 } = graphql;
 
@@ -28,15 +29,48 @@ const Mutation = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLString),
           description: 'The unique email of the new user'
         },
+        authToken: {
+          type: GraphQLString,
+          description: 'The unique Auth0 token of the new user'
+        },
+        profilePicture: {
+          type: GraphQLString,
+          description: 'The profile picture URL for the user'
+        },
         roleId: {
-          type: GraphQLID
+          type: GraphQLID,
+          description: 'The role associated with the new user'
         }
       },
       resolve(parent, args) {
+        let token;
+        const { authToken, ...restArgs } = args;
         return User.findBy({ email: args.email }).then(user => {
-          if (user[0] && user[0].email) return user[0];
-          return User.insert({ ...args })
-            .then(res => res)
+          if (user[0] && user[0].email) {
+            token = jwt({
+              userId: user[0].id,
+              email: user[0].email,
+              roleId: user[0].roleId
+            });
+            return {
+              id: user[0].id,
+              email: user[0].email,
+              roleId: user[0].roleId,
+              token
+            };
+          }
+          return User.insert({ ...restArgs })
+            .then(res => {
+              token = jwt({
+                userId: res.id,
+                email: res.email,
+                roleId: user.roleId
+              });
+              return {
+                ...res,
+                token
+              };
+            })
             .catch(err => {
               return new Error(err);
             });
@@ -372,7 +406,7 @@ const Mutation = new GraphQLObjectType({
         id: {
           type: new GraphQLNonNull(GraphQLID),
           description: 'The unique ID of the credential to be deleted'
-        },
+        }
       },
       resolve(parent, args) {
         if (!args.id || isNaN(args.id)) {
