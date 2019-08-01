@@ -10,6 +10,7 @@ exports.seed = function(knex, Promise) {
           username: 'admin',
           email: 'teamstampd@gmail.com',
           profilePicture: '',
+          sub: '1',
           roleId: 1
         },
         {
@@ -17,6 +18,7 @@ exports.seed = function(knex, Promise) {
           username: 'admin2',
           email: 'stampdteam@gmail.com',
           profilePicture: '',
+          sub: '2',
           roleId: 1
         },
         // These are the school accounts
@@ -25,6 +27,7 @@ exports.seed = function(knex, Promise) {
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
           profilePicture: '',
+          sub: '3',
           roleId: 2
         },
         {
@@ -32,6 +35,7 @@ exports.seed = function(knex, Promise) {
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
           profilePicture: '',
+          sub: '4',
           roleId: 2
         },
         {
@@ -39,6 +43,7 @@ exports.seed = function(knex, Promise) {
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
           profilePicture: '',
+          sub: '5',
           roleId: 2
         },
         // These are the student accounts
@@ -47,6 +52,7 @@ exports.seed = function(knex, Promise) {
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
           profilePicture: '',
+          sub: '6',
           roleId: 3
         },
         {
@@ -54,6 +60,7 @@ exports.seed = function(knex, Promise) {
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
           profilePicture: '',
+          sub: '7',
           roleId: 3
         },
         {
@@ -61,6 +68,7 @@ exports.seed = function(knex, Promise) {
           username: faker.fake('{{internet.userName}}'),
           email: faker.fake('{{internet.email}}'),
           profilePicture: '',
+          sub: '8',
           roleId: 3
         }
       ]);

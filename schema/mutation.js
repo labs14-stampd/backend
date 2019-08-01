@@ -5,6 +5,7 @@ const User = require('../models/userModel.js');
 const School = require('../models/schoolModel.js');
 const Credential = require('../models/credentialModel.js');
 const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
+const getLoginStatus = require('../api/getLoginStatus.js');
 
 const {
   GraphQLObjectType,
@@ -30,7 +31,7 @@ const Mutation = new GraphQLObjectType({
           description: 'The unique email of the new user'
         },
         authToken: {
-          type: GraphQLString,
+          type: new GraphQLNonNull(GraphQLString),
           description: 'The unique Auth0 token of the new user'
         },
         profilePicture: {
@@ -45,7 +46,11 @@ const Mutation = new GraphQLObjectType({
       resolve(parent, args) {
         let token;
         const { authToken, ...restArgs } = args;
+        const sub = getLoginStatus(authToken);
         return User.findBy({ email: args.email }).then(user => {
+          if (user.sub && user.sub !== sub) {
+            return new Error('You must be logged in with a valid account.');
+          }
           if (user[0] && user[0].email) {
             token = jwt({
               userId: user[0].id,
@@ -59,7 +64,7 @@ const Mutation = new GraphQLObjectType({
               token
             };
           }
-          return User.insert({ ...restArgs })
+          return User.insert({ ...restArgs, sub })
             .then(res => {
               token = jwt({
                 userId: res.id,
@@ -92,10 +97,6 @@ const Mutation = new GraphQLObjectType({
         email: {
           type: GraphQLString,
           description: 'The new unique email of the user'
-        },
-        sub: {
-          type: new GraphQLNonNull(GraphQLString),
-          description: 'Unique identifier returned by Auth0'
         },
         roleId: {
           type: GraphQLID,
