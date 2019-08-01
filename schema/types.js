@@ -55,7 +55,7 @@ const UserType = new GraphQLObjectType({
     sub: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'Unique identifier returned by Auth0'
-    }
+    },
     token: { type: GraphQLString, description: 'JWT token for user' },
     tokenExpiration: { type: GraphQLInt, description: 'Token expiration time' },
     role: {
