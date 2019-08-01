@@ -1,10 +1,10 @@
 exports.up = function(knex) {
   return knex.schema.createTable('users', tbl => {
-    tbl.increments('id');
     tbl
-      .string('username', 256)
-      .unique()
-      .notNull();
+      .increments('id')
+      .unsigned()
+      .primary();
+    tbl.string('username', 256).unique();
     tbl
       .string('email', 128)
       .unique()
