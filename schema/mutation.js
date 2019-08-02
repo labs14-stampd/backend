@@ -46,7 +46,7 @@ const Mutation = new GraphQLObjectType({
       resolve(parent, args) {
         let token;
         const { authToken, ...restArgs } = args;
-        const sub = getLoginStatus(authToken);
+        const sub = authToken; //getLoginStatus(authToken); ****** We should use a token, let's refactor this later
         return User.findBy({ email: args.email }).then(user => {
           if (user.sub && user.sub !== sub) {
             return new Error('You must be logged in with a valid account.');
