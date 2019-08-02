@@ -107,7 +107,9 @@ const RootQuery = new GraphQLObjectType({
               return new Error('Credential with that ID could not be found');
             }
           })
-          .catch(err => new Error('there was an error completing your request.'));
+          .catch(
+            err => new Error('there was an error completing your request.')
+          );
       }
     },
     getCredentialsBySchoolId: {
@@ -115,9 +117,11 @@ const RootQuery = new GraphQLObjectType({
       description: 'Get all of a schools credentials',
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        return Credentials.findBy({schoolId: args.id})
+        return Credentials.findBy({ schoolId: args.id })
           .then(res => res)
-          .catch(err => new Error('there was an error completing your request.'));
+          .catch(
+            err => new Error('there was an error completing your request.')
+          );
       }
     }
   } // fields
