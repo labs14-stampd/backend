@@ -1,5 +1,9 @@
 const graphql = require('graphql');
 const jwt = require('../api/tokenService.js');
+const Web3 = require("web3");
+const Tx = require("ethereumjs-tx");
+const rpcURL = process.env.INFURA;
+const web3 = new Web3(rpcURL);
 
 const User = require('../models/userModel.js');
 const School = require('../models/schoolModel.js');
