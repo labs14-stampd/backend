@@ -11,6 +11,10 @@ exports.up = function(knex) {
       .notNull();
     tbl.string('profilePicture', 256);
     tbl
+      .string('sub', 128)
+      .notNull()
+      .unique();
+    tbl
       .integer('roleId')
       .unsigned()
       .references('id')

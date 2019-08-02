@@ -40,6 +40,7 @@
     "graphql-playground-middleware-express": "^1.7.12",
     "helmet": "^3.19.0",
     "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^2.2.0",
     "knex": "^0.19.0",
     "moment": "^2.24.0",
     "morgan": "^1.9.1",
