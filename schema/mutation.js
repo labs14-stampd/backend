@@ -4,6 +4,8 @@ const Web3 = require("web3");
 const Tx = require("ethereumjs-tx");
 const rpcURL = process.env.INFURA;
 const web3 = new Web3(rpcURL);
+const contractAddress = process.env.CONTRACT_ADDRESS;
+const privateKey = process.env.PRIVATE_KEY
 const transaxFunc = (data, callback)=>{  web3.eth.getTransactionCount(account1, (err, txCount) => {
     // Build the transaction
     console.log('count', txCount);
@@ -17,7 +19,7 @@ const transaxFunc = (data, callback)=>{  web3.eth.getTransactionCount(account1, 
     };
     // Sign the transaction
     const tx = new Tx(txObject);
-    tx.sign(privateKey1);
+    tx.sign(privateKey);
 
     const serializedTx = tx.serialize();
     const raw = '0x' + serializedTx.toString('hex');
@@ -344,7 +346,6 @@ const Mutation = new GraphQLObjectType({
         }
       },
       resolve(parent, args) {
-        console.log(args);
         const credentialHash = web3.utils.sha3(JSON.stringify(args));
         const data = contract.methods.addCredential(credentialHash).encodeABI();
         return Credential.insert(args)
