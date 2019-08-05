@@ -5,7 +5,7 @@ const User = require('../models/userModel.js');
 const School = require('../models/schoolModel.js');
 const Credential = require('../models/credentialModel.js');
 const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
-const getLoginStatus = require('../api/getLoginStatus.js');
+const getDecoded = require('../api/getDecoded.js');
 
 const {
   GraphQLObjectType,
@@ -22,21 +22,9 @@ const Mutation = new GraphQLObjectType({
       type: UserType,
       description: 'Adds a new user',
       args: {
-        username: {
-          type: GraphQLString,
-          description: 'The username of the new user'
-        },
-        email: {
-          type: new GraphQLNonNull(GraphQLString),
-          description: 'The unique email of the new user'
-        },
         authToken: {
           type: new GraphQLNonNull(GraphQLString),
           description: 'The unique Auth0 token of the new user'
-        },
-        profilePicture: {
-          type: GraphQLString,
-          description: 'The profile picture URL for the user'
         },
         roleId: {
           type: GraphQLID,
@@ -46,8 +34,8 @@ const Mutation = new GraphQLObjectType({
       resolve(parent, args) {
         let token;
         const { authToken, ...restArgs } = args;
-        const sub = getLoginStatus(authToken);
-        return User.findBy({ email: args.email }).then(user => {
+        const { sub, email, username, profilePicture } = getDecoded(authToken);
+        return User.findBy({ email }).then(user => {
           if (user.sub && user.sub !== sub) {
             return new Error('You must be logged in with a valid account.');
           }
@@ -64,7 +52,13 @@ const Mutation = new GraphQLObjectType({
               token
             };
           }
-          return User.insert({ ...restArgs, sub })
+          return User.insert({
+            sub,
+            email,
+            username,
+            profilePicture,
+            ...restArgs
+          })
             .then(res => {
               token = jwt({
                 userId: res.id,
