@@ -5,7 +5,7 @@ const School = require('../models/schoolModel.js');
 const Credential = require('../models/credentialModel.js');
 const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
 const getDecoded = require('../api/getDecoded.js');
-const { txFunc, contractABI, web3, contract } = require('../web3');
+const { txFunc, web3, contract } = require('../web3/web3.js');
 
 const {
   GraphQLObjectType,
@@ -315,7 +315,7 @@ const Mutation = new GraphQLObjectType({
         return Credential.insert(args)
           .then(res => {
             if (res) {
-              transaxFunc(data, function(receipt) {
+              txFunc(data, function(receipt) {
                 //set txHash of object to the transactionHash returned in receipt
                 args.txHash = receipt.logs[0].transactionHash;
                 Credential.update(res.id, args);

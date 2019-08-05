@@ -4,7 +4,6 @@ require('dotenv').config();
 const rpcURL = process.env.INFURA;
 const web3 = new Web3(rpcURL);
 const contractAddress = process.env.CONTRACT_ADDRESS;
-const contract = new web3.eth.Contract(contractABI, contractAddress);
 
 const txFunc = (data, callback) => {
   web3.eth.getTransactionCount(account1, (err, txCount) => {
@@ -226,6 +225,8 @@ const contractABI = [
     type: 'function'
   }
 ];
+
+const contract = new web3.eth.Contract(contractABI, contractAddress);
 
 module.exports = {
   txFunc,
