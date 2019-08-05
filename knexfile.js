@@ -24,7 +24,20 @@ module.exports = {
   },
 
   testing: {
-    // finish
+    client: 'pg',
+    connection: process.env.TESTING_DATABASE_URL,
+    migrations: {
+      directory: './database/migrations',
+      tablename: 'knex_migrations'
+    },
+    seeds: {
+      directory: './database/seeds'
+    },
+    pool: {
+      min: 2,
+      max: 10
+    },
+    useNullAsDefault: true
   },
 
   production: {
