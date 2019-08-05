@@ -345,10 +345,17 @@ const Mutation = new GraphQLObjectType({
       },
       resolve(parent, args) {
         console.log(args);
+        const credentialHash = web3.utils.sha3(JSON.stringify(args));
+        const data = contract.methods.addCredential(credentialHash).encodeABI();
         return Credential.insert(args)
-          .then(res => {
-            console.log(res);
+          .then(
+            res => {
             if (res) {
+              transaxFunc(data, function(receipt){
+              //set txHash of object to the transactionHash returned in receipt
+              args.txHash = receipt.logs[0].transactionHash;
+              Credential.update(res.id, args)
+            });
               return res;
             } else {
               return new Error('The credential could not be created.');
