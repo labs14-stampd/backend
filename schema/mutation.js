@@ -4,8 +4,202 @@ const Web3 = require("web3");
 const Tx = require("ethereumjs-tx");
 const rpcURL = process.env.INFURA;
 const web3 = new Web3(rpcURL);
+const contractABI = [
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_credHash",
+				"type": "bytes32"
+			}
+		],
+		"name": "addCredential",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_credHash",
+				"type": "bytes32"
+			}
+		],
+		"name": "removeCredential",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "credHash",
+				"type": "bytes32"
+			}
+		],
+		"name": "CredentialAdded",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "credHash",
+				"type": "bytes32"
+			}
+		],
+		"name": "CredentialRemoved",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "credHash",
+				"type": "bytes32"
+			}
+		],
+		"name": "CredentialValidated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "credHash",
+				"type": "bytes32"
+			}
+		],
+		"name": "CredentialInvalidated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"name": "credentials",
+		"outputs": [
+			{
+				"name": "contentHash",
+				"type": "bytes32"
+			},
+			{
+				"name": "valid",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "isOwner",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_credHash",
+				"type": "bytes32"
+			}
+		],
+		"name": "validateCredential",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+const privateKey = Buffer.from(process.env.PRIVATE_KEY, 'hex');
 const contractAddress = process.env.CONTRACT_ADDRESS;
-const privateKey = process.env.PRIVATE_KEY
+const contract = new web3.eth.Contract(contractABI, contractAddress);
 const transaxFunc = (data, callback)=>{  web3.eth.getTransactionCount(account1, (err, txCount) => {
     // Build the transaction
     console.log('count', txCount);
