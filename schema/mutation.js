@@ -4,7 +4,32 @@ const Web3 = require("web3");
 const Tx = require("ethereumjs-tx");
 const rpcURL = process.env.INFURA;
 const web3 = new Web3(rpcURL);
+const transaxFunc = (data, callback)=>{  web3.eth.getTransactionCount(account1, (err, txCount) => {
+    // Build the transaction
+    console.log('count', txCount);
+    const txObject = {
+      nonce:web3.utils.toHex(txCount),
+      to:contractAddress,
+      value:0,
+      gasLimit: web3.utils.toHex(250000),
+      gasPrice: web3.utils.toHex(web3.utils.toWei('3', 'gwei')),
+      data: data
+    };
+    // Sign the transaction
+    const tx = new Tx(txObject);
+    tx.sign(privateKey1);
 
+    const serializedTx = tx.serialize();
+    const raw = '0x' + serializedTx.toString('hex');
+
+    // Broadcast the transaction
+    web3.eth.sendSignedTransaction(raw, (err, txHash) => {
+      console.log('err', err);
+      console.log('txHash:', txHash);
+
+    }).then(receipt=>
+      {console.log('receipt ', receipt);callback(receipt);});
+  });};
 const User = require('../models/userModel.js');
 const School = require('../models/schoolModel.js');
 const Credential = require('../models/credentialModel.js');
