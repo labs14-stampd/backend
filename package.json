@@ -7,6 +7,7 @@
     "server": "nodemon index.js",
     "start": "node index.js",
     "test": "jest --watch --verbose",
+    "lint": "npx eslint --fix ./*",
     "rollback": "npx knex migrate:rollback",
     "migrate": "npx knex migrate:latest",
     "seed": "npx knex seed:run",
@@ -49,7 +50,9 @@
   },
   "devDependencies": {
     "cross-env": "^5.2.0",
-    "eslint": "^6.1.0",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.2",
     "faker": "^4.1.0",
     "jest": "^24.8.0",
     "nodemon": "^1.19.1"
