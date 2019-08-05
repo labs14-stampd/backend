@@ -60,11 +60,11 @@ module.exports = {
         description: 'The unique ID of the user to be deleted'
       },
       name: {
-        type: new GraphQLNonNull(GraphQLString),
+        type: GraphQLString,
         description: 'The unique name of the school'
       },
       taxId: {
-        type: new GraphQLNonNull(GraphQLString),
+        type: GraphQLString,
         description: 'The unique tax ID of the school'
       },
       street1: {
@@ -80,15 +80,15 @@ module.exports = {
       zip: { type: GraphQLString, description: 'The zip code of the school' },
       type: { type: GraphQLString, description: 'The type of the school' },
       phone: {
-        type: new GraphQLNonNull(GraphQLString),
+        type: GraphQLString,
         description: 'The phone number of the school'
       },
       url: {
-        type: new GraphQLNonNull(GraphQLString),
+        type: GraphQLString,
         description: 'The website url of the school'
       },
       userId: {
-        type: new GraphQLNonNull(GraphQLID),
+        type: GraphQLID,
         description: 'The ID of the user associated with the school'
       }
     },
