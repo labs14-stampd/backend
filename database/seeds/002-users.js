@@ -10,7 +10,7 @@ exports.seed = function(knex, Promise) {
           username: 'admin',
           email: 'teamstampd@gmail.com',
           profilePicture: '',
-          sub: '1',
+          sub: 'google-oauth2|101142802516382334664',
           roleId: 1
         },
         {
