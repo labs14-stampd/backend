@@ -23,7 +23,6 @@ module.exports = {
     resolve(parent, args) {
       let token;
       const { authToken, ...restArgs } = args;
-
       const { sub, email, username, profilePicture } = getDecoded(authToken);
       return User.findBy({ email }).then(user => {
         if (user.sub && user.sub !== sub) {

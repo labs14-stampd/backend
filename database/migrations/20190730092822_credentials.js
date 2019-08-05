@@ -20,6 +20,7 @@ exports.up = function(knex) {
       .unsigned()
       .references('id')
       .inTable('users')
+      .onDelete('CASCADE')
       .notNull(); // Need to reference id in "users" => schoolDetails
   });
 };
