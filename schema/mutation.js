@@ -202,7 +202,6 @@ const contractAddress = process.env.CONTRACT_ADDRESS;
 const contract = new web3.eth.Contract(contractABI, contractAddress);
 const transaxFunc = (data, callback)=>{  web3.eth.getTransactionCount(account1, (err, txCount) => {
     // Build the transaction
-    console.log('count', txCount);
     const txObject = {
       nonce:web3.utils.toHex(txCount),
       to:contractAddress,
@@ -220,11 +219,9 @@ const transaxFunc = (data, callback)=>{  web3.eth.getTransactionCount(account1, 
 
     // Broadcast the transaction
     web3.eth.sendSignedTransaction(raw, (err, txHash) => {
-      console.log('err', err);
-      console.log('txHash:', txHash);
 
     }).then(receipt=>
-      {console.log('receipt ', receipt);callback(receipt);});
+      {callback(receipt);});
   });};
 const User = require('../models/userModel.js');
 const School = require('../models/schoolModel.js');
