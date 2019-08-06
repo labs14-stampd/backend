@@ -88,10 +88,13 @@ const Mutation = new GraphQLObjectType({
             .addCredential(credentialHash)
             .encodeABI();
           if (data.length) {
-            const hash = await txFunc(data);
-            return Credential.insert(args).then(res => res);
+            args.txHash = await txFunc(data);
+            return Credential.insert(args).then(res => {
+              return res;
+            });
+          } else {
+            return new Error('The credential could not be created.');
           }
-          return new Error('The credential could not be created.');
         } catch (error) {
           return new Error('There was an error completing your request.');
         }
