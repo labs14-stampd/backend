@@ -4,8 +4,7 @@
   "description": "The back-end server for the Labs 14 Stampd project",
   "main": "index.js",
   "engines": {
-    "node": "10.16.x",
-    "yarn": "1.16.x"
+    "node": "10.16.x"
   },
   "scripts": {
     "server": "nodemon index.js",
