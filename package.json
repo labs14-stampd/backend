@@ -9,12 +9,13 @@
   "scripts": {
     "server": "nodemon index.js",
     "start": "node index.js",
-    "test": "jest --watch --verbose",
+    "test": "cross-env DB_ENV=testing jest --watch --verbose",
     "lint": "npx eslint --fix '**/*.js'",
     "rollback": "npx knex migrate:rollback",
     "migrate": "npx knex migrate:latest",
     "seed": "npx knex seed:run",
-    "redo": "yarn rollback && yarn migrate && yarn seed"
+    "redo": "yarn rollback && yarn migrate && yarn seed",
+    "test-redo": "npx knex migrate:rollback --env=testing && npx knex migrate:latest --env=testing && npx knex seed:run --env=testing"
   },
   "repository": {
     "type": "git",
@@ -59,6 +60,7 @@
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-prettier": "^3.1.0",
+    "graphql-tools": "^4.0.5",
     "jest": "^24.8.0",
     "nodemon": "^1.19.1",
     "prettier": "^1.18.2"
