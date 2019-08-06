@@ -4,14 +4,13 @@
   "description": "The back-end server for the Labs 14 Stampd project",
   "main": "index.js",
   "engines": {
-    "node": "10.16.x",
-    "yarn": "1.16.x"
+    "node": "10.16.x"
   },
   "scripts": {
     "server": "nodemon index.js",
     "start": "node index.js",
     "test": "jest --watch --verbose",
-    "lint": "npx eslint --fix '**/*.js'",
+    "lint": "npx eslint --fix --ext .js ./",
     "rollback": "npx knex migrate:rollback",
     "migrate": "npx knex migrate:latest",
     "seed": "npx knex seed:run",
