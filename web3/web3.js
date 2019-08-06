@@ -4,9 +4,14 @@ require('dotenv').config();
 const rpcURL = process.env.INFURA;
 const web3 = new Web3(rpcURL);
 const contractAddress = process.env.CONTRACT_ADDRESS;
+const privateKey = Buffer.from(process.env.PRIVATE_KEY, 'hex');
 
-const txFunc = (data, callback) => {
-  web3.eth.getTransactionCount(account1, (err, txCount) => {
+const txFunc = async (data, callback) => {
+  try {
+    // Create transaction count
+    const txCount = await web3.eth.getTransactionCount(contractAddress);
+    console.log("txCount", txCount);
+
     // Build the transaction
     const txObject = {
       nonce: web3.utils.toHex(txCount),
@@ -16,20 +21,23 @@ const txFunc = (data, callback) => {
       gasPrice: web3.utils.toHex(web3.utils.toWei('3', 'gwei')),
       data: data
     };
+
     // Sign the transaction
     const tx = new Tx(txObject);
     tx.sign(privateKey);
-
+   
     const serializedTx = tx.serialize();
     const raw = '0x' + serializedTx.toString('hex');
+   
+    console.log("Working", raw);
 
     // Broadcast the transaction
-    web3.eth
-      .sendSignedTransaction(raw, (err, txHash) => {})
-      .then(receipt => {
-        callback(receipt);
-      });
-  });
+    const receipt = await web3.eth
+    .sendSignedTransaction(raw);
+    return receipt.logs[0].transactionHash;
+  } catch (error) {
+    return new Error('Breakchain');
+  }
 };
 
 const contractABI = [
