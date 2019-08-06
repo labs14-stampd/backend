@@ -131,11 +131,15 @@ const RootQuery = new GraphQLObjectType({
       },
       async resolve(parent, args){
         try{
-          const {id, ...cred} = await Credentials.findById(args.id);
+          console.log('validate args', args)
+          const {id,txHash,valid,expirationDate,created_at, updated_at, ...cred} = await Credentials.findById(args.id);
+          cred.schoolId = cred.schoolId.toString();
+          console.log('cred', cred)
           const credHash = web3.utils.sha3(JSON.stringify(cred));
-          const data = contract.methods.validateCredential(credHash).encodeABI();
-          console.log(await txFunc(data));
-          console.log('data ', data)
+          console.log('credHash', credHash)
+          const data = await contract.methods.validateCredential(credHash).call();
+          
+          console.log('data ', data);
         } catch(error){
           return error;
         }

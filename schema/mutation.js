@@ -84,7 +84,9 @@ const Mutation = new GraphQLObjectType({
       },
       async resolve(parent, args) {
         try {
+          console.log('addCred args', args)
           const credentialHash = web3.utils.sha3(JSON.stringify(args));
+          console.log('hash of the credential', credentialHash)
           const data = contract.methods
             .addCredential(credentialHash)
             .encodeABI();
@@ -201,7 +203,8 @@ const Mutation = new GraphQLObjectType({
           })
           .catch(err => ({ error: err }));
       }
-    } // Remove Credential
+    }, // Remove Credential
+ 
   })
 });
 
