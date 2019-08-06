@@ -12,16 +12,15 @@ const RootQuery = new GraphQLObjectType({
     getAllUsers: {
       type: new GraphQLList(UserType),
       description: 'Gets all users',
-      resolve(parent, args) {
+      resolve() {
         return User.find()
           .then(res => {
             if (res) {
               return res;
-            } else {
-              return new Error('The users could not be found.');
             }
+            return new Error('The users could not be found.');
           })
-          .catch(err => {
+          .catch(() => {
             return new Error('There was an error completing your request.');
           });
       }
@@ -33,34 +32,31 @@ const RootQuery = new GraphQLObjectType({
       resolve(parent, args) {
         if (!args.id) {
           return new Error('Please include a user ID and try again.');
-        } else {
-          return User.findById(args.id)
-            .then(res => {
-              if (res) {
-                return res;
-              } else {
-                return new Error('The user could not be found.');
-              }
-            })
-            .catch(err => {
-              return new Error('There was an error completing your request.');
-            });
         }
+        return User.findById(args.id)
+          .then(res => {
+            if (res) {
+              return res;
+            }
+            return new Error('The user could not be found.');
+          })
+          .catch(() => {
+            return new Error('There was an error completing your request.');
+          });
       }
     },
     getAllSchoolDetails: {
       type: new GraphQLList(SchoolDetailsType),
       description: 'Gets all schools',
-      resolve(parent, args) {
+      resolve() {
         return Schools.find()
           .then(res => {
             if (res.length) {
               return res;
-            } else {
-              return new Error('No schools could be found.');
             }
+            return new Error('No schools could be found.');
           })
-          .catch(err => {
+          .catch(() => {
             return new Error('There was an error completing your request.');
           });
       }
@@ -72,7 +68,7 @@ const RootQuery = new GraphQLObjectType({
       resolve(parent, args) {
         return Schools.findById(args.id)
           .then(res => res)
-          .catch(err => {
+          .catch(() => {
             return new Error('there was an error completing your request.');
           });
       }
@@ -85,13 +81,12 @@ const RootQuery = new GraphQLObjectType({
           .then(res => {
             if (res.length) {
               return res;
-            } else {
-              return new Error('No credentials could be found');
             }
+            return new Error('No credentials could be found');
           })
-          .catch(
-            err => new Error('there was an error completing your request.')
-          );
+          .catch(() => {
+            return new Error('there was an error completing your request.');
+          });
       }
     },
     getCredentialById: {
@@ -103,13 +98,12 @@ const RootQuery = new GraphQLObjectType({
           .then(res => {
             if (res) {
               return res;
-            } else {
-              return new Error('Credential with that ID could not be found');
             }
+            return new Error('Credential with that ID could not be found');
           })
-          .catch(
-            err => new Error('there was an error completing your request.')
-          );
+          .catch(() => {
+            return new Error('there was an error completing your request.');
+          });
       }
     },
     getCredentialsBySchoolId: {
@@ -119,9 +113,9 @@ const RootQuery = new GraphQLObjectType({
       resolve(parent, args) {
         return Credentials.findBy({ schoolId: args.id })
           .then(res => res)
-          .catch(
-            err => new Error('there was an error completing your request.')
-          );
+          .catch(() => {
+            return new Error('there was an error completing your request.');
+          });
       }
     }
   } // fields

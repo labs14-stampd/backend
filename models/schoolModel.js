@@ -1,15 +1,5 @@
 const db = require('../database/dbConfig.js');
 
-module.exports = {
-  find,
-  findBy,
-  findById,
-  findByUserId,
-  insert,
-  update,
-  remove
-};
-
 function find() {
   return db('schoolDetails');
 }
@@ -47,3 +37,13 @@ function remove(id) {
     .where({ id })
     .del();
 }
+
+module.exports = {
+  find,
+  findBy,
+  findById,
+  findByUserId,
+  insert,
+  update,
+  remove
+};

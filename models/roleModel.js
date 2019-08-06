@@ -1,10 +1,5 @@
 const db = require('../database/dbConfig.js');
 
-module.exports = {
-  find,
-  findById
-};
-
 function find() {
   return db('roles');
 }
@@ -14,3 +9,8 @@ function findById(id) {
     .where({ id })
     .first();
 }
+
+module.exports = {
+  find,
+  findById
+};

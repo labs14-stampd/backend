@@ -1,16 +1,16 @@
 const Web3 = require('web3');
 const Tx = require('ethereumjs-tx');
 require('dotenv').config();
+
 const rpcURL = process.env.INFURA;
 const web3 = new Web3(rpcURL);
 const contractAddress = process.env.CONTRACT_ADDRESS;
 const privateKey = Buffer.from(process.env.PRIVATE_KEY, 'hex');
 
-const txFunc = async (data, callback) => {
+const txFunc = async data => {
   try {
     // Create transaction count
     const txCount = await web3.eth.getTransactionCount(contractAddress);
-    console.log("txCount", txCount);
 
     // Build the transaction
     const txObject = {
@@ -19,21 +19,18 @@ const txFunc = async (data, callback) => {
       value: 0,
       gasLimit: web3.utils.toHex(250000),
       gasPrice: web3.utils.toHex(web3.utils.toWei('3', 'gwei')),
-      data: data
+      data
     };
 
     // Sign the transaction
     const tx = new Tx(txObject);
     tx.sign(privateKey);
-   
+
     const serializedTx = tx.serialize();
-    const raw = '0x' + serializedTx.toString('hex');
-   
-    console.log("Working", raw);
+    const raw = `0x${serializedTx.toString('hex')}`;
 
     // Broadcast the transaction
-    const receipt = await web3.eth
-    .sendSignedTransaction(raw);
+    const receipt = await web3.eth.sendSignedTransaction(raw);
     return receipt.logs[0].transactionHash;
   } catch (error) {
     return new Error('Breakchain');

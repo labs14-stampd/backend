@@ -1,5 +1,6 @@
 require('dotenv').config();
 const pg = require('pg');
+
 pg.defaults.ssl = true;
 
 // Production database connection
