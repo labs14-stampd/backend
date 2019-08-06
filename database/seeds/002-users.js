@@ -1,10 +1,10 @@
 const faker = require('faker');
 
-exports.seed = function(knex, Promise) {
+exports.seed = function seedUsers(knex) {
   return knex('users')
     .del()
-    .then(function() {
-      return knex('users').insert([
+    .then(() =>
+      knex('users').insert([
         {
           // id: 1,
           username: 'admin',
@@ -71,6 +71,6 @@ exports.seed = function(knex, Promise) {
           sub: '8',
           roleId: 3
         }
-      ]);
-    });
+      ])
+    );
 };

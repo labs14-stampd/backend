@@ -1,4 +1,4 @@
-exports.up = function(knex) {
+exports.up = function createCredentials(knex) {
   return knex.schema.createTable('credentials', tbl => {
     tbl
       .increments('id')
@@ -6,7 +6,7 @@ exports.up = function(knex) {
       .primary();
     tbl.string('name', 256).notNull();
     tbl.text('description').notNull();
-    tbl.string('txHash', 64);
+    tbl.string('txHash', 66);
     tbl.string('type', 128).notNull();
     tbl.string('studentEmail', 128).notNull();
     tbl.string('imageUrl', 256).notNull();
@@ -20,10 +20,11 @@ exports.up = function(knex) {
       .unsigned()
       .references('id')
       .inTable('users')
+      .onDelete('CASCADE')
       .notNull(); // Need to reference id in "users" => schoolDetails
   });
 };
 
-exports.down = function(knex) {
+exports.down = function dropCredentials(knex) {
   return knex.schema.dropTable('credentials');
 };

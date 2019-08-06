@@ -23,7 +23,7 @@ const RoleType = new GraphQLObjectType({
       description: 'The unique username of the user'
     },
     users: {
-      type: new GraphQLList(UserType),
+      type: new GraphQLList(UserType), // eslint-disable-line no-use-before-define
       description: 'Returns all users of specific role',
       resolve(parent) {
         return Users.findBy({ roleId: parent.id });
@@ -66,7 +66,7 @@ const UserType = new GraphQLObjectType({
       }
     },
     schoolDetails: {
-      type: SchoolDetailsType,
+      type: SchoolDetailsType, // eslint-disable-line no-use-before-define
       description: 'The school details associated with the user',
       resolve(parent) {
         return Schools.findByUserId(parent.id);
@@ -119,7 +119,7 @@ const SchoolDetailsType = new GraphQLObjectType({
       }
     },
     credentials: {
-      type: new GraphQLList(CredentialType),
+      type: new GraphQLList(CredentialType), // eslint-disable-line no-use-before-define
       description: 'The credentials associated with the school',
       resolve(parent) {
         return Credentials.findBySchoolId(parent.userId);
@@ -179,7 +179,7 @@ const CredentialType = new GraphQLObjectType({
       // ^^^ This is the id in the 'users' table
     },
     schoolsUserInfo: {
-      type: UserType,
+      type: UserType, // eslint-disable-line no-use-before-define
       description: 'The user associated with the school',
       resolve(parent) {
         return Users.findById(parent.schoolId);

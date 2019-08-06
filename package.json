@@ -3,10 +3,15 @@
   "version": "1.0.0",
   "description": "The back-end server for the Labs 14 Stampd project",
   "main": "index.js",
+  "engines": {
+    "node": "10.16.x",
+    "yarn": "1.16.x"
+  },
   "scripts": {
     "server": "nodemon index.js",
     "start": "node index.js",
     "test": "jest --watch --verbose",
+    "lint": "npx eslint --fix '**/*.js'",
     "rollback": "npx knex migrate:rollback",
     "migrate": "npx knex migrate:latest",
     "seed": "npx knex seed:run",
@@ -47,10 +52,16 @@
     "morgan": "^1.9.1",
     "pg": "^7.11.0",
     "web3": "1.0.0-beta.34"
-
   },
   "devDependencies": {
+    "cross-env": "^5.2.0",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.1.0",
     "jest": "^24.8.0",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "prettier": "^1.18.2"
   }
 }

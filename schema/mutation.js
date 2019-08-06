@@ -1,41 +1,7 @@
 const graphql = require('graphql');
-const jwt = require('../api/tokenService.js');
-const Web3 = require("web3");
-const Tx = require("ethereumjs-tx");
-const rpcURL = process.env.INFURA;
-const account1 = process.env.ACCOUNT_1;
-const web3 = new Web3(rpcURL);
-const transaxFunc = (data, callback)=>{  web3.eth.getTransactionCount(account1, (err, txCount) => {
-    // Build the transaction
-    console.log('count', txCount);
-    const txObject = {
-      nonce:web3.utils.toHex(txCount),
-      to:contractAddress,
-      value:0,
-      gasLimit: web3.utils.toHex(250000),
-      gasPrice: web3.utils.toHex(web3.utils.toWei('3', 'gwei')),
-      data: data
-    };
-    // Sign the transaction
-    const tx = new Tx(txObject);
-    tx.sign(privateKey1);
-
-    const serializedTx = tx.serialize();
-    const raw = '0x' + serializedTx.toString('hex');
-
-    // Broadcast the transaction
-    web3.eth.sendSignedTransaction(raw, (err, txHash) => {
-      console.log('err', err);
-      console.log('txHash:', txHash);
-
-    }).then(receipt=>
-      {console.log('receipt ', receipt);callback(receipt);});
-  });};
-const User = require('../models/userModel.js');
-const School = require('../models/schoolModel.js');
 const Credential = require('../models/credentialModel.js');
-const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
-const getLoginStatus = require('../api/getLoginStatus.js');
+const { CredentialType } = require('./types.js');
+const { txFunc, web3, contract } = require('../web3/web3.js');
 
 const {
   GraphQLObjectType,
@@ -45,253 +11,25 @@ const {
   GraphQLBoolean
 } = graphql;
 
+const {
+  addUser,
+  updateUser,
+  deleteUser,
+  addSchoolDetail,
+  updateSchoolDetail
+} = require('./mutations');
+
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
-    addUser: {
-      type: UserType,
-      description: 'Adds a new user',
-      args: {
-        username: {
-          type: GraphQLString,
-          description: 'The username of the new user'
-        },
-        email: {
-          type: new GraphQLNonNull(GraphQLString),
-          description: 'The unique email of the new user'
-        },
-        authToken: {
-          type: new GraphQLNonNull(GraphQLString),
-          description: 'The unique Auth0 token of the new user'
-        },
-        profilePicture: {
-          type: GraphQLString,
-          description: 'The profile picture URL for the user'
-        },
-        roleId: {
-          type: GraphQLID,
-          description: 'The role associated with the new user'
-        }
-      },
-      resolve(parent, args) {
-        let token;
-        const { authToken, ...restArgs } = args;
-        const sub = authToken; //getLoginStatus(authToken); ****** We should use a token, let's refactor this later
-        return User.findBy({ email: args.email }).then(user => {
-          if (user.sub && user.sub !== sub) {
-            return new Error('You must be logged in with a valid account.');
-          }
-          if (user[0] && user[0].email) {
-            token = jwt({
-              userId: user[0].id,
-              email: user[0].email,
-              roleId: user[0].roleId
-            });
-            return {
-              id: user[0].id,
-              email: user[0].email,
-              roleId: user[0].roleId,
-              token
-            };
-          }
-          return User.insert({ ...restArgs, sub })
-            .then(res => {
-              token = jwt({
-                userId: res.id,
-                email: res.email,
-                roleId: user.roleId
-              });
-              return {
-                ...res,
-                token
-              };
-            })
-            .catch(err => {
-              return new Error(err);
-            });
-        });
-      }
-    }, // Add User
-    updateUser: {
-      type: UserType,
-      description: 'Updates an existing user by user ID',
-      args: {
-        id: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'The unique ID of the user'
-        },
-        username: {
-          type: GraphQLString,
-          description: 'The new username of the user'
-        },
-        email: {
-          type: GraphQLString,
-          description: 'The new unique email of the user'
-        },
-        roleId: {
-          type: GraphQLID,
-          description: 'The new roleId of the user'
-        }
-      }, // Update User
-      resolve(parent, args) {
-        if (!args.id || isNaN(args.id)) {
-          return new Error('Please include a user ID and try again.');
-        } else {
-          return User.update(args.id, args)
-            .then(res => {
-              if (res) {
-                return User.findById(args.id)
-                  .then(res => {
-                    return res;
-                  })
-                  .catch(err => {
-                    return new Error(
-                      'There was an error completing your request.'
-                    );
-                  });
-              } else {
-                return new Error('The user could not be updated.');
-              }
-            })
-            .catch(err => {
-              return new Error('There was an error completing your request.');
-            });
-        }
-      }
-    }, //Update User
-    deleteUser: {
-      type: UserType,
-      description: 'Deletes an existing user by user ID',
-      args: {
-        id: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'The unique ID of the user to be deleted'
-        }
-      },
-      resolve(parent, args) {
-        if (!args.id || isNaN(args.id)) {
-          return new Error('Please include a user ID and try again.');
-        } else {
-          return User.remove(args.id)
-            .then(res => {
-              if (res) {
-                return { id: args.id };
-              } else {
-                return new Error('The user could not be deleted.');
-              }
-            })
-            .catch(err => {
-              return { error: err };
-            });
-        }
-      }
-    }, // Delete User
-    //************ School Details ************/
-    addSchoolDetail: {
-      type: SchoolDetailsType,
-      description: 'Adds school details to an existing user',
-      args: {
-        name: {
-          type: new GraphQLNonNull(GraphQLString),
-          description: 'The unique name of the school'
-        },
-        taxId: {
-          type: new GraphQLNonNull(GraphQLString),
-          description: 'The unique tax ID of the school'
-        },
-        street1: {
-          type: GraphQLString,
-          description: "Street line 1 of the school's address"
-        },
-        street2: {
-          type: GraphQLString,
-          description: "Street line 2 of the school's address"
-        },
-        city: { type: GraphQLString, description: 'The city of the school' },
-        state: { type: GraphQLString, description: 'The state of the school' },
-        zip: { type: GraphQLString, description: 'The zip code of the school' },
-        type: { type: GraphQLString, description: 'The type of the school' },
-        phone: {
-          type: new GraphQLNonNull(GraphQLString),
-          description: 'The phone number of the school'
-        },
-        url: {
-          type: new GraphQLNonNull(GraphQLString),
-          description: 'The website url of the school'
-        },
-        userId: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'The ID of the user associated with the school'
-        }
-      },
-      resolve(parent, args) {
-        return School.insert(args)
-          .then(res => res)
-          .catch(err => {
-            return new Error(err);
-          });
-      }
-    }, // Add School Detail
-    updateSchoolDetail: {
-      type: SchoolDetailsType,
-      description: 'Updates school details for a user',
-      args: {
-        id: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'The unique ID of the user to be deleted'
-        },
-        name: {
-          type: new GraphQLNonNull(GraphQLString),
-          description: 'The unique name of the school'
-        },
-        taxId: {
-          type: new GraphQLNonNull(GraphQLString),
-          description: 'The unique tax ID of the school'
-        },
-        street1: {
-          type: GraphQLString,
-          description: "Street line 1 of the school's address"
-        },
-        street2: {
-          type: GraphQLString,
-          description: "Street line 2 of the school's address"
-        },
-        city: { type: GraphQLString, description: 'The city of the school' },
-        state: { type: GraphQLString, description: 'The state of the school' },
-        zip: { type: GraphQLString, description: 'The zip code of the school' },
-        type: { type: GraphQLString, description: 'The type of the school' },
-        phone: {
-          type: new GraphQLNonNull(GraphQLString),
-          description: 'The phone number of the school'
-        },
-        url: {
-          type: new GraphQLNonNull(GraphQLString),
-          description: 'The website url of the school'
-        },
-        userId: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'The ID of the user associated with the school'
-        }
-      },
-      resolve(parent, args) {
-        if (!args.id || isNaN(args.id)) {
-          return new Error('Please include a SchoolDetails ID and try again.');
-        } else {
-          return School.update(args.id, args)
-            .then(res => {
-              if (res) {
-                return res;
-              } else {
-                return new Error('The School could not be updated.');
-              }
-            })
-            .catch(err => {
-              return new Error('There was an error completing your request.');
-            });
-        }
-      }
-    }, //Update School Detail
-    //************ School Details ************/
+
+    addUser,
+    updateUser,
+    deleteUser,
+    //* *********** School Details ************/
+    addSchoolDetail,
+    updateSchoolDetail,
+    //* *********** Credential Details ************/
     addNewCredential: {
       type: CredentialType,
       description: 'Issues a new credential to a student',
@@ -344,27 +82,23 @@ const Mutation = new GraphQLObjectType({
           // ^^^ This is the id in the 'users' table
         }
       },
-      resolve(parent, args) {
-        console.log(args);
-        const credentialHash = web3.utils.sha3(JSON.stringify(args));
-        const data = contract.methods.addCredential(credentialHash).encodeABI();
-        return Credential.insert(args)
-          .then(
-            res => {
-            if (res) {
-              transaxFunc(data, function(receipt){
-              //set txHash of object to the transactionHash returned in receipt
-              args.txHash = receipt.logs[0].transactionHash;
-              Credential.update(res.id, args)
-            });
+      async resolve(parent, args) {
+        try {
+          const credentialHash = web3.utils.sha3(JSON.stringify(args));
+          const data = contract.methods
+            .addCredential(credentialHash)
+            .encodeABI();
+          if (data.length) {
+            args.txHash = await txFunc(data);
+            return Credential.insert(args).then(res => {
               return res;
-            } else {
-              return new Error('The credential could not be created.');
-            }
-          })
-          .catch(err => {
-            return new Error(err);
-          });
+            });
+          } else {
+            return new Error('The credential could not be created.');
+          }
+        } catch (error) {
+          return new Error('There was an error completing your request.');
+        }
       }
     }, // add new credential
     updateCredential: {
@@ -424,29 +158,25 @@ const Mutation = new GraphQLObjectType({
         }
       },
       resolve(parent, args) {
-        if (!args.id || isNaN(args.id)) {
+        if (!args.id || typeof Number(args.id) !== 'number') {
           return new Error('Please include a Credential ID and try again.');
-        } else {
-          const credentialHash = web3.utils.sha3(JSON.stringify(args));
-          const data = contract.methods.addCredential(credentialHash).encodeABI();
-          transaxFunc(data, function(receipt){
-              //set txHash of object to the transactionHash returned in receipt
-              args.txHash = receipt.logs[0].transactionHash;
-              return Credential.update(args.id, args)
-                .then(res => {
-                  if (res) {
-
-                    return res;
-                  } else {
-                    return new Error('The credential could not be updated.');
-                  }
-                })
-                .catch(err => {
-                  return new Error('There was an error completing your request.');
-                });
-            });
-
         }
+        const credentialHash = web3.utils.sha3(JSON.stringify(args));
+        const data = contract.methods.addCredential(credentialHash).encodeABI();
+        txFunc(data, receipt => {
+          // set txHash of object to the transactionHash returned in receipt
+          args.txHash = receipt.logs[0].transactionHash;
+          return Credential.update(args.id, args)
+            .then(res => {
+              if (res) {
+                return res;
+              }
+              return new Error('The credential could not be updated.');
+            })
+            .catch(() => {
+              return new Error('There was an error completing your request.');
+            });
+        });
       }
     }, // Update Credential
     removeCredential: {
@@ -459,21 +189,17 @@ const Mutation = new GraphQLObjectType({
         }
       },
       resolve(parent, args) {
-        if (!args.id || isNaN(args.id)) {
+        if (!args.id || typeof Number(args.id) !== 'number') {
           return new Error('Please include a credential ID and try again.');
-        } else {
-          return Credential.remove(args.id)
-            .then(res => {
-              if (res) {
-                return { id: args.id };
-              } else {
-                return new Error('The credential could not be deleted.');
-              }
-            })
-            .catch(err => {
-              return { error: err };
-            });
         }
+        return Credential.remove(args.id)
+          .then(res => {
+            if (res) {
+              return { id: args.id };
+            }
+            return new Error('The credential could not be deleted.');
+          })
+          .catch(err => ({ error: err }));
       }
     } // Remove Credential
   })

@@ -1,4 +1,4 @@
-exports.up = function(knex) {
+exports.up = function createSchoolDetails(knex) {
   return knex.schema.createTable('schoolDetails', tbl => {
     tbl
       .increments('id')
@@ -30,6 +30,6 @@ exports.up = function(knex) {
   });
 };
 
-exports.down = function(knex) {
+exports.down = function dropSchoolDetails(knex) {
   return knex.schema.dropTable('schoolDetails');
 };
