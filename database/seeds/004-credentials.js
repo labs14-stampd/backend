@@ -1,11 +1,11 @@
 const faker = require('faker');
 const moment = require('moment');
 
-exports.seed = function(knex, Promise) {
+exports.seed = function seedCredentials(knex) {
   return knex('credentials')
     .del()
-    .then(function() {
-      return knex('credentials').insert([
+    .then(() =>
+      knex('credentials').insert([
         {
           // id: 1,
           name: 'Masters in Gravitational Engineering',
@@ -19,7 +19,7 @@ exports.seed = function(knex, Promise) {
           criteria: 'Complete Engineering of a gavitational field',
           issuedOn: moment('2016-01-01', 'YYYY-MM-DD'),
           expirationDate: moment('2029-01-01', 'YYYY-MM-DD'),
-          schoolId: 4 //This is actually the id from 'users' table
+          schoolId: 4 // This is actually the id from 'users' table
         },
         {
           // id: 2,
@@ -34,7 +34,7 @@ exports.seed = function(knex, Promise) {
           criteria: 'Complete Horsemanship at the Classical Level',
           issuedOn: moment('2016-01-01', 'YYYY-MM-DD'),
           expirationDate: moment('2029-01-01', 'YYYY-MM-DD'),
-          schoolId: 5 //This is actually the id from 'users' table
+          schoolId: 5 // This is actually the id from 'users' table
         },
         {
           // id: 3,
@@ -50,8 +50,8 @@ exports.seed = function(knex, Promise) {
             'Complete Underwater Blowtorching at an Advanced Proficiency',
           issuedOn: moment('2016-01-01', 'YYYY-MM-DD'),
           expirationDate: moment('2029-01-01', 'YYYY-MM-DD'),
-          schoolId: 4 //This is actually the id from 'users' table
+          schoolId: 4 // This is actually the id from 'users' table
         }
-      ]);
-    });
+      ])
+    );
 };

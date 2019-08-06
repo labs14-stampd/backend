@@ -5,7 +5,7 @@ const { SchoolDetailsType } = require('../types.js');
 const { GraphQLString, GraphQLNonNull, GraphQLID } = graphql;
 
 module.exports = {
-  //************ School Details ************/
+  //* *********** School Details ************/
   addSchoolDetail: {
     type: SchoolDetailsType,
     description: 'Adds school details to an existing user',
@@ -46,9 +46,7 @@ module.exports = {
     resolve(parent, args) {
       return School.insert(args)
         .then(res => res)
-        .catch(err => {
-          return new Error(err);
-        });
+        .catch(err => new Error(err));
     }
   }, // Add School Detail
   updateSchoolDetail: {
@@ -93,21 +91,19 @@ module.exports = {
       }
     },
     resolve(parent, args) {
-      if (!args.id || isNaN(args.id)) {
+      if (!args.id || typeof Number(args.id) !== 'number') {
         return new Error('Please include a SchoolDetails ID and try again.');
-      } else {
-        return School.update(args.id, args)
-          .then(res => {
-            if (res) {
-              return res;
-            } else {
-              return new Error('The School could not be updated.');
-            }
-          })
-          .catch(err => {
-            return new Error('There was an error completing your request.');
-          });
       }
+      return School.update(args.id, args)
+        .then(res => {
+          if (res) {
+            return res;
+          }
+          return new Error('The School could not be updated.');
+        })
+        .catch(() => {
+          return new Error('There was an error completing your request.');
+        });
     }
-  } //Update School Detail
+  } // Update School Detail
 };

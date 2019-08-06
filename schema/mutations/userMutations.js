@@ -59,9 +59,7 @@ module.exports = {
               token
             };
           })
-          .catch(err => {
-            return new Error(err);
-          });
+          .catch(err => new Error(err));
       });
     }
   }, // Add User
@@ -87,31 +85,25 @@ module.exports = {
       }
     }, // Update User
     resolve(parent, args) {
-      if (!args.id || isNaN(args.id)) {
+      if (!args.id || typeof Number(args.id) !== 'number') {
         return new Error('Please include a user ID and try again.');
-      } else {
-        return User.update(args.id, args)
-          .then(res => {
-            if (res) {
-              return User.findById(args.id)
-                .then(res => {
-                  return res;
-                })
-                .catch(err => {
-                  return new Error(
-                    'There was an error completing your request.'
-                  );
-                });
-            } else {
-              return new Error('The user could not be updated.');
-            }
-          })
-          .catch(err => {
-            return new Error('There was an error completing your request.');
-          });
       }
+      return User.update(args.id, args)
+        .then(res => {
+          if (res) {
+            return User.findById(args.id)
+              .then(response => response)
+              .catch(() => {
+                return new Error('There was an error completing your request.');
+              });
+          }
+          return new Error('The user could not be updated.');
+        })
+        .catch(() => {
+          return new Error('There was an error completing your request.');
+        });
     }
-  }, //Update User
+  }, // Update User
   deleteUser: {
     type: UserType,
     description: 'Deletes an existing user by user ID',
@@ -122,21 +114,17 @@ module.exports = {
       }
     },
     resolve(parent, args) {
-      if (!args.id || isNaN(args.id)) {
+      if (!args.id || typeof Number(args.id) !== 'number') {
         return new Error('Please include a user ID and try again.');
-      } else {
-        return User.remove(args.id)
-          .then(res => {
-            if (res) {
-              return { id: args.id };
-            } else {
-              return new Error('The user could not be deleted.');
-            }
-          })
-          .catch(err => {
-            return { error: err };
-          });
       }
+      return User.remove(args.id)
+        .then(res => {
+          if (res) {
+            return { id: args.id };
+          }
+          return new Error('The user could not be deleted.');
+        })
+        .catch(err => ({ error: err }));
     }
   } // Delete User
 };

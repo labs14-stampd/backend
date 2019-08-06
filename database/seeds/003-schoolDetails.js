@@ -1,10 +1,10 @@
 const faker = require('faker');
 
-exports.seed = function(knex, Promise) {
+exports.seed = function seedSchoolDetails(knex) {
   return knex('schoolDetails')
     .del()
-    .then(function() {
-      return knex('schoolDetails').insert([
+    .then(() =>
+      knex('schoolDetails').insert([
         {
           // id: 1,
           name: 'School of the Midwest',
@@ -47,6 +47,6 @@ exports.seed = function(knex, Promise) {
           url: 'https://www.southern.edu/',
           userId: 5
         }
-      ]);
-    });
+      ])
+    );
 };

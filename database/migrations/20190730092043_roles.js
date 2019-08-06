@@ -1,4 +1,4 @@
-exports.up = function(knex) {
+exports.up = function createRoles(knex) {
   return knex.schema.createTable('roles', tbl => {
     tbl
       .increments('id')
@@ -8,6 +8,6 @@ exports.up = function(knex) {
   });
 };
 
-exports.down = function(knex) {
+exports.down = function dropRoles(knex) {
   return knex.schema.dropTableIfExists('roles');
 };

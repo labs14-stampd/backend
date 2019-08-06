@@ -1,4 +1,4 @@
-exports.up = function(knex) {
+exports.up = function createCredentials(knex) {
   return knex.schema.createTable('credentials', tbl => {
     tbl
       .increments('id')
@@ -25,6 +25,6 @@ exports.up = function(knex) {
   });
 };
 
-exports.down = function(knex) {
+exports.down = function dropCredentials(knex) {
   return knex.schema.dropTable('credentials');
 };

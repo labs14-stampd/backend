@@ -1,10 +1,6 @@
 const graphql = require('graphql');
-const jwt = require('../api/tokenService.js');
-const User = require('../models/userModel.js');
-const School = require('../models/schoolModel.js');
 const Credential = require('../models/credentialModel.js');
-const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
-const getDecoded = require('../api/getDecoded.js');
+const { CredentialType } = require('./types.js');
 const { txFunc, web3, contract } = require('../web3/web3.js');
 
 const {
@@ -29,10 +25,10 @@ const Mutation = new GraphQLObjectType({
     addUser,
     updateUser,
     deleteUser,
-    //************ School Details ************/
+    //* *********** School Details ************/
     addSchoolDetail,
     updateSchoolDetail,
-    //************ Credential Details ************/
+    //* *********** Credential Details ************/
     addNewCredential: {
       type: CredentialType,
       description: 'Issues a new credential to a student',
@@ -85,25 +81,23 @@ const Mutation = new GraphQLObjectType({
           // ^^^ This is the id in the 'users' table
         }
       },
-      resolve(parent, args) {
-        const credentialHash = web3.utils.sha3(JSON.stringify(args));
-        const data = contract.methods.addCredential(credentialHash).encodeABI();
-        return Credential.insert(args)
-          .then(res => {
-            if (res) {
-              txFunc(data, function(receipt) {
-                //set txHash of object to the transactionHash returned in receipt
-                args.txHash = receipt.logs[0].transactionHash;
-                Credential.update(res.id, args);
-              });
+      async resolve(parent, args) {
+        try {
+          const credentialHash = web3.utils.sha3(JSON.stringify(args));
+          const data = contract.methods
+            .addCredential(credentialHash)
+            .encodeABI();
+          if (data.length) {
+            args.txHash = await txFunc(data);
+            return Credential.insert(args).then(res => {
               return res;
-            } else {
-              return new Error('The credential could not be created.');
-            }
-          })
-          .catch(err => {
-            return new Error(err);
-          });
+            });
+          } else {
+            return new Error('The credential could not be created.');
+          }
+        } catch (error) {
+          return new Error('There was an error completing your request.');
+        }
       }
     }, // add new credential
     updateCredential: {
@@ -163,29 +157,25 @@ const Mutation = new GraphQLObjectType({
         }
       },
       resolve(parent, args) {
-        if (!args.id || isNaN(args.id)) {
+        if (!args.id || typeof Number(args.id) !== 'number') {
           return new Error('Please include a Credential ID and try again.');
-        } else {
-          const credentialHash = web3.utils.sha3(JSON.stringify(args));
-          const data = contract.methods
-            .addCredential(credentialHash)
-            .encodeABI();
-          txFunc(data, function(receipt) {
-            //set txHash of object to the transactionHash returned in receipt
-            args.txHash = receipt.logs[0].transactionHash;
-            return Credential.update(args.id, args)
-              .then(res => {
-                if (res) {
-                  return res;
-                } else {
-                  return new Error('The credential could not be updated.');
-                }
-              })
-              .catch(err => {
-                return new Error('There was an error completing your request.');
-              });
-          });
         }
+        const credentialHash = web3.utils.sha3(JSON.stringify(args));
+        const data = contract.methods.addCredential(credentialHash).encodeABI();
+        txFunc(data, receipt => {
+          // set txHash of object to the transactionHash returned in receipt
+          args.txHash = receipt.logs[0].transactionHash;
+          return Credential.update(args.id, args)
+            .then(res => {
+              if (res) {
+                return res;
+              }
+              return new Error('The credential could not be updated.');
+            })
+            .catch(() => {
+              return new Error('There was an error completing your request.');
+            });
+        });
       }
     }, // Update Credential
     removeCredential: {
@@ -198,21 +188,17 @@ const Mutation = new GraphQLObjectType({
         }
       },
       resolve(parent, args) {
-        if (!args.id || isNaN(args.id)) {
+        if (!args.id || typeof Number(args.id) !== 'number') {
           return new Error('Please include a credential ID and try again.');
-        } else {
-          return Credential.remove(args.id)
-            .then(res => {
-              if (res) {
-                return { id: args.id };
-              } else {
-                return new Error('The credential could not be deleted.');
-              }
-            })
-            .catch(err => {
-              return { error: err };
-            });
         }
+        return Credential.remove(args.id)
+          .then(res => {
+            if (res) {
+              return { id: args.id };
+            }
+            return new Error('The credential could not be deleted.');
+          })
+          .catch(err => ({ error: err }));
       }
     } // Remove Credential
   })
