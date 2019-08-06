@@ -3,8 +3,10 @@ const User = require('../models/userModel.js');
 const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
 const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
+const { txFunc, web3, contract } = require('../web3/web3.js');
 
-const { GraphQLObjectType, GraphQLList, GraphQLID } = graphql;
+
+const { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLNonNull} = graphql;
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
@@ -116,6 +118,27 @@ const RootQuery = new GraphQLObjectType({
           .catch(() => {
             return new Error('there was an error completing your request.');
           });
+      }
+    }, 
+    validateCredential:{
+      type: CredentialType,
+      description: 'Checks that a credential exists and is currently valid',
+      args: {
+        id:{
+          type: new GraphQLNonNull(GraphQLID), 
+          description: 'The unique ID of the credential to be validated'
+        }
+      },
+      async resolve(parent, args){
+        try{
+          console.log('validate args', args)
+          const {id,txHash,valid,expirationDate,created_at, updated_at, ...cred} = await Credentials.findById(args.id);
+          cred.schoolId = cred.schoolId.toString();
+          const credHash = web3.utils.sha3(JSON.stringify(cred));
+          const data = await contract.methods.validateCredential(credHash).call();
+          } catch(error){
+          return error;
+        }
       }
     }
   } // fields
