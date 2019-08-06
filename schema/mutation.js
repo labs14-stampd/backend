@@ -3,6 +3,7 @@ const jwt = require('../api/tokenService.js');
 const Web3 = require("web3");
 const Tx = require("ethereumjs-tx");
 const rpcURL = process.env.INFURA;
+const account1 = process.env.ACCOUNT_1;
 const web3 = new Web3(rpcURL);
 const transaxFunc = (data, callback)=>{  web3.eth.getTransactionCount(account1, (err, txCount) => {
     // Build the transaction
