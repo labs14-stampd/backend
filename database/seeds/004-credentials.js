@@ -1,5 +1,4 @@
-const faker = require('faker');
-const moment = require('moment');
+const Moment = require('moment');
 
 exports.seed = function seedCredentials(knex) {
   return knex('credentials')
@@ -13,12 +12,12 @@ exports.seed = function seedCredentials(knex) {
             'Certifies that this person is capable of engineering while in a gravitational field',
           txHash: '',
           type: 'Masters',
-          studentEmail: faker.fake('{{internet.email}}'),
+          studentEmail: 'graviton@gmail.com',
           imageUrl: '',
           valid: true,
           criteria: 'Complete Engineering of a gavitational field',
-          issuedOn: moment('2016-01-01', 'YYYY-MM-DD'),
-          expirationDate: moment('2029-01-01', 'YYYY-MM-DD'),
+          issuedOn: Moment('2016-01-01', 'YYYY-MM-DD'),
+          expirationDate: Moment('2029-01-01', 'YYYY-MM-DD'),
           schoolId: 4 // This is actually the id from 'users' table
         },
         {
@@ -28,12 +27,12 @@ exports.seed = function seedCredentials(knex) {
             'Certifies that this person is capable of handling horses in a classical fashion',
           txHash: '',
           type: "Bachelor's",
-          studentEmail: faker.fake('{{internet.email}}'),
+          studentEmail: 'batchman@baidu.com',
           imageUrl: '',
           valid: true,
           criteria: 'Complete Horsemanship at the Classical Level',
-          issuedOn: moment('2016-01-01', 'YYYY-MM-DD'),
-          expirationDate: moment('2029-01-01', 'YYYY-MM-DD'),
+          issuedOn: Moment('2016-01-01', 'YYYY-MM-DD'),
+          expirationDate: Moment('2029-01-01', 'YYYY-MM-DD'),
           schoolId: 5 // This is actually the id from 'users' table
         },
         {
@@ -43,13 +42,12 @@ exports.seed = function seedCredentials(knex) {
             'Certifies that this person is capable of handling a blow torch underwater',
           txHash: '',
           type: 'PhD',
-          studentEmail: faker.fake('{{internet.email}}'),
+          studentEmail: 'aquaman@rocketmail.com',
           imageUrl: '',
           valid: true,
-          criteria:
-            'Complete Underwater Blowtorching at an Advanced Proficiency',
-          issuedOn: moment('2016-01-01', 'YYYY-MM-DD'),
-          expirationDate: moment('2029-01-01', 'YYYY-MM-DD'),
+          criteria: 'Complete Underwater Blowtorching at an Advanced Proficiency',
+          issuedOn: Moment('2016-01-01', 'YYYY-MM-DD'),
+          expirationDate: Moment('2029-01-01', 'YYYY-MM-DD'),
           schoolId: 4 // This is actually the id from 'users' table
         }
       ])

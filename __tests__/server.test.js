@@ -10,7 +10,7 @@ describe('Requests to status route: ', () => {
     expect(res.type).toBe('text/html');
   });
 
-  it('• should return status "OK"', async () => {
+  it('• should return status \"OK\"', async () => {
     const res = await request(server).get(REQUEST_URI);
     expect(res.status).toBe(200);
   });
@@ -29,7 +29,7 @@ describe('Requests to GQL playground route: ', () => {
     expect(res.type).toBe('text/html');
   });
 
-  it('• should return status "OK"', async () => {
+  it('• should return status \"OK\"', async () => {
     const res = await request(server).get(REQUEST_URI);
     expect(res.status).toBe(200);
   });

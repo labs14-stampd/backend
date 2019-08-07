@@ -1,5 +1,3 @@
-const faker = require('faker');
-
 exports.seed = function seedUsers(knex) {
   return knex('users')
     .del()
@@ -24,24 +22,24 @@ exports.seed = function seedUsers(knex) {
         // These are the school accounts
         {
           // id: 3,
-          username: faker.fake('{{internet.userName}}'),
-          email: faker.fake('{{internet.email}}'),
+          username: 'school1',
+          email: 'schoolzrus@rocketmail.com',
           profilePicture: '',
           sub: '3',
           roleId: 2
         },
         {
           // id: 4,
-          username: faker.fake('{{internet.userName}}'),
-          email: faker.fake('{{internet.email}}'),
+          username: 'school2',
+          email: 'surzloohcs@hotmail.com',
           profilePicture: '',
           sub: '4',
           roleId: 2
         },
         {
           // id: 5,
-          username: faker.fake('{{internet.userName}}'),
-          email: faker.fake('{{internet.email}}'),
+          username: 'school3',
+          email: 'school@school.edu',
           profilePicture: '',
           sub: '5',
           roleId: 2
@@ -49,24 +47,24 @@ exports.seed = function seedUsers(knex) {
         // These are the student accounts
         {
           // id: 6,
-          username: faker.fake('{{internet.userName}}'),
-          email: faker.fake('{{internet.email}}'),
+          username: 'student1',
+          email: 'stud1@yahoo.com',
           profilePicture: '',
           sub: '6',
           roleId: 3
         },
         {
           // id: 7,
-          username: faker.fake('{{internet.userName}}'),
-          email: faker.fake('{{internet.email}}'),
+          username: 'student2',
+          email: 'stud2@icloud.com',
           profilePicture: '',
           sub: '7',
           roleId: 3
         },
         {
           // id: 8,
-          username: faker.fake('{{internet.userName}}'),
-          email: faker.fake('{{internet.email}}'),
+          username: 'student3',
+          email: 'notadud@yandex.com',
           profilePicture: '',
           sub: '8',
           roleId: 3
