@@ -148,7 +148,12 @@ const contractABI = [
 			}
 		],
 		"name": "invalidateCredential",
-		"outputs": [],
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"

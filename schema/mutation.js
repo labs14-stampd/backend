@@ -84,12 +84,18 @@ const Mutation = new GraphQLObjectType({
       },
       async resolve(parent, args) {
         try {
+          console.log('in addCrde resolver, args', args)
+
           const credentialHash = web3.utils.sha3(JSON.stringify(args));
+          console.log('addcred resolver hash', credentialHash);
           const data = contract.methods
             .addCredential(credentialHash)
             .encodeABI();
           if (data.length) {
             args.txHash = await txFunc(data);
+            console.log('in addcred resolver', args)
+            args.valid = true;
+
             return Credential.insert(args).then(res => {
               return res;
             });
@@ -201,71 +207,8 @@ const Mutation = new GraphQLObjectType({
           })
           .catch(err => ({ error: err }));
       }
-    }, // Remove Credential
-    invalidateCredential:{
-      type:CredentialType,
-      description: 'Removes a credential', 
-      args:{
-        id: {
-          type:new GraphQLNonNull(GraphQLID),
-          description: 'The unique id of the credential to be deleted'
-        }, 
-        name: {
-          type: GraphQLString,
-          description: 'Name of the new credential'
-        },
-        description: {
-          type: GraphQLString,
-          description: 'Description of the new credential'
-        },
-        txHash: {
-          type: GraphQLString,
-          description: 'Ethereum transaction hash for the new credential'
-        },
-        type: {
-          type: GraphQLString,
-          description: 'Type of new credential'
-        },
-        studentEmail: {
-          type: GraphQLString,
-          description: 'Student email associated with new credential'
-        },
-        imageUrl: {
-          type: GraphQLString,
-          description: 'Image URL associated with new credential'
-        },
-        criteria: {
-          type: GraphQLString,
-          description: 'Criteria required to complete new credential'
-        },
-        valid: {
-          type: GraphQLBoolean,
-          description:
-            'A boolean flag indicating if the new credential is still valid'
-        },
-        issuedOn: {
-          type: GraphQLString,
-          description: 'Date new credential was issued'
-        },
-        expirationDate: {
-          type: GraphQLString,
-          description: 'Date that the new credential will expire'
-        },
-        schoolId: {
-          type: GraphQLID,
-          description:
-            'USER id associated with the school issuing the new credential'
-          // ^^^ This is the id in the 'users' table
-        }
-      }, 
-      async resolve(parent, args){
-        if(!args.id || typeof Number(args.id) !== 'number'){
-          return new Error('Please include a Credential ID and try again. ')
-        }
-        
-
-      }
-    }
+    } // Remove Credential
+    
   })
 });
 
