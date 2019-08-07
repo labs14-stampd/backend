@@ -30,12 +30,6 @@ async function update(id, changes) {
   return findById(id);
 }
 
-async function updateValid(id, flag) {
-  await db('credentials')
-    .where({ id })
-    .update('valid', flag);
-  return findById(id);
-}
 function remove(id) {
   return db('credentials')
     .where({ id })
@@ -49,6 +43,5 @@ module.exports = {
   findBySchoolId,
   insert,
   update,
-  updateValid,
   remove
 };

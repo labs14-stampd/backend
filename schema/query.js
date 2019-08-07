@@ -138,7 +138,7 @@ const RootQuery = new GraphQLObjectType({
           const credHash = web3.utils.sha3(JSON.stringify(cred));
           console.log('credHash in validate resolver ', credHash);
           //data will be true or false, depending on validity of credential
-          const data = await contract.methods.validateCredential(credHash).call();
+          const data = await contract.methods.verifyCredential(credHash).call();
           //so you can see what you get for now
           console.log('data ', data);
           } catch(error){

@@ -268,15 +268,29 @@ const Mutation = new GraphQLObjectType({
           if (!args.id || typeof Number(args.id) !== 'number') {
             return new Error('Please include a credential ID and try again.');
           }
-          return Credential.updateValid(args.id, false)
-            .then(res => {
-              if (res) {
-                console.log('res in invalidate', res)
-                return { id: args.id };
+          
+            try {    
+              const { id,txHash, valid, expirationDate, created_at, updated_at,  ...cred} = args;
+              const credHash = web3.utils.sha3(JSON.stringify(cred));
+              const data = contract.methods
+                .invalidateCredential(credHash)
+                .encodeABI();
+              if (data.length) {
+                args.txHash = await txFunc(data);
+                args.valid = false;
+                return Credential.update(args.id, args)
+                .then(res => {
+                  if (res) {
+                    return { id: args.id };
+                  }
+                  return new Error('The credential could not be invalidated.');
+                });
+              } else {
+                return new Error('The credential could not be invalidated.');
               }
-              return new Error('The credential could not be validated.');
-            })
-            .catch(err => ({ error: err }));
+            } catch (error) {
+              return new Error('There was an error completing your request.');
+            }
         }
       }, //invalidateCredential
       validateCredential: { 

@@ -33,33 +33,15 @@ const txFunc = async data => {
     // Broadcast the transaction
     const receipt = await web3.eth.sendSignedTransaction(raw, (err, txHash) => {
       console.log('reciept', err, txHash);
-    });
-    return receipt.logs[0].transactionHash;
+	});
+	console.log('receipt', receipt)
+    return receipt.transactionHash;
   } catch (error) {
     console.log(error);
   }
 };
 
 const contractABI = [
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "_credHash",
-				"type": "bytes32"
-			}
-		],
-		"name": "validateCredential",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
 	{
 		"constant": false,
 		"inputs": [
@@ -95,6 +77,25 @@ const contractABI = [
 			},
 			{
 				"name": "valid",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_credHash",
+				"type": "bytes32"
+			}
+		],
+		"name": "verifyCredential",
+		"outputs": [
+			{
+				"name": "",
 				"type": "bool"
 			}
 		],
@@ -251,7 +252,7 @@ const contractABI = [
 		"name": "OwnershipTransferred",
 		"type": "event"
 	}
-];
+]
 const contract = new web3.eth.Contract(contractABI, contractAddress);
 
 module.exports = {
