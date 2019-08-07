@@ -1,7 +1,7 @@
 const { graphql } = require('graphql');
 const schema = require('../schema/schema');
 
-const USERDATA = [
+const USER_DATA = [
   {
     id: '1',
     username: 'admin',
@@ -68,6 +68,51 @@ const USERDATA = [
   }
 ];
 
+const SCHOOLDETAILS_DATA = [
+  {
+    id: '1',
+    name: 'School of the Midweast',
+    taxId: '000000000',
+    street1: 'Midway St.',
+    street2: null,
+    city: 'Midway City',
+    state: 'MA',
+    zip: '5050',
+    phone: '555-5555',
+    type: 'University',
+    url: 'https://www.midweast.edu/',
+    userId: '3'
+  },
+  {
+    id: '2',
+    name: 'School of the Weast',
+    taxId: '000000001',
+    street1: 'Grove Street',
+    street2: null,
+    city: 'San Andreas',
+    state: 'CA',
+    zip: '0420',
+    phone: '2-610-2004',
+    type: 'University',
+    url: 'https://www.bestestweastern.edu/',
+    userId: '4'
+  },
+  {
+    id: '3',
+    name: 'School of the East',
+    taxId: '000000002',
+    street1: 'Sweet streats',
+    street2: null,
+    city: 'Sweet City',
+    state: 'HA',
+    zip: '00000',
+    phone: '999-9999',
+    type: 'College',
+    url: 'https://www.weastern.edu/',
+    userId: '5'
+  }
+];
+
 describe('getAllUsers query: ', () => {
   it('• should return all user data from test seeds', async () => {
     const QUERY = `
@@ -84,7 +129,7 @@ describe('getAllUsers query: ', () => {
     `;
 
     const res = await graphql(schema, QUERY, null);
-    expect(res.data.getAllUsers).toEqual(USERDATA);
+    expect(res.data.getAllUsers).toEqual(USER_DATA);
   });
 
   it("• should have matching role ID's in both roleId and role properties", async () => {
@@ -150,7 +195,7 @@ describe('getUserById query: ', () => {
     `;
 
     const res = await graphql(schema, QUERY, null);
-    expect(res.data.getUserById).toEqual(USERDATA[TEST_ID_TO_GET - 1]); // Subtract the ID by 1 to get the corresponding array index
+    expect(res.data.getUserById).toEqual(USER_DATA[TEST_ID_TO_GET - 1]); // Subtract the ID by 1 to get the corresponding array index
   });
 
   it("• should have matching role ID's in both roleId and role properties", async () => {
@@ -200,7 +245,7 @@ describe('getUserById query: ', () => {
 
 describe('getUserById error handling: ', () => {
   test('• when ID parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE = "Please include a user ID and try again.";
+    const EXPECTED_ERROR_MESSAGE = 'Please include a user ID and try again.';
 
     const QUERY = `
       query {
@@ -216,7 +261,7 @@ describe('getUserById error handling: ', () => {
   });
 
   test('• when attempting to get a non-existent user', async () => {
-    const EXPECTED_ERROR_MESSAGE = "The user could not be found.";
+    const EXPECTED_ERROR_MESSAGE = 'The user could not be found.';
 
     const NONEXISTENT_ID_TO_GET = 0;
     const QUERY = `
@@ -232,5 +277,49 @@ describe('getUserById error handling: ', () => {
     const res = await graphql(schema, QUERY, null);
     expect(res.data.getUserById).toBeNull();
     expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+});
+
+describe('getAllSchoolDetails query: ', () => {
+  it('• should return all school details data from test seeds', async () => {
+    const QUERY = `
+      query {
+        getAllSchoolDetails {
+          id
+          name
+          taxId
+          street1
+          street2
+          city
+          state
+          zip
+          type
+          phone
+          url
+          userId
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getAllSchoolDetails).toEqual(SCHOOLDETAILS_DATA);
+  });
+
+  it("• should have matching user ID's in both userId and user properties", async () => {
+    const QUERY = `
+      query {
+        getAllSchoolDetails {
+          userId
+          user {
+            id
+          }
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    res.data.getAllSchoolDetails.forEach(schoolDetails => {
+      expect(schoolDetails.userId).toEqual(schoolDetails.user.id);
+    });
   });
 });

@@ -5,7 +5,7 @@ exports.seed = function seedSchoolDetails(knex) {
       knex('schoolDetails').insert([
         {
           // id: 1,
-          name: 'School of the Midwest',
+          name: 'School of the Midweast',
           taxId: '000000000',
           street1: 'Midway St.',
           street2: null,
@@ -19,7 +19,7 @@ exports.seed = function seedSchoolDetails(knex) {
         },
         {
           // id: 2,
-          name: 'School of the West',
+          name: 'School of the Weast',
           taxId: '000000001',
           street1: 'Grove Street',
           street2: null,
@@ -28,7 +28,7 @@ exports.seed = function seedSchoolDetails(knex) {
           zip: '0420',
           phone: '2-610-2004',
           type: 'University',
-          url: 'https://www.bestestwestern.edu/',
+          url: 'https://www.bestestweastern.edu/',
           userId: 4
         },
         {
@@ -42,7 +42,7 @@ exports.seed = function seedSchoolDetails(knex) {
           zip: '00000',
           phone: '999-9999',
           type: 'College',
-          url: 'https://www.southern.edu/',
+          url: 'https://www.weastern.edu/',
           userId: 5
         }
       ])
