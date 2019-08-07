@@ -268,7 +268,7 @@ const Mutation = new GraphQLObjectType({
           if (!args.id || typeof Number(args.id) !== 'number') {
             return new Error('Please include a credential ID and try again.');
           }
-          return Credential.remove(args.id)
+          return Credential.updateValid(args.id)
             .then(res => {
               if (res) {
                 return { id: args.id };
@@ -338,7 +338,7 @@ const Mutation = new GraphQLObjectType({
           if (!args.id || typeof Number(args.id) !== 'number') {
             return new Error('Please include a credential ID and try again.');
           }
-          return Credential.remove(args.id)
+          return Credential.updateValid(args.id)
             .then(res => {
               if (res) {
                 return { id: args.id };
