@@ -268,12 +268,13 @@ const Mutation = new GraphQLObjectType({
           if (!args.id || typeof Number(args.id) !== 'number') {
             return new Error('Please include a credential ID and try again.');
           }
-          return Credential.updateValid(args.id)
+          return Credential.updateValid(args.id, false)
             .then(res => {
               if (res) {
+                console.log('res in invalidate', res)
                 return { id: args.id };
               }
-              return new Error('The credential could not be deleted.');
+              return new Error('The credential could not be validated.');
             })
             .catch(err => ({ error: err }));
         }
@@ -284,7 +285,7 @@ const Mutation = new GraphQLObjectType({
         args: {
           id: {
             type:new GraphQLNonNull(GraphQLID),
-            description: 'The unique id of the credential to be deleted'
+            description: 'The unique id of the credential to be invalidated'
           }, 
           name: {
             type: GraphQLString,
@@ -338,7 +339,7 @@ const Mutation = new GraphQLObjectType({
           if (!args.id || typeof Number(args.id) !== 'number') {
             return new Error('Please include a credential ID and try again.');
           }
-          return Credential.updateValid(args.id)
+          return Credential.updateValid(args.id, true)
             .then(res => {
               if (res) {
                 return { id: args.id };
