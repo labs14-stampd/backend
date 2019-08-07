@@ -207,8 +207,147 @@ const Mutation = new GraphQLObjectType({
           })
           .catch(err => ({ error: err }));
       }
-    } // Remove Credential
-    
+    }, // Remove Credential
+    invalidateCredential:{
+        type:CredentialType,
+        description: 'Invalidates a Credential', 
+        args:{
+          id: {
+            type:new GraphQLNonNull(GraphQLID),
+            description: 'The unique id of the credential to be deleted'
+          }, 
+          name: {
+            type: GraphQLString,
+            description: 'Name of the new credential'
+          },
+          description: {
+            type: GraphQLString,
+            description: 'Description of the new credential'
+          },
+          txHash: {
+            type: GraphQLString,
+            description: 'Ethereum transaction hash for the new credential'
+          },
+          type: {
+            type: GraphQLString,
+            description: 'Type of new credential'
+          },
+          studentEmail: {
+            type: GraphQLString,
+            description: 'Student email associated with new credential'
+          },
+          imageUrl: {
+            type: GraphQLString,
+            description: 'Image URL associated with new credential'
+          },
+          criteria: {
+            type: GraphQLString,
+            description: 'Criteria required to complete new credential'
+          },
+          valid: {
+            type: GraphQLBoolean,
+            description:
+              'A boolean flag indicating if the new credential is still valid'
+          },
+          issuedOn: {
+            type: GraphQLString,
+            description: 'Date new credential was issued'
+          },
+          expirationDate: {
+            type: GraphQLString,
+            description: 'Date that the new credential will expire'
+          },
+          schoolId: {
+            type: GraphQLID,
+            description:
+              'USER id associated with the school issuing the new credential'
+            // ^^^ This is the id in the 'users' table
+          }
+        }, 
+        async resolve(parent, args) {
+          if (!args.id || typeof Number(args.id) !== 'number') {
+            return new Error('Please include a credential ID and try again.');
+          }
+          return Credential.remove(args.id)
+            .then(res => {
+              if (res) {
+                return { id: args.id };
+              }
+              return new Error('The credential could not be deleted.');
+            })
+            .catch(err => ({ error: err }));
+        }
+      }, //invalidateCredential
+      validateCredential: { 
+        type: CredentialType, 
+        description: "Validates an invalidated Credential", 
+        args: {
+          id: {
+            type:new GraphQLNonNull(GraphQLID),
+            description: 'The unique id of the credential to be deleted'
+          }, 
+          name: {
+            type: GraphQLString,
+            description: 'Name of the new credential'
+          },
+          description: {
+            type: GraphQLString,
+            description: 'Description of the new credential'
+          },
+          txHash: {
+            type: GraphQLString,
+            description: 'Ethereum transaction hash for the new credential'
+          },
+          type: {
+            type: GraphQLString,
+            description: 'Type of new credential'
+          },
+          studentEmail: {
+            type: GraphQLString,
+            description: 'Student email associated with new credential'
+          },
+          imageUrl: {
+            type: GraphQLString,
+            description: 'Image URL associated with new credential'
+          },
+          criteria: {
+            type: GraphQLString,
+            description: 'Criteria required to complete new credential'
+          },
+          valid: {
+            type: GraphQLBoolean,
+            description:
+              'A boolean flag indicating if the new credential is still valid'
+          },
+          issuedOn: {
+            type: GraphQLString,
+            description: 'Date new credential was issued'
+          },
+          expirationDate: {
+            type: GraphQLString,
+            description: 'Date that the new credential will expire'
+          },
+          schoolId: {
+            type: GraphQLID,
+            description:
+              'USER id associated with the school issuing the new credential'
+            // ^^^ This is the id in the 'users' table
+          }
+        }, 
+        async resolve(parent, args) {
+          if (!args.id || typeof Number(args.id) !== 'number') {
+            return new Error('Please include a credential ID and try again.');
+          }
+          return Credential.remove(args.id)
+            .then(res => {
+              if (res) {
+                return { id: args.id };
+              }
+              return new Error('The credential could not be deleted.');
+            })
+            .catch(err => ({ error: err }));
+        }
+      } //validateCredential
   })
 });
 

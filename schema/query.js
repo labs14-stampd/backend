@@ -120,7 +120,7 @@ const RootQuery = new GraphQLObjectType({
           });
       }
     }, 
-    validateCredential:{
+    verifyCredential:{
       type: CredentialType,
       description: 'Checks that a credential exists and is currently valid',
       args: {
