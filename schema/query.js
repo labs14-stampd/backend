@@ -135,7 +135,10 @@ const RootQuery = new GraphQLObjectType({
           const {id,txHash,valid,expirationDate,created_at, updated_at, ...cred} = await Credentials.findById(args.id);
           cred.schoolId = cred.schoolId.toString();
           const credHash = web3.utils.sha3(JSON.stringify(cred));
+          //data will be true or false, depending on validity of credential
           const data = await contract.methods.validateCredential(credHash).call();
+          //so you can see what you get for now
+          console.log('data ', data);
           } catch(error){
           return error;
         }
