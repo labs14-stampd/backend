@@ -68,8 +68,16 @@ const RootQuery = new GraphQLObjectType({
       description: 'Gets school by school ID',
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
+        if (!args.id) {
+          return new Error('Please include a school details ID and try again.');
+        }
         return Schools.findById(args.id)
-          .then(res => res)
+          .then(res => {
+            if (res) {
+              return res;
+            }
+            return new Error('School details could not be found.');
+          })
           .catch(() => {
             return new Error('there was an error completing your request.');
           });
@@ -96,6 +104,9 @@ const RootQuery = new GraphQLObjectType({
       description: 'Get a credential by ID',
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
+        if (!args.id) {
+          return new Error('Please include a credential ID and try again.');
+        }
         return Credentials.findById(args.id)
           .then(res => {
             if (res) {
@@ -112,9 +123,21 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(CredentialType),
       description: 'Get all of a schools credentials',
       args: { id: { type: GraphQLID } },
-      resolve(parent, args) {
+      async resolve(parent, args) {
+        if (!args.id) {
+          return new Error('Please include a school ID and try again.');
+        }
+        const school = await User.findById(args.id);
+        if (!school) {
+          return new Error('School with that ID could not be found');
+        }
         return Credentials.findBy({ schoolId: args.id })
-          .then(res => res)
+          .then(res => {
+            if (res) {
+              return res;
+            }
+            return new Error('School with that ID could not be found');
+          })
           .catch(() => {
             return new Error('there was an error completing your request.');
           });
