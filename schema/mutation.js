@@ -87,16 +87,14 @@ const Mutation = new GraphQLObjectType({
       },
       async resolve(parent, args) {
         try {
-          console.log('in addCrde resolver, args', args)
-
           const credentialHash = web3.utils.sha3(JSON.stringify(args));
-          console.log('addcred resolver hash', credentialHash);
+          args.credHash = credentialHash;
           const data = contract.methods
             .addCredential(credentialHash)
             .encodeABI();
           if (data.length) {
             args.txHash = await txFunc(data);
-            console.log('in addcred resolver', args)
+            console.log('in addcred resolver', args);
             args.valid = true;
 
             return Credential.insert(args).then(res => {
@@ -124,6 +122,11 @@ const Mutation = new GraphQLObjectType({
         description: {
           type: GraphQLString,
           description: 'Description of the new credential'
+        },
+        credHash: {
+          type: GraphQLString,
+          description:
+            'Hash of credential information to be stored on blockchain'
         },
         txHash: {
           type: GraphQLString,
@@ -210,177 +213,198 @@ const Mutation = new GraphQLObjectType({
           .catch(err => ({ error: err }));
       }
     }, // Remove Credential
-    invalidateCredential:{
-        type:CredentialType,
-        description: 'Invalidates a Credential', 
-        args:{
-          id: {
-            type:new GraphQLNonNull(GraphQLID),
-            description: 'The unique id of the credential to be deleted'
-          }, 
-          name: {
-            type: GraphQLString,
-            description: 'Name of the new credential'
-          },
-          description: {
-            type: GraphQLString,
-            description: 'Description of the new credential'
-          },
-          txHash: {
-            type: GraphQLString,
-            description: 'Ethereum transaction hash for the new credential'
-          },
-          type: {
-            type: GraphQLString,
-            description: 'Type of new credential'
-          },
-          studentEmail: {
-            type: GraphQLString,
-            description: 'Student email associated with new credential'
-          },
-          imageUrl: {
-            type: GraphQLString,
-            description: 'Image URL associated with new credential'
-          },
-          criteria: {
-            type: GraphQLString,
-            description: 'Criteria required to complete new credential'
-          },
-          valid: {
-            type: GraphQLBoolean,
-            description:
-              'A boolean flag indicating if the new credential is still valid'
-          },
-          issuedOn: {
-            type: GraphQLString,
-            description: 'Date new credential was issued'
-          },
-          expirationDate: {
-            type: GraphQLString,
-            description: 'Date that the new credential will expire'
-          },
-          schoolId: {
-            type: GraphQLID,
-            description:
-              'USER id associated with the school issuing the new credential'
-            // ^^^ This is the id in the 'users' table
-          }
-        }, 
-        async resolve(parent, args) {
-          if (!args.id || typeof Number(args.id) !== 'number') {
-            return new Error('Please include a credential ID and try again.');
-          }
-          
-            try {    
-              const { id,txHash, valid, expirationDate, created_at, updated_at,  ...cred} = args;
-              const credHash = web3.utils.sha3(JSON.stringify(cred));
-              const data = contract.methods
-                .invalidateCredential("0x64bd5b55628ba944fbc12ef8b2e63f35b364170cd99f4adf8a7aa3f4142e6cd3")
-                .encodeABI();
-              if (data.length) {
-                args.txHash = await txFunc(data);
-                args.valid = false;
-                return Credential.update(args.id, args)
-                .then(res => {
-                  if (res) {
-                    return { id: args.id };
-                  }
-                  return new Error('The credential could not be invalidated.');
-                });
-              } else {
-                return new Error('The credential could not be invalidated.');
+    invalidateCredential: {
+      type: CredentialType,
+      description: 'Invalidates a Credential',
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The unique id of the credential to be deleted'
+        },
+        name: {
+          type: GraphQLString,
+          description: 'Name of the new credential'
+        },
+        description: {
+          type: GraphQLString,
+          description: 'Description of the new credential'
+        },
+        txHash: {
+          type: GraphQLString,
+          description: 'Ethereum transaction hash for the new credential'
+        },
+        type: {
+          type: GraphQLString,
+          description: 'Type of new credential'
+        },
+        studentEmail: {
+          type: GraphQLString,
+          description: 'Student email associated with new credential'
+        },
+        imageUrl: {
+          type: GraphQLString,
+          description: 'Image URL associated with new credential'
+        },
+        criteria: {
+          type: GraphQLString,
+          description: 'Criteria required to complete new credential'
+        },
+        valid: {
+          type: GraphQLBoolean,
+          description:
+            'A boolean flag indicating if the new credential is still valid'
+        },
+        issuedOn: {
+          type: GraphQLString,
+          description: 'Date new credential was issued'
+        },
+        expirationDate: {
+          type: GraphQLString,
+          description: 'Date that the new credential will expire'
+        },
+        schoolId: {
+          type: GraphQLID,
+          description:
+            'USER id associated with the school issuing the new credential'
+          // ^^^ This is the id in the 'users' table
+        }
+      },
+      async resolve(parent, args) {
+        if (!args.id || typeof Number(args.id) !== 'number') {
+          return new Error('Please include a credential ID and try again.');
+        }
+
+        try {
+          const {
+            id,
+            txHash,
+            valid,
+            expirationDate,
+            created_at,
+            updated_at,
+            ...cred
+          } = args;
+          const credHash = web3.utils.sha3(JSON.stringify(cred));
+          const data = contract.methods
+            .invalidateCredential(
+              '0x64bd5b55628ba944fbc12ef8b2e63f35b364170cd99f4adf8a7aa3f4142e6cd3'
+            )
+            .encodeABI();
+          if (data.length) {
+            args.txHash = await txFunc(data);
+            args.valid = false;
+            return Credential.update(args.id, args).then(res => {
+              if (res) {
+                return { id: args.id };
               }
-            } catch (error) {
-              return new Error('There was an error completing your request.');
-            }
+              return new Error('The credential could not be invalidated.');
+            });
+          } else {
+            return new Error('The credential could not be invalidated.');
+          }
+        } catch (error) {
+          return new Error('There was an error completing your request.');
         }
-      }, //invalidateCredential
-      validateCredential: { 
-        type: CredentialType, 
-        description: "Validates an invalidated Credential", 
-        args: {
-          id: {
-            type:new GraphQLNonNull(GraphQLID),
-            description: 'The unique id of the credential to be validated'
-          }, 
-          name: {
-            type: GraphQLString,
-            description: 'Name of the new credential'
-          },
-          description: {
-            type: GraphQLString,
-            description: 'Description of the new credential'
-          },
-          txHash: {
-            type: GraphQLString,
-            description: 'Ethereum transaction hash for the new credential'
-          },
-          type: {
-            type: GraphQLString,
-            description: 'Type of new credential'
-          },
-          studentEmail: {
-            type: GraphQLString,
-            description: 'Student email associated with new credential'
-          },
-          imageUrl: {
-            type: GraphQLString,
-            description: 'Image URL associated with new credential'
-          },
-          criteria: {
-            type: GraphQLString,
-            description: 'Criteria required to complete new credential'
-          },
-          valid: {
-            type: GraphQLBoolean,
-            description:
-              'A boolean flag indicating if the new credential is still valid'
-          },
-          issuedOn: {
-            type: GraphQLString,
-            description: 'Date new credential was issued'
-          },
-          expirationDate: {
-            type: GraphQLString,
-            description: 'Date that the new credential will expire'
-          },
-          schoolId: {
-            type: GraphQLID,
-            description:
-              'USER id associated with the school issuing the new credential'
-            // ^^^ This is the id in the 'users' table
-          }
-        }, 
-        async resolve(parent, args) {
-          
-          if (!args.id || typeof Number(args.id) !== 'number') {
-            return new Error('Please include a credential ID and try again.');
-          }
-          try {    
-            const { id,txHash, valid, expirationDate, created_at, updated_at,  ...cred} = args;
-            const credHash = web3.utils.sha3(JSON.stringify(cred));
-            const data = contract.methods
-              .validateCredential("0x64bd5b55628ba944fbc12ef8b2e63f35b364170cd99f4adf8a7aa3f4142e6cd3")
-              .encodeABI();
-            if (data.length) {
-              args.txHash = await txFunc(data);
-              args.valid = true;
-              return Credential.update(args.id, args)
-              .then(res => {
-                if (res) {
-                  return { id: args.id };
-                }
-                return new Error('The credential could not be validated.');
-              });
-            } else {
+      }
+    }, //invalidateCredential
+    validateCredential: {
+      type: CredentialType,
+      description: 'Validates an invalidated Credential',
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The unique id of the credential to be validated'
+        },
+        name: {
+          type: GraphQLString,
+          description: 'Name of the new credential'
+        },
+        description: {
+          type: GraphQLString,
+          description: 'Description of the new credential'
+        },
+        credHash: {
+          type: GraphQLString,
+          description:
+            'Hash of credential information to be stored on blockchain'
+        },
+        txHash: {
+          type: GraphQLString,
+          description: 'Ethereum transaction hash for the new credential'
+        },
+        type: {
+          type: GraphQLString,
+          description: 'Type of new credential'
+        },
+        studentEmail: {
+          type: GraphQLString,
+          description: 'Student email associated with new credential'
+        },
+        imageUrl: {
+          type: GraphQLString,
+          description: 'Image URL associated with new credential'
+        },
+        criteria: {
+          type: GraphQLString,
+          description: 'Criteria required to complete new credential'
+        },
+        valid: {
+          type: GraphQLBoolean,
+          description:
+            'A boolean flag indicating if the new credential is still valid'
+        },
+        issuedOn: {
+          type: GraphQLString,
+          description: 'Date new credential was issued'
+        },
+        expirationDate: {
+          type: GraphQLString,
+          description: 'Date that the new credential will expire'
+        },
+        schoolId: {
+          type: GraphQLID,
+          description:
+            'USER id associated with the school issuing the new credential'
+          // ^^^ This is the id in the 'users' table
+        }
+      },
+      async resolve(parent, args) {
+        if (!args.id || typeof Number(args.id) !== 'number') {
+          return new Error('Please include a credential ID and try again.');
+        }
+        try {
+          const {
+            id,
+            txHash,
+            valid,
+            expirationDate,
+            created_at,
+            updated_at,
+            ...cred
+          } = args;
+          const credHash = web3.utils.sha3(JSON.stringify(cred));
+          const data = contract.methods
+            .validateCredential(
+              '0x64bd5b55628ba944fbc12ef8b2e63f35b364170cd99f4adf8a7aa3f4142e6cd3'
+            )
+            .encodeABI();
+          if (data.length) {
+            args.txHash = await txFunc(data);
+            args.valid = true;
+            return Credential.update(args.id, args).then(res => {
+              if (res) {
+                return { id: args.id };
+              }
               return new Error('The credential could not be validated.');
-            }
-          } catch (error) {
-            return new Error('There was an error completing your request.');
+            });
+          } else {
+            return new Error('The credential could not be validated.');
           }
-          
+        } catch (error) {
+          return new Error('There was an error completing your request.');
         }
-      } //validateCredential
+      }
+    } //validateCredential
   })
 });
 
