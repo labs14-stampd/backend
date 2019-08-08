@@ -46,6 +46,10 @@ const Mutation = new GraphQLObjectType({
           type: GraphQLString,
           description: 'Ethereum transaction hash for the new credential'
         },
+        credHash: {
+          type: GraphQLString,
+          description: 'Hash of new credential'
+        },
         type: {
           type: new GraphQLNonNull(GraphQLString),
           description: 'Type of new credential'
@@ -273,7 +277,7 @@ const Mutation = new GraphQLObjectType({
               const { id,txHash, valid, expirationDate, created_at, updated_at,  ...cred} = args;
               const credHash = web3.utils.sha3(JSON.stringify(cred));
               const data = contract.methods
-                .invalidateCredential(credHash)
+                .invalidateCredential("0x64bd5b55628ba944fbc12ef8b2e63f35b364170cd99f4adf8a7aa3f4142e6cd3")
                 .encodeABI();
               if (data.length) {
                 args.txHash = await txFunc(data);
@@ -350,17 +354,33 @@ const Mutation = new GraphQLObjectType({
           }
         }, 
         async resolve(parent, args) {
+          
           if (!args.id || typeof Number(args.id) !== 'number') {
             return new Error('Please include a credential ID and try again.');
           }
-          return Credential.updateValid(args.id, true)
-            .then(res => {
-              if (res) {
-                return { id: args.id };
-              }
-              return new Error('The credential could not be deleted.');
-            })
-            .catch(err => ({ error: err }));
+          try {    
+            const { id,txHash, valid, expirationDate, created_at, updated_at,  ...cred} = args;
+            const credHash = web3.utils.sha3(JSON.stringify(cred));
+            const data = contract.methods
+              .validateCredential("0x64bd5b55628ba944fbc12ef8b2e63f35b364170cd99f4adf8a7aa3f4142e6cd3")
+              .encodeABI();
+            if (data.length) {
+              args.txHash = await txFunc(data);
+              args.valid = true;
+              return Credential.update(args.id, args)
+              .then(res => {
+                if (res) {
+                  return { id: args.id };
+                }
+                return new Error('The credential could not be validated.');
+              });
+            } else {
+              return new Error('The credential could not be validated.');
+            }
+          } catch (error) {
+            return new Error('There was an error completing your request.');
+          }
+          
         }
       } //validateCredential
   })

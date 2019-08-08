@@ -50,6 +50,25 @@ const contractABI = [
 				"type": "bytes32"
 			}
 		],
+		"name": "validateCredential",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_credHash",
+				"type": "bytes32"
+			}
+		],
 		"name": "addCredential",
 		"outputs": [
 			{
