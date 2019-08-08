@@ -22,7 +22,6 @@ const {
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
-
     addUser,
     updateUser,
     deleteUser,
@@ -103,9 +102,8 @@ const Mutation = new GraphQLObjectType({
             return Credential.insert(args).then(res => {
               return res;
             });
-          } else {
-            return new Error('The credential could not be created.');
           }
+          return new Error('The credential could not be created.');
         } catch (error) {
           return new Error('There was an error completing your request.');
         }

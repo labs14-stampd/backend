@@ -1,6 +1,3 @@
-const faker = require('faker');
-const moment = require('moment');
-
 exports.seed = function seedCredentials(knex) {
   return knex('credentials')
     .del()
@@ -13,12 +10,12 @@ exports.seed = function seedCredentials(knex) {
             'Certifies that this person is capable of engineering while in a gravitational field',
           txHash: '',
           type: 'Masters',
-          studentEmail: faker.fake('{{internet.email}}'),
+          studentEmail: 'graviton@gmail.com',
           imageUrl: '',
           valid: true,
           criteria: 'Complete Engineering of a gavitational field',
-          issuedOn: moment('2016-01-01', 'YYYY-MM-DD'),
-          expirationDate: moment('2029-01-01', 'YYYY-MM-DD'),
+          issuedOn: '2016-01-01T06:00:00.000Z',
+          expirationDate: '2029-01-01T06:00:00.000Z',
           schoolId: 4 // This is actually the id from 'users' table
         },
         {
@@ -28,12 +25,12 @@ exports.seed = function seedCredentials(knex) {
             'Certifies that this person is capable of handling horses in a classical fashion',
           txHash: '',
           type: "Bachelor's",
-          studentEmail: faker.fake('{{internet.email}}'),
+          studentEmail: 'batchman@baidu.com',
           imageUrl: '',
-          valid: true,
+          valid: false,
           criteria: 'Complete Horsemanship at the Classical Level',
-          issuedOn: moment('2016-01-01', 'YYYY-MM-DD'),
-          expirationDate: moment('2029-01-01', 'YYYY-MM-DD'),
+          issuedOn: '2016-01-01T06:00:00.000Z',
+          expirationDate: '2029-01-01T06:00:00.000Z',
           schoolId: 5 // This is actually the id from 'users' table
         },
         {
@@ -43,13 +40,12 @@ exports.seed = function seedCredentials(knex) {
             'Certifies that this person is capable of handling a blow torch underwater',
           txHash: '',
           type: 'PhD',
-          studentEmail: faker.fake('{{internet.email}}'),
+          studentEmail: 'aquaman@rocketmail.com',
           imageUrl: '',
           valid: true,
-          criteria:
-            'Complete Underwater Blowtorching at an Advanced Proficiency',
-          issuedOn: moment('2016-01-01', 'YYYY-MM-DD'),
-          expirationDate: moment('2029-01-01', 'YYYY-MM-DD'),
+          criteria: 'Complete Underwater Blowtorching at an Advanced Proficiency',
+          issuedOn: '2016-01-01T06:00:00.000Z',
+          expirationDate: '2029-01-01T06:00:00.000Z',
           schoolId: 4 // This is actually the id from 'users' table
         }
       ])

@@ -3,13 +3,10 @@ const pg = require('pg');
 
 pg.defaults.ssl = true;
 
-// Production database connection
-const dbConnection = process.env.DATABASE_URL;
-
 module.exports = {
   development: {
     client: 'pg',
-    connection: dbConnection,
+    connection: process.env.DATABASE_URL,
     migrations: {
       directory: './database/migrations',
       tablename: 'knex_migrations'
@@ -23,10 +20,9 @@ module.exports = {
     },
     useNullAsDefault: true
   },
-
   testing: {
     client: 'pg',
-    connection: process.env.TESTING_DATABASE_URL,
+    connection: process.env.TEST_DATABASE_URL,
     migrations: {
       directory: './database/migrations',
       tablename: 'knex_migrations'
@@ -40,10 +36,9 @@ module.exports = {
     },
     useNullAsDefault: true
   },
-
   production: {
     client: 'pg',
-    connection: dbConnection,
+    connection: process.env.DATABASE_URL,
     pool: {
       min: 2,
       max: 10
