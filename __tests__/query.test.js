@@ -579,8 +579,7 @@ describe('getCredentialById error handling: ', () => {
   });
 
   test('• when attempting to get non-existent credentials', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'Credential with that ID could not be found';
+    const EXPECTED_ERROR_MESSAGE = 'Credential with that ID could not be found';
 
     const NONEXISTENT_ID_TO_GET = 0;
     const QUERY = `
@@ -595,6 +594,124 @@ describe('getCredentialById error handling: ', () => {
 
     const res = await graphql(schema, QUERY, null);
     expect(res.data.getCredentialById).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+});
+
+describe('getCredentialsBySchoolId query: ', () => {
+  it('• should return the corresponding credentials data for a school that has already issued credentials', async () => {
+    const TEST_ID_TO_GET = 5; // School user ID's start at 4; the second school in the data seeds has exactly 1 issued credential
+    const EXPECTED_CREDENTIAL_INDEX = 1; // The second school in the data seeds issued the second seeded credential
+    const QUERY = `
+      query {
+        getCredentialsBySchoolId (
+          id: ${TEST_ID_TO_GET}
+        ) {
+          id
+          name
+          description
+          txHash
+          type
+          studentEmail
+          imageUrl
+          criteria
+          valid
+          issuedOn
+          expirationDate
+          schoolId
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getCredentialsBySchoolId.length).toBe(1);
+    expect(res.data.getCredentialsBySchoolId[0]).toEqual(
+      CREDENTIALS_DATA[EXPECTED_CREDENTIAL_INDEX]
+    );
+  });
+
+  it('• should return the corresponding credentials data for a school that has not issued any credentials', async () => {
+    const TEST_ID_TO_GET = 6; // School user ID's start at 4; the third school in the data seeds has no issued credentials
+    const QUERY = `
+      query {
+        getCredentialsBySchoolId (
+          id: ${TEST_ID_TO_GET}
+        ) {
+          id
+          name
+          description
+          txHash
+          type
+          studentEmail
+          imageUrl
+          criteria
+          valid
+          issuedOn
+          expirationDate
+          schoolId
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getCredentialsBySchoolId.length).toBe(0);
+  });
+
+  it("• should have matching school user ID's in both schoolId and schoolsUserInfo properties", async () => {
+    const TEST_ID_TO_GET = 4; // School user ID's start at 4; the first school in the data seeds has exactly 2 issued credential
+    const QUERY = `
+      query {
+        getCredentialsBySchoolId (
+          id: ${TEST_ID_TO_GET}
+        ) {
+          schoolId
+          schoolsUserInfo {
+            id
+          }
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    res.data.getCredentialsBySchoolId.forEach(credentials => {
+      expect(credentials.schoolId).toEqual(credentials.schoolsUserInfo.id);
+    });
+  });
+});
+
+describe('getCredentialsBySchoolId error handling: ', () => {
+  test('• when "id" parameter is missing', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Please include a school ID and try again.';
+
+    const QUERY = `
+      query {
+        getCredentialsBySchoolId {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getCredentialsBySchoolId).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when attempting to get credentials issued by a non-existent school', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'School with that ID could not be found';
+
+    const NONEXISTENT_ID_TO_GET = 0;
+    const QUERY = `
+      query {
+        getCredentialsBySchoolId (
+          id: ${NONEXISTENT_ID_TO_GET}
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getCredentialsBySchoolId).toBeNull();
     expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
 });
