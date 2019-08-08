@@ -141,6 +141,10 @@ const CredentialType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'Description of the credential'
     },
+    credHash: {
+      type: GraphQLString,
+      description: 'Hash of credential information to be stored on blockchain'
+    },
     txHash: {
       type: GraphQLString,
       description: 'Ethereum transaction hash for the credential'

@@ -8,6 +8,7 @@ exports.seed = function seedCredentials(knex) {
           name: 'Masters in Gravitational Engineering',
           description:
             'Certifies that this person is capable of engineering while in a gravitational field',
+          credHash: '',
           txHash: '',
           type: 'Masters',
           studentEmail: 'graviton@gmail.com',
@@ -23,6 +24,7 @@ exports.seed = function seedCredentials(knex) {
           name: 'B.A. in Classical Horsemanship',
           description:
             'Certifies that this person is capable of handling horses in a classical fashion',
+          credHash: '',
           txHash: '',
           type: "Bachelor's",
           studentEmail: 'batchman@baidu.com',
@@ -38,12 +40,14 @@ exports.seed = function seedCredentials(knex) {
           name: 'PhD in Underwater Blow Torching',
           description:
             'Certifies that this person is capable of handling a blow torch underwater',
+          credHash: '',
           txHash: '',
           type: 'PhD',
           studentEmail: 'aquaman@rocketmail.com',
           imageUrl: '',
           valid: true,
-          criteria: 'Complete Underwater Blowtorching at an Advanced Proficiency',
+          criteria:
+            'Complete Underwater Blowtorching at an Advanced Proficiency',
           issuedOn: '2016-01-01T06:00:00.000Z',
           expirationDate: '2029-01-01T06:00:00.000Z',
           schoolId: 4 // This is actually the id from 'users' table
