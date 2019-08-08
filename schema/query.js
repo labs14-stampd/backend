@@ -140,7 +140,7 @@ const RootQuery = new GraphQLObjectType({
         }
       }
     },
-    validateCredential: {
+    verifyCredential: {
       type: CredentialType,
       description: 'Checks that a credential exists and is currently valid',
       args: {
@@ -160,11 +160,10 @@ const RootQuery = new GraphQLObjectType({
             updated_at,
             ...cred
           } = await Credentials.findById(args.id);
-          cred.schoolId = cred.schoolId.toString();
-          const credHash = web3.utils.sha3(JSON.stringify(cred));
+          
           //data will be true or false, depending on validity of credential
-          const data = await contract.methods.verifyCredential(credHash).call();
-          //so you can see what you get for now
+          const data = await contract.methods.verifyCredential(cred.credHash).call();
+          console.log('data', data)
           } catch(error){
             return error;
           }
