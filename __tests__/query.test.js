@@ -7,7 +7,7 @@ const USER_DATA = [
     username: 'admin',
     email: 'teamstampd@gmail.com',
     profilePicture: '',
-    roleId: '2',
+    roleId: '1',
     sub: '1'
   },
   {
@@ -475,10 +475,12 @@ describe('getAllCredentials query: ', () => {
       query {
         getAllCredentials {
           id
-          name
+          credName
           description
+          credHash
           txHash
           type
+          ownerName
           studentEmail
           imageUrl
           criteria
@@ -523,10 +525,12 @@ describe('getCredentialById query: ', () => {
           id: ${TEST_ID_TO_GET}
         ) {
           id
-          name
+          credName
           description
+          credHash
           txHash
           type
+          ownerName
           studentEmail
           imageUrl
           criteria
@@ -614,10 +618,12 @@ describe('getCredentialsBySchoolId query: ', () => {
           id: ${TEST_ID_TO_GET}
         ) {
           id
-          name
+          credName
           description
+          credHash
           txHash
           type
+          ownerName
           studentEmail
           imageUrl
           criteria
@@ -644,20 +650,9 @@ describe('getCredentialsBySchoolId query: ', () => {
           id: ${TEST_ID_TO_GET}
         ) {
           id
-          name
-          description
-          txHash
-          type
-          studentEmail
-          imageUrl
-          criteria
-          valid
-          issuedOn
-          expirationDate
-          schoolId
         }
       }
-    `;
+    `; // Query should only ask for ID since the idea is to simply expect an empty list
 
     const res = await graphql(schema, QUERY, null);
     expect(res.data.getCredentialsBySchoolId.length).toBe(0);
