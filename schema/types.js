@@ -132,7 +132,7 @@ const SchoolDetailsType = new GraphQLObjectType({
 const CredentialType = new GraphQLObjectType({
   name: 'Credential',
   fields: () => ({
-    id: { type: GraphQLID, description: 'The unique ID of a credentail' },
+    id: { type: GraphQLID, description: 'The unique ID of a credential' },
     credName: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'Name of the credential'
