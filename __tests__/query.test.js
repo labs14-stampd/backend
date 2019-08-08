@@ -404,7 +404,7 @@ describe('getSchoolDetailsBySchoolId query: ', () => {
   });
 
   it("• should have matching user ID's in both userId and user properties", async () => {
-    const TEST_ID_TO_GET = Math.ceil(Math.random() * 3); // Get a random ID within the range of the user seed ID's
+    const TEST_ID_TO_GET = Math.ceil(Math.random() * 3); // Get a random ID within the range of the seed data
     const QUERY = `
       query {
         getSchoolDetailsBySchoolId (
@@ -504,5 +504,97 @@ describe('getAllCredentials query: ', () => {
     res.data.getAllCredentials.forEach(credentials => {
       expect(credentials.schoolId).toEqual(credentials.schoolsUserInfo.id);
     });
+  });
+});
+
+describe('getCredentialById query: ', () => {
+  // Will use randomized test input
+  it('• should return the corresponding credentials data', async () => {
+    const TEST_ID_TO_GET = Math.ceil(Math.random() * 3); // Get a random ID within the range of the seed data
+    const QUERY = `
+      query {
+        getCredentialById (
+          id: ${TEST_ID_TO_GET}
+        ) {
+          id
+          name
+          description
+          txHash
+          type
+          studentEmail
+          imageUrl
+          criteria
+          valid
+          issuedOn
+          expirationDate
+          schoolId
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getCredentialById).toEqual(
+      CREDENTIALS_DATA[TEST_ID_TO_GET - 1]
+    ); // Subtract the ID by 1 to get the corresponding array index
+  });
+
+  it("• should have matching school user ID's in both schoolId and schoolsUserInfo properties", async () => {
+    const TEST_ID_TO_GET = Math.ceil(Math.random() * 3); // Get a random ID within the range of the seed data
+    const QUERY = `
+      query {
+        getCredentialById (
+          id: ${TEST_ID_TO_GET}
+        ) {
+          schoolId
+          schoolsUserInfo {
+            id
+          }
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getCredentialById.schoolId).toEqual(
+      res.data.getCredentialById.schoolsUserInfo.id
+    );
+  });
+});
+
+describe('getCredentialById error handling: ', () => {
+  test('• when "id" parameter is missing', async () => {
+    const EXPECTED_ERROR_MESSAGE =
+      'Please include a credential ID and try again.';
+
+    const QUERY = `
+      query {
+        getCredentialById {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getCredentialById).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when attempting to get non-existent credentials', async () => {
+    const EXPECTED_ERROR_MESSAGE =
+      'Credential with that ID could not be found';
+
+    const NONEXISTENT_ID_TO_GET = 0;
+    const QUERY = `
+      query {
+        getCredentialById (
+          id: ${NONEXISTENT_ID_TO_GET}
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getCredentialById).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
 });
