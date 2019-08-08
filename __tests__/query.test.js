@@ -180,18 +180,18 @@ describe('getUserById query: ', () => {
   it("• should return the corresponding user's data", async () => {
     const TEST_ID_TO_GET = Math.ceil(Math.random() * 8); // Get a random ID within the range of the seed data
     const QUERY = `
-    query {
-      getUserById (
-        id: ${TEST_ID_TO_GET}
-      ) {
-        id
-        username
-        email
-        profilePicture
-        roleId
-        sub
+      query {
+        getUserById (
+          id: ${TEST_ID_TO_GET}
+        ) {
+          id
+          username
+          email
+          profilePicture
+          roleId
+          sub
+        }
       }
-    }
     `;
 
     const res = await graphql(schema, QUERY, null);
@@ -201,16 +201,16 @@ describe('getUserById query: ', () => {
   it("• should have matching role ID's in both roleId and role properties", async () => {
     const TEST_ID_TO_GET = Math.ceil(Math.random() * 8); // Get a random ID within the range of the user seed ID's
     const QUERY = `
-    query {
-      getUserById (
-        id: ${TEST_ID_TO_GET}
-      ) {
-        roleId
-        role {
-          id
+      query {
+        getUserById (
+          id: ${TEST_ID_TO_GET}
+        ) {
+          roleId
+          role {
+            id
+          }
         }
       }
-    }
     `;
 
     const res = await graphql(schema, QUERY, null);
@@ -244,7 +244,7 @@ describe('getUserById query: ', () => {
 });
 
 describe('getUserById error handling: ', () => {
-  test('• when ID parameter is missing', async () => {
+  test('• when "id" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE = 'Please include a user ID and try again.';
 
     const QUERY = `
@@ -321,5 +321,91 @@ describe('getAllSchoolDetails query: ', () => {
     res.data.getAllSchoolDetails.forEach(schoolDetails => {
       expect(schoolDetails.userId).toEqual(schoolDetails.user.id);
     });
+  });
+});
+
+describe('getSchoolDetailsBySchoolId query: ', () => {
+  // Will use randomized test input
+  it('• should return the corresponding school details data', async () => {
+    const TEST_ID_TO_GET = Math.ceil(Math.random() * 3); // Get a random ID within the range of the seed data
+    const QUERY = `
+      query {
+        getSchoolDetailsBySchoolId (
+          id: ${TEST_ID_TO_GET}
+        ) {
+          id
+          name
+          taxId
+          street1
+          street2
+          city
+          state
+          zip
+          type
+          phone
+          url
+          userId
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getSchoolDetailsBySchoolId).toEqual(SCHOOLDETAILS_DATA[TEST_ID_TO_GET - 1]); // Subtract the ID by 1 to get the corresponding array index
+  });
+
+  it("• should have matching user ID's in both userId and user properties", async () => {
+    const TEST_ID_TO_GET = Math.ceil(Math.random() * 3); // Get a random ID within the range of the user seed ID's
+    const QUERY = `
+      query {
+        getSchoolDetailsBySchoolId (
+          id: ${TEST_ID_TO_GET}
+        ) {
+          userId
+          user {
+            id
+          }
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getSchoolDetailsBySchoolId.userId).toEqual(res.data.getSchoolDetailsBySchoolId.user.id);
+  });
+});
+
+describe('getSchoolDetailsBySchoolId error handling: ', () => {
+  test('• when "id" parameter is missing', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Please include a school details ID and try again.';
+
+    const QUERY = `
+      query {
+        getSchoolDetailsBySchoolId {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getSchoolDetailsBySchoolId).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when attempting to get non-existent school details', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'School details could not be found.';
+
+    const NONEXISTENT_ID_TO_GET = 0;
+    const QUERY = `
+      query {
+        getSchoolDetailsBySchoolId (
+          id: ${NONEXISTENT_ID_TO_GET}
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getSchoolDetailsBySchoolId).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
 });
