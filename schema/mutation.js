@@ -94,9 +94,7 @@ const Mutation = new GraphQLObjectType({
             .encodeABI();
           if (data.length) {
             args.txHash = await txFunc(data);
-            console.log('in addcred resolver', args);
             args.valid = true;
-
             return Credential.insert(args).then(res => {
               return res;
             });
@@ -228,6 +226,11 @@ const Mutation = new GraphQLObjectType({
         description: {
           type: GraphQLString,
           description: 'Description of the new credential'
+        }, 
+        credHash: {
+          type: GraphQLString,
+          description:
+            'Hash of credential information to be stored on blockchain'
         },
         txHash: {
           type: GraphQLString,
@@ -275,19 +278,9 @@ const Mutation = new GraphQLObjectType({
         }
 
         try {
-          const {
-            id,
-            txHash,
-            valid,
-            expirationDate,
-            created_at,
-            updated_at,
-            ...cred
-          } = args;
-          const credHash = web3.utils.sha3(JSON.stringify(cred));
           const data = contract.methods
             .invalidateCredential(
-              '0x64bd5b55628ba944fbc12ef8b2e63f35b364170cd99f4adf8a7aa3f4142e6cd3'
+              args.credHash
             )
             .encodeABI();
           if (data.length) {
@@ -373,19 +366,10 @@ const Mutation = new GraphQLObjectType({
           return new Error('Please include a credential ID and try again.');
         }
         try {
-          const {
-            id,
-            txHash,
-            valid,
-            expirationDate,
-            created_at,
-            updated_at,
-            ...cred
-          } = args;
-          const credHash = web3.utils.sha3(JSON.stringify(cred));
+          
           const data = contract.methods
             .validateCredential(
-              '0x64bd5b55628ba944fbc12ef8b2e63f35b364170cd99f4adf8a7aa3f4142e6cd3'
+              args.credHash
             )
             .encodeABI();
           if (data.length) {
