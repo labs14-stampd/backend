@@ -113,6 +113,54 @@ const SCHOOLDETAILS_DATA = [
   }
 ];
 
+const CREDENTIALS_DATA = [
+  {
+    id: '1',
+    name: 'Masters in Gravitational Engineering',
+    description:
+      'Certifies that this person is capable of engineering while in a gravitational field',
+    txHash: '',
+    type: 'Masters',
+    studentEmail: 'graviton@gmail.com',
+    imageUrl: '',
+    criteria: 'Complete Engineering of a gavitational field',
+    valid: true,
+    issuedOn: '2016-01-01T06:00:00.000Z',
+    expirationDate: '2029-01-01T06:00:00.000Z',
+    schoolId: '4'
+  },
+  {
+    id: '2',
+    name: 'B.A. in Classical Horsemanship',
+    description:
+      'Certifies that this person is capable of handling horses in a classical fashion',
+    txHash: '',
+    type: "Bachelor's",
+    studentEmail: 'batchman@baidu.com',
+    imageUrl: '',
+    criteria: 'Complete Horsemanship at the Classical Level',
+    valid: false,
+    issuedOn: '2016-01-01T06:00:00.000Z',
+    expirationDate: '2029-01-01T06:00:00.000Z',
+    schoolId: '5'
+  },
+  {
+    id: '3',
+    name: 'PhD in Underwater Blow Torching',
+    description:
+      'Certifies that this person is capable of handling a blow torch underwater',
+    txHash: '',
+    type: 'PhD',
+    studentEmail: 'aquaman@rocketmail.com',
+    imageUrl: '',
+    criteria: 'Complete Underwater Blowtorching at an Advanced Proficiency',
+    valid: true,
+    issuedOn: '2016-01-01T06:00:00.000Z',
+    expirationDate: '2029-01-01T06:00:00.000Z',
+    schoolId: '4'
+  }
+];
+
 describe('getAllUsers query: ', () => {
   it('• should return all user data from test seeds', async () => {
     const QUERY = `
@@ -350,7 +398,9 @@ describe('getSchoolDetailsBySchoolId query: ', () => {
     `;
 
     const res = await graphql(schema, QUERY, null);
-    expect(res.data.getSchoolDetailsBySchoolId).toEqual(SCHOOLDETAILS_DATA[TEST_ID_TO_GET - 1]); // Subtract the ID by 1 to get the corresponding array index
+    expect(res.data.getSchoolDetailsBySchoolId).toEqual(
+      SCHOOLDETAILS_DATA[TEST_ID_TO_GET - 1]
+    ); // Subtract the ID by 1 to get the corresponding array index
   });
 
   it("• should have matching user ID's in both userId and user properties", async () => {
@@ -369,13 +419,16 @@ describe('getSchoolDetailsBySchoolId query: ', () => {
     `;
 
     const res = await graphql(schema, QUERY, null);
-    expect(res.data.getSchoolDetailsBySchoolId.userId).toEqual(res.data.getSchoolDetailsBySchoolId.user.id);
+    expect(res.data.getSchoolDetailsBySchoolId.userId).toEqual(
+      res.data.getSchoolDetailsBySchoolId.user.id
+    );
   });
 });
 
 describe('getSchoolDetailsBySchoolId error handling: ', () => {
   test('• when "id" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Please include a school details ID and try again.';
+    const EXPECTED_ERROR_MESSAGE =
+      'Please include a school details ID and try again.';
 
     const QUERY = `
       query {
@@ -407,5 +460,49 @@ describe('getSchoolDetailsBySchoolId error handling: ', () => {
     const res = await graphql(schema, QUERY, null);
     expect(res.data.getSchoolDetailsBySchoolId).toBeNull();
     expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+});
+
+describe('getAllCredentials query: ', () => {
+  it('• should return all credentials data from test seeds', async () => {
+    const QUERY = `
+      query {
+        getAllCredentials {
+          id
+          name
+          description
+          txHash
+          type
+          studentEmail
+          imageUrl
+          criteria
+          valid
+          issuedOn
+          expirationDate
+          schoolId
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getAllCredentials).toEqual(CREDENTIALS_DATA);
+  });
+
+  it("• should have matching school user ID's in both schoolId and schoolsUserInfo properties", async () => {
+    const QUERY = `
+      query {
+        getAllCredentials {
+          schoolId
+          schoolsUserInfo {
+            id
+          }
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    res.data.getAllCredentials.forEach(credentials => {
+      expect(credentials.schoolId).toEqual(credentials.schoolsUserInfo.id);
+    });
   });
 });

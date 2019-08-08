@@ -27,7 +27,7 @@ exports.seed = function seedCredentials(knex) {
           type: "Bachelor's",
           studentEmail: 'batchman@baidu.com',
           imageUrl: '',
-          valid: true,
+          valid: false,
           criteria: 'Complete Horsemanship at the Classical Level',
           issuedOn: '2016-01-01T06:00:00.000Z',
           expirationDate: '2029-01-01T06:00:00.000Z',
