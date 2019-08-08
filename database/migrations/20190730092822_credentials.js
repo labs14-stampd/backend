@@ -4,11 +4,12 @@ exports.up = function createCredentials(knex) {
       .increments('id')
       .unsigned()
       .primary();
-    tbl.string('name', 256).notNull();
+    tbl.string('credName', 256).notNull();
     tbl.text('description').notNull();
     tbl.string('credHash', 66);
     tbl.string('txHash', 66);
     tbl.string('type', 128).notNull();
+    tbl.string('ownerName', 256).notNull();
     tbl.string('studentEmail', 128).notNull();
     tbl.string('imageUrl', 256).notNull();
     tbl.bool('valid').defaultTo(true);
