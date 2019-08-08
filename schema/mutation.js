@@ -33,7 +33,7 @@ const Mutation = new GraphQLObjectType({
       type: CredentialType,
       description: 'Issues a new credential to a student',
       args: {
-        name: {
+        credName: {
           type: new GraphQLNonNull(GraphQLString),
           description: 'Name of the new credential'
         },
@@ -52,6 +52,10 @@ const Mutation = new GraphQLObjectType({
         type: {
           type: new GraphQLNonNull(GraphQLString),
           description: 'Type of new credential'
+        },
+        ownerName: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'Name associated with credential'
         },
         studentEmail: {
           type: new GraphQLNonNull(GraphQLString),
@@ -115,7 +119,7 @@ const Mutation = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLID),
           description: 'The unique ID of the user to be deleted'
         },
-        name: {
+        credName: {
           type: GraphQLString,
           description: 'Name of the new credential'
         },
@@ -135,6 +139,10 @@ const Mutation = new GraphQLObjectType({
         type: {
           type: GraphQLString,
           description: 'Type of new credential'
+        },
+        ownerName: {
+          type: GraphQLString,
+          description: 'Name associated with credential'
         },
         studentEmail: {
           type: GraphQLString,
@@ -221,7 +229,7 @@ const Mutation = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLID),
           description: 'The unique id of the credential to be deleted'
         },
-        name: {
+        credName: {
           type: GraphQLString,
           description: 'Name of the new credential'
         },
@@ -236,6 +244,10 @@ const Mutation = new GraphQLObjectType({
         type: {
           type: GraphQLString,
           description: 'Type of new credential'
+        },
+        ownerName: {
+          type: GraphQLString,
+          description: 'Name associated with credential'
         },
         studentEmail: {
           type: GraphQLString,
@@ -315,7 +327,7 @@ const Mutation = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLID),
           description: 'The unique id of the credential to be validated'
         },
-        name: {
+        credName: {
           type: GraphQLString,
           description: 'Name of the new credential'
         },
@@ -335,6 +347,10 @@ const Mutation = new GraphQLObjectType({
         type: {
           type: GraphQLString,
           description: 'Type of new credential'
+        },
+        ownerName: {
+          type: GraphQLString,
+          description: 'Name associated with credential'
         },
         studentEmail: {
           type: GraphQLString,
