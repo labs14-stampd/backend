@@ -150,8 +150,6 @@ const RootQuery = new GraphQLObjectType({
         }
       },
       resolve: async (parent, args) => {
-        console.log('validate args', args);
-
         try {
           const {
             id,
@@ -164,15 +162,15 @@ const RootQuery = new GraphQLObjectType({
           } = await Credentials.findById(args.id);
           cred.schoolId = cred.schoolId.toString();
           const credHash = web3.utils.sha3(JSON.stringify(cred));
-          const data = await contract.methods
-            .validateCredential(credHash)
-            .call();
-        } catch (error) {
-          return error;
+          //data will be true or false, depending on validity of credential
+          const data = await contract.methods.verifyCredential(credHash).call();
+          //so you can see what you get for now
+          } catch(error){
+            return error;
+          }
         }
       }
-    }
-  } // fields
+    } // fields
 });
 
 module.exports = {
