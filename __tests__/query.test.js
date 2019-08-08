@@ -7,7 +7,7 @@ const USER_DATA = [
     username: 'admin',
     email: 'teamstampd@gmail.com',
     profilePicture: '',
-    roleId: '1',
+    roleId: '2',
     sub: '1'
   },
   {
@@ -119,6 +119,7 @@ const CREDENTIALS_DATA = [
     name: 'Masters in Gravitational Engineering',
     description:
       'Certifies that this person is capable of engineering while in a gravitational field',
+    credHash: '',
     txHash: '',
     type: 'Masters',
     studentEmail: 'graviton@gmail.com',
@@ -134,6 +135,7 @@ const CREDENTIALS_DATA = [
     name: 'B.A. in Classical Horsemanship',
     description:
       'Certifies that this person is capable of handling horses in a classical fashion',
+    credHash: '',
     txHash: '',
     type: "Bachelor's",
     studentEmail: 'batchman@baidu.com',
@@ -149,6 +151,7 @@ const CREDENTIALS_DATA = [
     name: 'PhD in Underwater Blow Torching',
     description:
       'Certifies that this person is capable of handling a blow torch underwater',
+    credHash: '',
     txHash: '',
     type: 'PhD',
     studentEmail: 'aquaman@rocketmail.com',
