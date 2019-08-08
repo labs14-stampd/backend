@@ -1,5 +1,3 @@
-const Moment = require('moment');
-
 exports.seed = function seedCredentials(knex) {
   return knex('credentials')
     .del()
@@ -16,8 +14,8 @@ exports.seed = function seedCredentials(knex) {
           imageUrl: '',
           valid: true,
           criteria: 'Complete Engineering of a gavitational field',
-          issuedOn: Moment('2016-01-01', 'YYYY-MM-DD'),
-          expirationDate: Moment('2029-01-01', 'YYYY-MM-DD'),
+          issuedOn: '2016-01-01T06:00:00.000Z',
+          expirationDate: '2029-01-01T06:00:00.000Z',
           schoolId: 4 // This is actually the id from 'users' table
         },
         {
@@ -31,8 +29,8 @@ exports.seed = function seedCredentials(knex) {
           imageUrl: '',
           valid: true,
           criteria: 'Complete Horsemanship at the Classical Level',
-          issuedOn: Moment('2016-01-01', 'YYYY-MM-DD'),
-          expirationDate: Moment('2029-01-01', 'YYYY-MM-DD'),
+          issuedOn: '2016-01-01T06:00:00.000Z',
+          expirationDate: '2029-01-01T06:00:00.000Z',
           schoolId: 5 // This is actually the id from 'users' table
         },
         {
@@ -46,8 +44,8 @@ exports.seed = function seedCredentials(knex) {
           imageUrl: '',
           valid: true,
           criteria: 'Complete Underwater Blowtorching at an Advanced Proficiency',
-          issuedOn: Moment('2016-01-01', 'YYYY-MM-DD'),
-          expirationDate: Moment('2029-01-01', 'YYYY-MM-DD'),
+          issuedOn: '2016-01-01T06:00:00.000Z',
+          expirationDate: '2029-01-01T06:00:00.000Z',
           schoolId: 4 // This is actually the id from 'users' table
         }
       ])
