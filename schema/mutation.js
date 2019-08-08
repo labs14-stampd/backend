@@ -303,7 +303,7 @@ const Mutation = new GraphQLObjectType({
         args: {
           id: {
             type:new GraphQLNonNull(GraphQLID),
-            description: 'The unique id of the credential to be invalidated'
+            description: 'The unique id of the credential to be validated'
           }, 
           name: {
             type: GraphQLString,
