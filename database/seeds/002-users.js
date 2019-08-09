@@ -6,7 +6,7 @@ exports.seed = function seedUsers(knex) {
         {
           // id: 1,
           username: 'admin',
-          email: 'teamstampd@gmail.com',
+          email: 'schoolzrus@rocketmail.com',
           profilePicture: '',
           sub: '1',
           roleId: 1
@@ -23,7 +23,7 @@ exports.seed = function seedUsers(knex) {
         {
           // id: 3,
           username: 'school1',
-          email: 'schoolzrus@rocketmail.com',
+          email: 'teamstampd@gmail.com',
           profilePicture: '',
           sub: '3',
           roleId: 2
