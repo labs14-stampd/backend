@@ -187,14 +187,24 @@ Get school information through queries in GraphQL, example:
 
 ## 2️⃣ Actions
 
-`getAllUsers` -> gets all users
-`getUserById(id: ID)` -> Gets a user by userId
-`getAllSchoolDetails` -> Gets all school details (for testing only)
-`getSchoolDetailsBySchoolId(id: ID)` -> Gets school details by schoolId
-`getAllCredentials` -> Gets all credentials
-`getCredentialById(id: ID)` -> Gets credential by credential ID
-`getCredentialsBySchoolId(id: ID)` -> Get all of a schools credentials
-`verifyCredential` -> Verifies a credential on the blockchain
+- `getAllUsers` -> gets all users
+- `getUserById(id: ID)` -> Gets a user by userId
+- `getAllSchoolDetails` -> Gets all school details (for testing only)
+- `getSchoolDetailsBySchoolId(id: ID)` -> Gets school details by schoolId
+- `getAllCredentials` -> Gets all credentials
+- `getCredentialById(id: ID)` -> Gets credential by credential ID
+- `getCredentialsBySchoolId(id: ID)` -> Get all of a schools credentials
+- `verifyCredential` -> Verifies a credential on the blockchain
+
+- `addUser( authToken: String! roleId: ID )` -> Adds a new user
+- `updateUser( id: ID! username: String email: String roleId: ID )` -> Updates a users information
+- `deleteUser(id: ID!)` -> Deletes a user by id
+- `addSchoolDetail( name: String! taxId: String! street1: String street2: String city: String state: String zip: String type: String phone: String! url: String! userId: ID! )` -> Adds details for a school
+- `updateSchoolDetail( id: ID! name: String taxId: String street1: String street2: String city: String state: String zip: String type: String phone: String url: String userId: ID )` -> Updates a schools details
+- `addNewCredential( credName: String! description: String! txHash: String credHash: String type: String! ownerName: String! studentEmail: String! imageUrl: String! criteria: String! valid: Boolean issuedOn: String! expirationDate: String schoolId: ID! )` -> Adds a new credential to the database and blockchain
+- `updateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` -> Updates a credential and reissues it on the blockchain
+- `removeCredential(id: ID!): Credential invalidateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` -> Deletes a credential
+- `validateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` Updates a credential to valid and reissues it on the blockchain
 
 ## 3️⃣ Environment Variables
 
