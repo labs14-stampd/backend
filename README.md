@@ -217,15 +217,15 @@ create a .env file that includes the following:
 * TESTING_DATABASE_URL - Url for testing database
 
 * DATABASE_URL - Url for database
-# NODE_SERVER_SENTRY - Sentry URI for continuous integration
-# PK - Secret used for hashing JWTs
+* NODE_SERVER_SENTRY - Sentry URI for continuous integration
+* PK - Secret used for hashing JWTs
 
-REACT_APP_AUTH_TOKEN - Another secret used for hashing other JWTs
+* REACT_APP_AUTH_TOKEN - Another secret used for hashing other JWTs
 
-CONTRACT_ADDRESS - Address of contract deployed to Ethereum blockchain
-INFURA - URL of Infura API
-PRIVATE_KEY - Private key for Infura
-ACCOUNT_1 - Owner address for Ethereum contract
+* CONTRACT_ADDRESS - Address of contract deployed to Ethereum blockchain
+* INFURA - URL of Infura API
+* PRIVATE_KEY - Private key for Infura
+* ACCOUNT_1 - Owner address for Ethereum contract
 ```
 
 ## Contributing
@@ -267,5 +267,4 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 
 ## Documentation
 
-See [Frontend Documentation](🚫link to your frontend readme here) for details on the fronend of our project.
-🚫 Add DS iOS and/or Andriod links here if applicable.
+See [Frontend Documentation](https://github.com/labs14-stampd/frontend) for details on the fronend of our project.
