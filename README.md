@@ -81,7 +81,7 @@ Get school information through queries in GraphQL, example:
     imageUrl: "www.fakeurl.com"
     issuedOn: "7/7/1917"
     credName: "Certification in Welding"
-    studentName: "Gary Oldman"
+    ownerName: "Gary Oldman"
     schoolId: "1"
     studentEmail: "fakestudent@gmail.com"
     type: "Certificate"
@@ -93,22 +93,29 @@ Get school information through queries in GraphQL, example:
 }
 ```
 
+```json
+{
+  "data": {
+    "addNewCredential": {
+      "id": "4",
+      "credHash": "0x8ae1d6e7efb7e492997844b76aa80b009a3d67f153ec09f119cfdb876d73d59d",
+      "txHash": "0x36f54937d5c1dce9fa949f4fa8fee048e6e20a0fa9949b98e847262d649a7f6d"
+    }
+  }
+}
+```
+
 # Data Model
 
-🚫This is just an example. Replace this with your data model
-
-#### 2️⃣ ORGANIZATIONS
+#### Role
 
 ---
 
 ```
 {
-  id: UUID
-  name: STRING
-  industry: STRING
-  paid: BOOLEAN
-  customer_id: STRING
-  subscription_id: STRING
+  id: ID
+  type: String!
+  users: [User]
 }
 ```
 
@@ -118,45 +125,76 @@ Get school information through queries in GraphQL, example:
 
 ```
 {
-  id: UUID
-  organization_id: UUID foreign key in ORGANIZATIONS table
-  first_name: STRING
-  last_name: STRING
-  role: STRING [ 'owner', 'supervisor', 'employee' ]
-  email: STRING
-  phone: STRING
-  cal_visit: BOOLEAN
-  emp_visit: BOOLEAN
-  emailpref: BOOLEAN
-  phonepref: BOOLEAN
+  id: ID
+  username: String
+  email: String!
+  profilePicture: String
+  roleId: ID
+  sub: String!
+  token: String
+  tokenExpiration: Int
+  role: Role
+  schoolDetails: SchoolDetails
+}
+```
+
+#### School Details
+
+---
+
+```
+{
+  id: ID
+  name: String!
+  taxId: String!
+  street1: String
+  street2: String
+  city: String
+  state: String
+  zip: String
+  type: String
+  phone: String!
+  url: String!
+  userId: ID!
+  user: User
+  credentials: [Credential]
+}
+```
+
+#### Credential
+
+---
+
+```
+{
+  id: ID
+  credName: String!
+  description: String!
+  credHash: String
+  txHash: String
+  type: String!
+  ownerName: String!
+  studentEmail: String!
+  imageUrl: String!
+  criteria: String!
+  valid: Boolean
+  issuedOn: String!
+  expirationDate: String
+  schoolId: ID!
+  schoolsUserInfo: User
 }
 ```
 
 ## 2️⃣ Actions
 
-🚫 This is an example, replace this with the actions that pertain to your backend
-
-`getOrgs()` -> Returns all organizations
-
-`getOrg(orgId)` -> Returns a single organization by ID
-
-`addOrg(org)` -> Returns the created org
-
-`updateOrg(orgId)` -> Update an organization by ID
-
-`deleteOrg(orgId)` -> Delete an organization by ID
-<br>
-<br>
-<br>
-`getUsers(orgId)` -> if no param all users
-
-`getUser(userId)` -> Returns a single user by user ID
-
-`addUser(user object)` --> Creates a new user and returns that user. Also creates 7 availabilities defaulted to hours of operation for their organization.
-
-`updateUser(userId, changes object)` -> Updates a single user by ID.
-
-`deleteUser(userId)` -> deletes everything dependent on the user
+`getAllUsers` -> gets all users
+`getUserById(id: ID)` -> Gets a user by userId
+`getAllSchoolDetails` -> Gets all school details (for testing only)
+`getSchoolDetailsBySchoolId(id: ID)` -> Gets school details by schoolId
+`getAllCredentials` -> Gets all credentials
+`getCredentialById(id: ID)` -> Gets credential by credential ID
+`getCredentialsBySchoolId(id: ID)` -> Get all of a schools credentials
+`verifyCredential` -> Verifies a credential on the blockchain
 
 ## 3️⃣ Environment Variables
 
