@@ -11,14 +11,25 @@ To get the server running locally:
 - **yarn server** to start the local server
 - **yarn test** to start server using testing environment
 
-### GraphQL/Node/Express/PostgresQL
+#### Node/Express
 
-🚫 Why did you choose this framework?
+- Javascript in the backend
+- Express allows for easy API creation
+- Middleware pattern
 
-- Point One
-- Point Two
-- Point Three
-- Point Four
+#### GraphQL
+
+- Built on top of express
+- One endpoint
+- Schema is built into GraphQL playground
+
+#### PostgresQL
+
+- Works well with Heroku
+
+#### Web3
+
+- The only way or app can intergrate and deploy to blockchain networks -- needs more wordsmithing
 
 ## How to use
 
