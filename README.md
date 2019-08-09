@@ -185,7 +185,7 @@ Get school information through queries in GraphQL, example:
 }
 ```
 
-## 2️⃣ Actions
+## Actions
 
 - `getAllUsers` -> gets all users
 - `getUserById(id: ID)` -> Gets a user by userId
@@ -206,19 +206,27 @@ Get school information through queries in GraphQL, example:
 - `removeCredential(id: ID!): Credential invalidateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` -> Deletes a credential
 - `validateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` Updates a credential to valid and reissues it on the blockchain
 
-## 3️⃣ Environment Variables
+## Environment Variables
 
 In order for the app to function correctly, the user must set up their own environment variables.
 
 create a .env file that includes the following:
 
-🚫 These are just examples, replace them with the specifics for your app
+```
+* PORT - Port to run server on
+* TESTING_DATABASE_URL - Url for testing database
 
-_ STAGING_DB - optional development db for using functionality not available in SQLite
-_ NODE\*ENV - set to "development" until ready for "production"
+* DATABASE_URL - Url for database
+# NODE_SERVER_SENTRY - Sentry URI for continuous integration
+# PK - Secret used for hashing JWTs
 
-- JWT*SECRET - you can generate this by using a python shell and running import random''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&amp;*(-_=+)') for i in range(50)])
-  _ SENDGRID_API_KEY - this is generated in your Sendgrid account \* stripe_secret - this is generated in the Stripe dashboard
+REACT_APP_AUTH_TOKEN - Another secret used for hashing other JWTs
+
+CONTRACT_ADDRESS - Address of contract deployed to Ethereum blockchain
+INFURA - URL of Infura API
+PRIVATE_KEY - Private key for Infura
+ACCOUNT_1 - Owner address for Ethereum contract
+```
 
 ## Contributing
 
