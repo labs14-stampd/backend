@@ -1,6 +1,56 @@
-# API Documentation
+<a href="https://heroku.com/deploy">
+  <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy">
+</a>
 
-#### Backend delpoyed at [https://stampd-backend.herokuapp.com/](https://stampd-backend.herokuapp.com/) <br>
+#
+
+<h1 align="center"><img src="./assets/readme-header.png" /></h1>
+
+# STAMPD SERVER
+
+## INTRODUCTION
+
+The education industry has a big problem; in addition to the student debt crisis and other issues, post-student life is often a complete mess. One of these key areas is the credentialing process. Employers and students are often left hanging while employment verifications or the general credentialing verification process take days (or even weeks) to finish. This leaves employers at risk of being understaffed, school in danger of being short-staffed in their registrars' offices, and students in a position of losing out on great jobs. This is exactly the part where Stampd comes in.
+
+Stampd is a blockchain-based project that allows educational institutions to permanently issue fully verified credentials that are stamped to the Ethereum blockchain. Using blockchain technology, educational institutions can have a fast and cost-effective way to take care of their students; within minutes, a school can issue a credential and email it out, while employers can have peace of mind in knowing that there's no secret way the credential could have been modified or tampered with. This enables fast hires, low budgetary costs, and happy new employees.
+
+Easy. Verified. Blockchain. Issue credentials with Stampd.
+
+## CONTRIBUTORS
+
+|                                            [Aljoe Bacus](https://github.com/joepound)                                             |                                               [Brannan Conrad](https://github.com/BrannanC)                                               |                                      [Byron Holmes](https://github.com/byronholmes2018)                                       |                                            [Megan Jeffcoat](https://github.com/meganjeffcoat)                                            |                                           [CJ Tantay](https://github.com/cjbt)                                            |                                         [Nathan Thomas](https://github.com/nwthomas)                                          |
+| :-------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------: |
+|      [<img src="https://avatars2.githubusercontent.com/u/14357797?s=460&v=4" width = "150" />](https://github.com/joepound)       |          [<img src="https://avatars1.githubusercontent.com/u/39506884?s=460&v=4" width = "150" />](https://github.com/BrannanC)           | [<img src="https://avatars1.githubusercontent.com/u/40626585?s=460&v=4" width = "150" />](https://github.com/byronholmes2018) |       [<img src="https://avatars3.githubusercontent.com/u/44781690?s=400&v=4" width = "150" />](https://github.com/meganjeffcoat)        |     [<img src="https://avatars3.githubusercontent.com/u/8962594?s=460&v=4" width = "150" />](https://github.com/cjbt)     |    [<img src="https://avatars3.githubusercontent.com/u/28681364?s=460&v=4" width = "150" />](https://github.com/nwthomas)     |
+|                       [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/joepound)                       |                           [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/BrannanC)                           |                 [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/byronholmes2018)                  |                        [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/meganjeffcoat)                        |                     [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/cjbt)                     |                     [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/nwthomas)                     |
+| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/aljoe-luis-bacus/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/brannan-conrad-18852616b/) |                                                                                                                               | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/megan-jeffcoat-b46b8287/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/cjtantay/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/nwthomas-dev/) |
+
+## TABLE OF CONTENTS
+
+- [Getting Started](#getting-started)
+  - [Installation and Setup](#installation-and-setup)
+- [Technology Stack](#technology-stack)
+- [Unit Testing](#unit-testing)
+- [Project Management](#project-management)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+
+## GETTING STARTED
+
+This repository contains a `yarn.lock` file. Please do not remove this file, as the integrity of the application cannot be gauranteed(especially with packages such as `Web3.js`) if versions that may be incompatible with each other are used by installing the newest version of each dependency/
+
+#### INSTALLATION AND SETUP
+
+- Clone this repository
+- Change directory using `cd` into the root directory of the project and use the `yarn` command to install all dependencies included in the `package.json` file
+- Install `Node Version Manager` (or `nvm`) by following the installation instructions [here](https://github.com/nvm-sh/nvm) (due to dependency reasons, this project requires the use of `Node.js` version 10, and `nvm` allows us to do this)
+- Run the command `nvm use 10` in the root directory of the server
+-
+
+## TECHNOLOGY STACK
+
+## API Documentation
+
+#### Backend deployed at [https://stampd-backend.herokuapp.com/](https://stampd-backend.herokuapp.com/) <br>
 
 ## Getting started
 
