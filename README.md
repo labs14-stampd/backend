@@ -1,72 +1,132 @@
-🚫 Note: All lines that start with 🚫 are instructions and should be deleted before this is posted to your portfolio. This is intended to be a guideline. Feel free to add your own flare to it.
-
-🚫 The numbers 1️⃣ through 3️⃣ next to each item represent the week that part of the docs needs to be comepleted by.  Make sure to delete the numbers by the end of Labs.
-
-🚫 Each student has a required minimum number of meaningful PRs each week per the rubric.  Contributing to docs does NOT count as a PR to meet your weekly requirements.
-
 # API Documentation
 
-#### 1️⃣ Backend delpoyed at [🚫name service here](🚫add URL here) <br>
+#### Backend delpoyed at [https://stampd-backend.herokuapp.com/](https://stampd-backend.herokuapp.com/) <br>
 
-## 1️⃣ Getting started
+## Getting started
 
 To get the server running locally:
-
-🚫 adjust these scripts to match your project
 
 - Clone this repo
 - **yarn install** to install all required dependencies
 - **yarn server** to start the local server
 - **yarn test** to start server using testing environment
 
-### Backend framework goes here
+#### Node/Express
 
-🚫 Why did you choose this framework?
+- Javascript in the backend
+- Express allows for easy API creation
+- Middleware pattern
 
--    Point One
--    Point Two
--    Point Three
--    Point Four
+#### GraphQL
 
-## 2️⃣ Endpoints
+- Built on top of express
+- One endpoint
+- Schema is built into GraphQL playground
 
-🚫This is a placeholder, replace the endpoints, access controll, and descriptioin to match your project
+#### PostgresQL
 
-#### Organization Routes
+- Works well with Heroku
 
-| Method | Endpoint                | Access Control | Description                                  |
-| ------ | ----------------------- | -------------- | -------------------------------------------- |
-| GET    | `/organizations/:orgId` | all users      | Returns the information for an organization. |
-| PUT    | `/organizatoins/:orgId` | owners         | Modify an existing organization.             |
-| DELETE | `/organizations/:orgId` | owners         | Delete an organization.                      |
+#### Web3
 
-#### User Routes
+- The only way or app can intergrate and deploy to blockchain networks -- needs more wordsmithing
 
-| Method | Endpoint                | Access Control      | Description                                        |
-| ------ | ----------------------- | ------------------- | -------------------------------------------------- |
-| GET    | `/users/current`        | all users           | Returns info for the logged in user.               |
-| GET    | `/users/org/:userId`    | owners, supervisors | Returns all users for an organization.             |
-| GET    | `/users/:userId`        | owners, supervisors | Returns info for a single user.                    |
-| POST   | `/users/register/owner` | none                | Creates a new user as owner of a new organization. |
-| PUT    | `/users/:userId`        | owners, supervisors |                                                    |
-| DELETE | `/users/:userId`        | owners, supervisors |                                                    |
+## How to use
+
+Check [https://stampd-backend.herokuapp.com/playground](https://stampd-backend.herokuapp.com/playground) for full query and mutations list
+
+Get school information through queries in GraphQL, example:
+
+#### Queries
+
+```javascript
+{
+  getSchoolDetailsBySchoolId(
+    id: 1
+  ){
+    name
+    street1
+    street2
+    city
+    state
+    zip
+    type
+    phone
+    url
+    user{
+      email
+    }
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "getSchoolDetailsBySchoolId": {
+      "name": "School of the Midweast",
+      "street1": "Midway St.",
+      "street2": null,
+      "city": "Midway City",
+      "state": "MA",
+      "zip": "5050",
+      "type": "University",
+      "phone": "555-5555",
+      "url": "https://www.midweast.edu/",
+      "user": {
+        "email": "schoolzrus@rocketmail.com"
+      }
+    }
+  }
+}
+```
+
+#### Mutations
+
+```javascript
+{
+  addNewCredential (
+    criteria: "Asserts student has completed all requirements for certification in welding at Elgin Community College"
+    description: "Basic concepts of oxy-acetylene welding and electric welding for beginners."
+    expirationDate: "none"
+    imageUrl: "www.fakeurl.com"
+    issuedOn: "7/7/1917"
+    credName: "Certification in Welding"
+    ownerName: "Gary Oldman"
+    schoolId: "1"
+    studentEmail: "fakestudent@gmail.com"
+    type: "Certificate"
+  ){
+    id
+    credHash
+    txHash
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "addNewCredential": {
+      "id": "4",
+      "credHash": "0x8ae1d6e7efb7e492997844b76aa80b009a3d67f153ec09f119cfdb876d73d59d",
+      "txHash": "0x36f54937d5c1dce9fa949f4fa8fee048e6e20a0fa9949b98e847262d649a7f6d"
+    }
+  }
+}
+```
 
 # Data Model
 
-🚫This is just an example. Replace this with your data model
-
-#### 2️⃣ ORGANIZATIONS
+#### Role
 
 ---
 
 ```
 {
-  id: UUID
-  name: STRING
-  industry: STRING
-  paid: BOOLEAN
-  customer_id: STRING
-  subscription_id: STRING
+  id: ID
+  type: String!
+  users: [User]
 }
 ```
 
@@ -76,60 +136,109 @@ To get the server running locally:
 
 ```
 {
-  id: UUID
-  organization_id: UUID foreign key in ORGANIZATIONS table
-  first_name: STRING
-  last_name: STRING
-  role: STRING [ 'owner', 'supervisor', 'employee' ]
-  email: STRING
-  phone: STRING
-  cal_visit: BOOLEAN
-  emp_visit: BOOLEAN
-  emailpref: BOOLEAN
-  phonepref: BOOLEAN
+  id: ID
+  username: String
+  email: String!
+  profilePicture: String
+  roleId: ID
+  sub: String!
+  token: String
+  tokenExpiration: Int
+  role: Role
+  schoolDetails: SchoolDetails
 }
 ```
 
-## 2️⃣ Actions
+#### School Details
 
-🚫 This is an example, replace this with the actions that pertain to your backend
+---
 
-`getOrgs()` -> Returns all organizations
+```
+{
+  id: ID
+  name: String!
+  taxId: String!
+  street1: String
+  street2: String
+  city: String
+  state: String
+  zip: String
+  type: String
+  phone: String!
+  url: String!
+  userId: ID!
+  user: User
+  credentials: [Credential]
+}
+```
 
-`getOrg(orgId)` -> Returns a single organization by ID
+#### Credential
 
-`addOrg(org)` -> Returns the created org
+---
 
-`updateOrg(orgId)` -> Update an organization by ID
+```
+{
+  id: ID
+  credName: String!
+  description: String!
+  credHash: String
+  txHash: String
+  type: String!
+  ownerName: String!
+  studentEmail: String!
+  imageUrl: String!
+  criteria: String!
+  valid: Boolean
+  issuedOn: String!
+  expirationDate: String
+  schoolId: ID!
+  schoolsUserInfo: User
+}
+```
 
-`deleteOrg(orgId)` -> Delete an organization by ID
-<br>
-<br>
-<br>
-`getUsers(orgId)` -> if no param all users
+## Actions
 
-`getUser(userId)` -> Returns a single user by user ID
+- `getAllUsers` -> gets all users
+- `getUserById(id: ID)` -> Gets a user by userId
+- `getAllSchoolDetails` -> Gets all school details (for testing only)
+- `getSchoolDetailsBySchoolId(id: ID)` -> Gets school details by schoolId
+- `getAllCredentials` -> Gets all credentials
+- `getCredentialById(id: ID)` -> Gets credential by credential ID
+- `getCredentialsBySchoolId(id: ID)` -> Get all of a schools credentials
+- `verifyCredential` -> Verifies a credential on the blockchain
 
-`addUser(user object)` --> Creates a new user and returns that user. Also creates 7 availabilities defaulted to hours of operation for their organization.
+- `addUser( authToken: String! roleId: ID )` -> Adds a new user
+- `updateUser( id: ID! username: String email: String roleId: ID )` -> Updates a users information
+- `deleteUser(id: ID!)` -> Deletes a user by id
+- `addSchoolDetail( name: String! taxId: String! street1: String street2: String city: String state: String zip: String type: String phone: String! url: String! userId: ID! )` -> Adds details for a school
+- `updateSchoolDetail( id: ID! name: String taxId: String street1: String street2: String city: String state: String zip: String type: String phone: String url: String userId: ID )` -> Updates a schools details
+- `addNewCredential( credName: String! description: String! txHash: String credHash: String type: String! ownerName: String! studentEmail: String! imageUrl: String! criteria: String! valid: Boolean issuedOn: String! expirationDate: String schoolId: ID! )` -> Adds a new credential to the database and blockchain
+- `updateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` -> Updates a credential and reissues it on the blockchain
+- `removeCredential(id: ID!): Credential invalidateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` -> Deletes a credential
+- `validateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` Updates a credential to valid and reissues it on the blockchain
 
-`updateUser(userId, changes object)` -> Updates a single user by ID.
-
-`deleteUser(userId)` -> deletes everything dependent on the user
-
-## 3️⃣ Environment Variables
+## Environment Variables
 
 In order for the app to function correctly, the user must set up their own environment variables.
 
 create a .env file that includes the following:
 
-🚫 These are just examples, replace them with the specifics for your app
-    
-    *  STAGING_DB - optional development db for using functionality not available in SQLite
-    *  NODE_ENV - set to "development" until ready for "production"
-    *  JWT_SECRET - you can generate this by using a python shell and running import random''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&amp;*(-*=+)') for i in range(50)])
-    *  SENDGRID_API_KEY - this is generated in your Sendgrid account
-    *  stripe_secret - this is generated in the Stripe dashboard
-    
+```
+* PORT - Port to run server on
+* TESTING_DATABASE_URL - Url for testing database
+
+* DATABASE_URL - Url for database
+* NODE_SERVER_SENTRY - Sentry URI for continuous integration
+* PK - Secret used for hashing JWTs
+
+* REACT_APP_AUTH_TOKEN - Another secret used for hashing other JWTs
+
+* CONTRACT_ADDRESS - Address of contract deployed to Ethereum blockchain
+* INFURA - URL of Infura API
+* PRIVATE_KEY - Private key for Infura
+* ACCOUNT_1 - Owner address for Ethereum contract
+```
+
 ## Contributing
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
@@ -138,11 +247,12 @@ Please note we have a [code of conduct](./code_of_conduct.md). Please follow it 
 
 ### Issue/Bug Request
 
- **If you are having an issue with the existing project code, please submit a bug report under the following guidelines:**
- - Check first to see if your issue has already been reported.
- - Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
- - Create a live example of the problem.
- - Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes,  where you believe the issue is originating from, and any potential solutions you have considered.
+**If you are having an issue with the existing project code, please submit a bug report under the following guidelines:**
+
+- Check first to see if your issue has already been reported.
+- Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
+- Create a live example of the problem.
+- Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes, where you believe the issue is originating from, and any potential solutions you have considered.
 
 ### Feature Requests
 
@@ -168,5 +278,4 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 
 ## Documentation
 
-See [Frontend Documentation](🚫link to your frontend readme here) for details on the fronend of our project.
-🚫 Add DS iOS and/or Andriod links here if applicable.
+See [Frontend Documentation](https://github.com/labs14-stampd/frontend) for details on the fronend of our project.
