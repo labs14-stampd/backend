@@ -74,21 +74,21 @@ Get school information through queries in GraphQL, example:
 
 ```javascript
 {
-  getSchoolDetailsBySchoolId(
-    id: 1
+  addNewCredential (
+    criteria: "Asserts student has completed all requirements for certification in welding at Elgin Community College"
+    description: "Basic concepts of oxy-acetylene welding and electric welding for beginners."
+    expirationDate: "none"
+    imageUrl: "www.fakeurl.com"
+    issuedOn: "7/7/1917"
+    credName: "Certification in Welding"
+    studentName: "Gary Oldman"
+    schoolId: "1"
+    studentEmail: "fakestudent@gmail.com"
+    type: "Certificate"
   ){
-    name
-    street1
-    street2
-    city
-    state
-    zip
-    type
-    phone
-    url
-    user{
-      email
-    }
+    id
+    credHash
+    txHash
   }
 }
 ```
