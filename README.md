@@ -12,7 +12,7 @@
 
 ## Introduction
 
-The education industry has a big problem; in addition to the student debt crisis and other issues, post-student life is often a complete mess. One of these key areas is the credentialing process. Employers and students are often left hanging while employment verifications or the general credentialing verification process take days (or even weeks) to finish. This leaves employers at risk of being understaffed, school in danger of being short-staffed in their registrars' offices, and students in a position of losing out on great jobs. This is exactly the part where Stampd comes in.
+The education industry has a big problem; in addition to the student debt crisis and other issues, post-student life is often a complete mess. One of these key areas is the credentialing process. Employers and students are often left hanging while employment verifications or the general verification process takes days (or even weeks) to finish. This leaves employers at risk of being understaffed, schools in danger of being short-staffed in their registrars' offices, and students in a position of losing out on great jobs. This is exactly the part where Stampd comes in.
 
 Stampd is a blockchain-based project that allows educational institutions to permanently issue fully verified credentials that are stamped to the Ethereum blockchain. Using blockchain technology, educational institutions can have a fast and cost-effective way to take care of their students; within minutes, a school can issue a credential and email it out, while employers can have peace of mind in knowing that there's no secret way the credential could have been modified or tampered with. This enables fast hires, low budgetary costs, and happy new employees.
 
@@ -39,8 +39,8 @@ Easy. Verified. Blockchain. Credentials with Stampd.
   - [Production Dependencies](#production-dependencies)
   - [Development Dependencies](#development-dependencies)
 - [API Examples](#api-documentation)
-  - [Queries](#queries)
-  - [Mutations](#mutations)
+  - [Example Query](#example-query)
+  - [Example Mutation](#example-mutation)
 - [Data Models](#data-models)
   - [Role](#role)
   - [User](#user)
@@ -116,7 +116,6 @@ The following is a short list of the major dependencies used (with the reasons w
 
 #### Production Dependencies
 
-- [sentry](https://sentry.io/welcome/)
 - [cors](https://expressjs.com/en/resources/middleware/cors.html)
 - [dotenv](https://www.npmjs.com/package/dotenv)
 - [ethereumjs-tx](https://github.com/ethereumjs/ethereumjs-tx)
@@ -129,6 +128,7 @@ The following is a short list of the major dependencies used (with the reasons w
 - [jwt-decode](https://github.com/auth0/jwt-decode)
 - [knex](http://knexjs.org/)
 - [pg](https://www.npmjs.com/package/pg)
+- [sentry](https://sentry.io/welcome/)
 - [web3](https://github.com/ethereum/web3.js/)
 
 #### Development Dependencies
@@ -152,7 +152,7 @@ The server IDE GraphQL Playground is deployed at [https://stampd-backend.herokua
 
 Here are some examples of a GraphQL query and mutation on this server along with corresponding JSON that is returned:
 
-#### Queries
+#### Example Query
 
 ```graphql
 query {
@@ -194,7 +194,7 @@ query {
 }
 ```
 
-#### Mutations
+#### Example Mutation
 
 ```graphql
 mutation {
