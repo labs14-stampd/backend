@@ -26,7 +26,7 @@ Easy. Verified. Blockchain. Credentials with Stampd.
 |                       [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/joepound)                       |                           [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/BrannanC)                           |                 [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/byronholmes2018)                  |                        [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/meganjeffcoat)                        |                     [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/cjbt)                     |                     [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/nwthomas)                     |
 | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/aljoe-luis-bacus/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/brannan-conrad-18852616b/) |                                                                                                                               | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/megan-jeffcoat-b46b8287/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/cjtantay/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/nwthomas-dev/) |
 
-## TABLE OF CONTENTS
+## Table of Contents
 
 - [Getting Started](#getting-started)
   - [Installation and Setup](#installation-and-setup)
@@ -40,15 +40,17 @@ Easy. Verified. Blockchain. Credentials with Stampd.
   - [Development Dependencies](#development-dependencies)
 - [API Documentation](#api-documentation)
 - [Project Management](#project-management)
-- [License](#license)
+- [Contributing](#contributing)
+- [Pull Request Guidelines](#pull-request-guidelines)
 - [Additional Documentation](#additional-documentation)
+- [License](#license)
 - [Acknowledgments](#acknowledgments)
 
-## GETTING STARTED
+## Getting Started
 
 This repository contains a **yarn.lock** file. Please do not remove this file, as the integrity of the application cannot be gauranteed(especially with packages such as **Web3.js**) if versions that may be incompatible with each other are used by installing the newest version of each dependency.
 
-#### INSTALLATION AND SETUP
+#### Installation and Setup
 
 To get the server running locally, clone this repo and use the following commands/steps:
 
@@ -58,7 +60,7 @@ To get the server running locally, clone this repo and use the following command
 4. Use the **yarn server** command in the root directory to start the local server
 5. Use the **yarn test** to start server using testing environment
 
-#### ENVIRONMENT VARIABLES
+#### Environment Variables
 
 In order for the app to function correctly, you must set up the correct environment variables. Please create a `.env` file that includes the following:
 
@@ -75,7 +77,7 @@ In order for the app to function correctly, you must set up the correct environm
 * ACCOUNT_1 = Owner address for Ethereum contract
 ```
 
-## TECHNOLOGY STACK
+## Technology Stack
 
 The following is a short list of the major dependencies used (with the reasons we used them) followed by a complete and exhaustive one with all production and development packages incorporated in the server build.
 
@@ -134,7 +136,7 @@ The following is a short list of the major dependencies used (with the reasons w
 
 The server is deployed at [https://stampd-backend.herokuapp.com/](https://stampd-backend.herokuapp.com/).
 
-The server IDE GraphQL Playground is available at [https://stampd-backend.herokuapp.com/playground](https://stampd-backend.herokuapp.com/playground).
+The server IDE GraphQL Playground is deployed at [https://stampd-backend.herokuapp.com/playground](https://stampd-backend.herokuapp.com/playground).
 
 ## How to use
 
@@ -320,12 +322,6 @@ Get school information through queries in GraphQL, example:
 - `removeCredential(id: ID!): Credential invalidateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` -> Deletes a credential
 - `validateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` Updates a credential to valid and reissues it on the blockchain
 
-## Contributing
-
-When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
-
-Please note we have a [code of conduct](./code_of_conduct.md). Please follow it in all your interactions with the project.
-
 ### Issue/Bug Request
 
 **If you are having an issue with the existing project code, please submit a bug report under the following guidelines:**
@@ -345,6 +341,12 @@ If you have developed a patch, bug fix, or new feature that would improve this a
 
 Remember that this project is licensed under the MIT license, and by submitting a pull request, you agree that your work will be, too.
 
+## Contributing
+
+When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
+
+Please note we have a [code of conduct](./code_of_conduct.md). Please follow it in all your interactions with the project.
+
 #### Pull Request Guidelines
 
 - Ensure any install or build dependencies are removed before the end of the layer when doing a build.
@@ -353,6 +355,18 @@ Remember that this project is licensed under the MIT license, and by submitting 
 - Include the relevant issue number, if applicable.
 - You may merge the Pull Request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
 
-## ADDITIONAL DOCUMENTATION
+## Additional Documentation
 
 See [Front-end Documentation](https://github.com/labs14-stampd/frontend) for details on the front-end client of our project.
+
+## License
+
+[MIT](LICENSE)
+
+## Acknowledgements
+
+- [Lambda School](https://lambdaschool.com/) - Thank you for educating us, equipping us with our current skillset, and pushing us towards success
+- [Josh Knell](https://github.com/BigKnell) - The Big Boss. The Big Cheese. Thanks for teaching us the basics and for keeping it real. Banjo on.
+- [Dustin Myers](https://github.com/dustinmyers) - The Legend himself. Dustin is the reason we can even write a single line of code in React. Thanks for your leadership, Dustin.
+- [Luis Hernandez](https://github.com/luishrd) - Luis, thanks for teaching us about the Bros and Homies. Your leadership in Lambda School back-end week lets us build servers and move mountains.
+- [Coffee](https://en.wikipedia.org/wiki/Coffee) - We'd like to thank coffee for the productivity of this Labs project. Seriously. Thanks.
