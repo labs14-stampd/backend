@@ -2,21 +2,23 @@
   <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy">
 </a>
 
+![eslint](https://img.shields.io/badge/eslint-airbnb-hotpink) ![MIT](https://img.shields.io/packagist/l/doctrine/orm.svg)
+
 #
 
 <h1 align="center"><img src="./assets/readme-header.png" /></h1>
 
-# STAMPD SERVER
+# Stampd Server
 
-## INTRODUCTION
+## Introduction
 
 The education industry has a big problem; in addition to the student debt crisis and other issues, post-student life is often a complete mess. One of these key areas is the credentialing process. Employers and students are often left hanging while employment verifications or the general credentialing verification process take days (or even weeks) to finish. This leaves employers at risk of being understaffed, school in danger of being short-staffed in their registrars' offices, and students in a position of losing out on great jobs. This is exactly the part where Stampd comes in.
 
 Stampd is a blockchain-based project that allows educational institutions to permanently issue fully verified credentials that are stamped to the Ethereum blockchain. Using blockchain technology, educational institutions can have a fast and cost-effective way to take care of their students; within minutes, a school can issue a credential and email it out, while employers can have peace of mind in knowing that there's no secret way the credential could have been modified or tampered with. This enables fast hires, low budgetary costs, and happy new employees.
 
-Easy. Verified. Blockchain. Issue credentials with Stampd.
+Easy. Verified. Blockchain. Credentials with Stampd.
 
-## CONTRIBUTORS
+## Contributors
 
 |                                            [Aljoe Bacus](https://github.com/joepound)                                             |                                               [Brannan Conrad](https://github.com/BrannanC)                                               |                                      [Byron Holmes](https://github.com/byronholmes2018)                                       |                                            [Megan Jeffcoat](https://github.com/meganjeffcoat)                                            |                                           [CJ Tantay](https://github.com/cjbt)                                            |                                         [Nathan Thomas](https://github.com/nwthomas)                                          |
 | :-------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------: |
@@ -28,62 +30,113 @@ Easy. Verified. Blockchain. Issue credentials with Stampd.
 
 - [Getting Started](#getting-started)
   - [Installation and Setup](#installation-and-setup)
+  - [Environment Variables](#environment-variables)
 - [Technology Stack](#technology-stack)
-- [Unit Testing](#unit-testing)
+  - [Node and Express](#node-and-express)
+  - [GraphQL](#graphql)
+  - [PostgreSQL](#postgresql)
+  - [Web3](#web3)
+  - [Production Dependencies](#production-dependencies)
+  - [Development Dependencies](#development-dependencies)
+- [API Documentation](#api-documentation)
 - [Project Management](#project-management)
 - [License](#license)
+- [Additional Documentation](#additional-documentation)
 - [Acknowledgments](#acknowledgments)
 
 ## GETTING STARTED
 
-This repository contains a `yarn.lock` file. Please do not remove this file, as the integrity of the application cannot be gauranteed(especially with packages such as `Web3.js`) if versions that may be incompatible with each other are used by installing the newest version of each dependency/
+This repository contains a **yarn.lock** file. Please do not remove this file, as the integrity of the application cannot be gauranteed(especially with packages such as **Web3.js**) if versions that may be incompatible with each other are used by installing the newest version of each dependency.
 
 #### INSTALLATION AND SETUP
 
-- Clone this repository
-- Change directory using `cd` into the root directory of the project and use the `yarn` command to install all dependencies included in the `package.json` file
-- Install `Node Version Manager` (or `nvm`) by following the installation instructions [here](https://github.com/nvm-sh/nvm) (due to dependency reasons, this project requires the use of `Node.js` version 10, and `nvm` allows us to do this)
-- Run the command `nvm use 10` in the root directory of the server
--
+To get the server running locally, clone this repo and use the following commands/steps:
+
+1. Install `Node Version Manager` (or `nvm`) by following the installation instructions [here](https://github.com/nvm-sh/nvm) (due to dependency reasons, this project requires the use of `Node.js` version 10, and `nvm` allows us to do this)
+2. Use the **yarn** command in the root directory to install all required dependencies
+3. Use the **nvm use 10** command to switch the `Node.js` version used to `10`
+4. Use the **yarn server** command in the root directory to start the local server
+5. Use the **yarn test** to start server using testing environment
+
+#### ENVIRONMENT VARIABLES
+
+In order for the app to function correctly, you must set up the correct environment variables. Please create a `.env` file that includes the following:
+
+```
+* PORT = Port to run server on
+* TESTING_DATABASE_URL = Url for testing database
+* DATABASE_URL = Url for database
+* NODE_SERVER_SENTRY = Sentry URI for continuous integration
+* PK = Secret used for hashing JWTs
+* REACT_APP_AUTH_TOKEN = Another secret used for hashing other JWTs
+* CONTRACT_ADDRESS = Address of contract deployed to Ethereum blockchain
+* INFURA = URL of Infura API
+* PRIVATE_KEY = Private key for Infura
+* ACCOUNT_1 = Owner address for Ethereum contract
+```
 
 ## TECHNOLOGY STACK
 
-## API Documentation
+The following is a short list of the major dependencies used (with the reasons we used them) followed by a complete and exhaustive one with all production and development packages incorporated in the server build.
 
-#### Backend deployed at [https://stampd-backend.herokuapp.com/](https://stampd-backend.herokuapp.com/) <br>
+#### Node and Express
 
-## Getting started
-
-To get the server running locally:
-
-- Clone this repo
-- **yarn install** to install all required dependencies
-- **yarn server** to start the local server
-- **yarn test** to start server using testing environment
-
-#### Node/Express
-
-- Javascript in the backend
+- Javascript in the language of choice for the back-end
 - Express allows for easy API creation
-- Middleware pattern
+- Middleware patterns are easy and fluid in Express
 
 #### GraphQL
 
-- Built on top of express
-- One endpoint
-- Schema is built into GraphQL playground
+- Built on top of Express
+- One endpoint allows for fast development speed
+- Schema is built into GraphQL Playground
 
-#### PostgresQL
+#### PostgreSQL
 
 - Works well with Heroku
 
 #### Web3
 
-- The only way or app can intergrate and deploy to blockchain networks -- needs more wordsmithing
+- Web3 allows for a direct connection to the Ethereum Virtual Machine, or EVM
+- Builds out suite of tools for connecting, posting, and retrieving data through the use of wallets
+
+#### Production Dependencies
+
+- [sentry](https://sentry.io/welcome/)
+- [cors](https://expressjs.com/en/resources/middleware/cors.html)
+- [dotenv](https://www.npmjs.com/package/dotenv)
+- [ethereumjs-tx](https://github.com/ethereumjs/ethereumjs-tx)
+- [express](https://expressjs.com/)
+- [express-graphql](https://github.com/graphql/express-graphql)
+- [graphql](https://www.npmjs.com/package/graphql)
+- [graphql-playground-middleware-express](https://www.npmjs.com/package/graphql-playground-middleware-express)
+- [helmet](https://helmetjs.github.io/)
+- [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)
+- [jwt-decode](https://github.com/auth0/jwt-decode)
+- [knex](http://knexjs.org/)
+- [pg](https://www.npmjs.com/package/pg)
+- [web3](https://github.com/ethereum/web3.js/)
+
+#### Development Dependencies
+
+- [cross-env](https://www.npmjs.com/package/cross-env)
+- [eslint](https://eslint.org/)
+- [eslint-config-airbnb-base](https://www.npmjs.com/package/eslint-config-airbnb-base)
+- [eslint-config-prettier](https://github.com/prettier/eslint-config-prettier)
+- [eslint-plugin-import](https://www.npmjs.com/package/eslint-plugin-import)
+- [eslint-plugin-prettier](https://github.com/prettier/eslint-plugin-prettier)
+- [jest](https://jestjs.io/)
+- [nodemon](https://www.npmjs.com/package/nodemon)
+- [prettier](https://github.com/prettier/prettier)
+- [supertest](https://github.com/visionmedia/supertest)
+
+## API Documentation
+
+The server is deployed at [https://stampd-backend.herokuapp.com/](https://stampd-backend.herokuapp.com/).
+
+The server IDE GraphQL Playground is available at [https://stampd-backend.herokuapp.com/playground](https://stampd-backend.herokuapp.com/playground).
 
 ## How to use
-
-Check [https://stampd-backend.herokuapp.com/playground](https://stampd-backend.herokuapp.com/playground) for full query and mutations list
 
 Get school information through queries in GraphQL, example:
 
@@ -267,28 +320,6 @@ Get school information through queries in GraphQL, example:
 - `removeCredential(id: ID!): Credential invalidateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` -> Deletes a credential
 - `validateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` Updates a credential to valid and reissues it on the blockchain
 
-## Environment Variables
-
-In order for the app to function correctly, the user must set up their own environment variables.
-
-create a .env file that includes the following:
-
-```
-* PORT - Port to run server on
-* TESTING_DATABASE_URL - Url for testing database
-
-* DATABASE_URL - Url for database
-* NODE_SERVER_SENTRY - Sentry URI for continuous integration
-* PK - Secret used for hashing JWTs
-
-* REACT_APP_AUTH_TOKEN - Another secret used for hashing other JWTs
-
-* CONTRACT_ADDRESS - Address of contract deployed to Ethereum blockchain
-* INFURA - URL of Infura API
-* PRIVATE_KEY - Private key for Infura
-* ACCOUNT_1 - Owner address for Ethereum contract
-```
-
 ## Contributing
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
@@ -322,10 +353,6 @@ Remember that this project is licensed under the MIT license, and by submitting 
 - Include the relevant issue number, if applicable.
 - You may merge the Pull Request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
 
-### Attribution
+## ADDITIONAL DOCUMENTATION
 
-These contribution guidelines have been adapted from [this good-Contributing.md-template](https://gist.github.com/PurpleBooth/b24679402957c63ec426).
-
-## Documentation
-
-See [Frontend Documentation](https://github.com/labs14-stampd/frontend) for details on the fronend of our project.
+See [Front-end Documentation](https://github.com/labs14-stampd/frontend) for details on the front-end client of our project.
