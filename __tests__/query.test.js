@@ -5,7 +5,7 @@ const USER_DATA = [
   {
     id: '1',
     username: 'admin',
-    email: 'teamstampd@gmail.com',
+    email: 'schoolzrus@rocketmail.com',
     profilePicture: '',
     roleId: '1',
     sub: '1'
@@ -21,7 +21,7 @@ const USER_DATA = [
   {
     id: '3',
     username: 'school1',
-    email: 'schoolzrus@rocketmail.com',
+    email: 'teamstampd@gmail.com',
     profilePicture: '',
     roleId: '2',
     sub: '3'
