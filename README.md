@@ -14,7 +14,7 @@
 
 The education industry has a big problem; in addition to the student debt crisis and other issues, post-student life is often a complete mess. One of these key areas is the credentialing process. Employers and students are often left hanging while employment verifications or the general verification process takes days (or even weeks) to finish. This leaves employers at risk of being understaffed, schools in danger of being short-staffed in their registrars' offices, and students in a position of losing out on great jobs. This is exactly the part where Stampd comes in.
 
-Stampd is a blockchain-based project that allows educational institutions to permanently issue fully verified credentials that are stamped to the Ethereum blockchain. Using blockchain technology, educational institutions can have a fast and cost-effective way to take care of their students; within minutes, a school can issue a credential and email it out, while employers can have peace of mind in knowing that there's no secret way the credential could have been modified or tampered with. This enables fast hires, low budgetary costs, and happy new employees.
+Stampd is a blockchain-based project that allows educational institutions to permanently issue fully verified credentials that are stamped to the Ethereum blockchain. Using blockchain technology, educational institutions can have a fast and cost-effective way to take care of their students; within minutes, a school can issue a credential and email it out, while employers can have peace of mind in knowing that there's no secret way the credential could have been modified or tampered with. This enables fast hires, low budgetary costs, and happy employees.
 
 Easy. Verified. Blockchain. Credentials with Stampd.
 
@@ -60,7 +60,7 @@ Easy. Verified. Blockchain. Credentials with Stampd.
 
 ## Getting Started
 
-This repository contains a **yarn.lock** file. Please do not remove this file, as the integrity of the application cannot be gauranteed(especially with packages such as **Web3.js**) if versions that may be incompatible with each other are used by installing the newest version of each dependency.
+This repository contains a **yarn.lock** file. Please do not remove this file from your local code, as the integrity of the application cannot be gauranteed if versions that may be incompatible with each other are used by installing the newest version of each dependency.
 
 #### Installation and Setup
 
@@ -338,11 +338,11 @@ mutation {
 
 If you spot a bug or would like to request a feature, we welcome and are grateful for any contributions from the community. Please review the process for contributing to this project by reading the [contribution guidelines](CONTRIBUTING.md).
 
-Also, please note we have a [code of conduct](./code_of_conduct.md). Please follow it in all your interactions with the project.
+Also, please note we have a [code of conduct](./CODE_OF_CONDUCT.md). Please follow it in all your interactions with the project.
 
 #### Issue and Bug Requests
 
-**If you are having an issue with the existing project code, please submit a bug report under the following guidelines:**
+If you are having an issue with the existing project code, please submit a bug report under the following guidelines:
 
 - Check first to see if your issue has already been reported.
 - Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
