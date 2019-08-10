@@ -38,13 +38,25 @@ Easy. Verified. Blockchain. Credentials with Stampd.
   - [Web3](#web3)
   - [Production Dependencies](#production-dependencies)
   - [Development Dependencies](#development-dependencies)
-- [API Documentation](#api-documentation)
+- [API Examples](#api-documentation)
+  - [Queries](#queries)
+  - [Mutations](#mutations)
+- [Data Models](#data-models)
+  - [Role](#role)
+  - [User](#user)
+  - [School Details](#school-details)
+  - [Credential](#credential)
+- [Query and Mutation List](#query-and-mutation-list)
+  - [Queries](#queries)
+  - [Mutations](#mutations)
 - [Project Management](#project-management)
-- [Contributing](#contributing)
-- [Pull Request Guidelines](#pull-request-guidelines)
+- [Contributing and Getting Involved](#contributing-and-getting-involved)
+  - [Issue and Bug Requests](#issue-and-bug-requests)
+  - [Feature Requests](#feature-requests)
+  - [Pull Request Guidelines](#pull-request-guidelines)
 - [Additional Documentation](#additional-documentation)
 - [License](#license)
-- [Acknowledgments](#acknowledgments)
+- [Acknowledgements](#acknowledgements)
 
 ## Getting Started
 
@@ -132,23 +144,19 @@ The following is a short list of the major dependencies used (with the reasons w
 - [prettier](https://github.com/prettier/prettier)
 - [supertest](https://github.com/visionmedia/supertest)
 
-## API Documentation
+## API Examples
 
 The server is deployed at [https://stampd-backend.herokuapp.com/](https://stampd-backend.herokuapp.com/).
 
 The server IDE GraphQL Playground is deployed at [https://stampd-backend.herokuapp.com/playground](https://stampd-backend.herokuapp.com/playground).
 
-## How to use
-
-Get school information through queries in GraphQL, example:
+Here are some examples of a GraphQL query and mutation on this server along with corresponding JSON that is returned:
 
 #### Queries
 
-```javascript
-{
-  getSchoolDetailsBySchoolId(
-    id: 1
-  ){
+```graphql
+query {
+  getSchoolDetailsBySchoolId(id: 1) {
     name
     street1
     street2
@@ -158,7 +166,7 @@ Get school information through queries in GraphQL, example:
     type
     phone
     url
-    user{
+    user {
       email
     }
   }
@@ -188,9 +196,9 @@ Get school information through queries in GraphQL, example:
 
 #### Mutations
 
-```javascript
-{
-  addNewCredential (
+```graphql
+mutation {
+  addNewCredential(
     criteria: "Asserts student has completed all requirements for certification in welding at Elgin Community College"
     description: "Basic concepts of oxy-acetylene welding and electric welding for beginners."
     expirationDate: "none"
@@ -201,7 +209,7 @@ Get school information through queries in GraphQL, example:
     schoolId: "1"
     studentEmail: "fakestudent@gmail.com"
     type: "Certificate"
-  ){
+  ) {
     id
     credHash
     txHash
@@ -221,7 +229,7 @@ Get school information through queries in GraphQL, example:
 }
 ```
 
-# Data Model
+## Data Models
 
 #### Role
 
@@ -235,7 +243,7 @@ Get school information through queries in GraphQL, example:
 }
 ```
 
-#### USERS
+#### USER
 
 ---
 
@@ -301,7 +309,9 @@ Get school information through queries in GraphQL, example:
 }
 ```
 
-## Actions
+## Query and Mutation List
+
+#### Queries
 
 - `getAllUsers` -> gets all users
 - `getUserById(id: ID)` -> Gets a user by userId
@@ -311,6 +321,8 @@ Get school information through queries in GraphQL, example:
 - `getCredentialById(id: ID)` -> Gets credential by credential ID
 - `getCredentialsBySchoolId(id: ID)` -> Get all of a schools credentials
 - `verifyCredential` -> Verifies a credential on the blockchain
+
+#### Mutations
 
 - `addUser( authToken: String! roleId: ID )` -> Adds a new user
 - `updateUser( id: ID! username: String email: String roleId: ID )` -> Updates a users information
@@ -322,7 +334,13 @@ Get school information through queries in GraphQL, example:
 - `removeCredential(id: ID!): Credential invalidateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` -> Deletes a credential
 - `validateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` Updates a credential to valid and reissues it on the blockchain
 
-### Issue/Bug Request
+## Contributing and Getting Involved
+
+If you spot a bug or would like to request a feature, we welcome and are grateful for any contributions from the community. Please review the process for contributing to this project by reading the [contribution guidelines](CONTRIBUTING.md).
+
+Also, please note we have a [code of conduct](./code_of_conduct.md). Please follow it in all your interactions with the project.
+
+#### Issue and Bug Requests
 
 **If you are having an issue with the existing project code, please submit a bug report under the following guidelines:**
 
@@ -331,21 +349,9 @@ Get school information through queries in GraphQL, example:
 - Create a live example of the problem.
 - Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes, where you believe the issue is originating from, and any potential solutions you have considered.
 
-### Feature Requests
+#### Feature Requests
 
 We would love to hear from you about new features which would improve this app and further the aims of our project. Please provide as much detail and information as possible to show us why you think your new feature should be implemented.
-
-### Pull Requests
-
-If you have developed a patch, bug fix, or new feature that would improve this app, please submit a pull request. It is best to communicate your ideas with the developers first before investing a great deal of time into a pull request to ensure that it will mesh smoothly with the project.
-
-Remember that this project is licensed under the MIT license, and by submitting a pull request, you agree that your work will be, too.
-
-## Contributing
-
-When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
-
-Please note we have a [code of conduct](./code_of_conduct.md). Please follow it in all your interactions with the project.
 
 #### Pull Request Guidelines
 
@@ -365,7 +371,7 @@ See [Front-end Documentation](https://github.com/labs14-stampd/frontend) for det
 
 ## Acknowledgements
 
-- [Lambda School](https://lambdaschool.com/) - Thank you for educating us, equipping us with our current skillset, and pushing us towards success
+- [Lambda School](https://lambdaschool.com/) - Thank you for educating us, equipping us with our current skillset, and pushing us towards success.
 - [Josh Knell](https://github.com/BigKnell) - The Big Boss. The Big Cheese. Thanks for teaching us the basics and for keeping it real. Banjo on.
 - [Dustin Myers](https://github.com/dustinmyers) - The Legend himself. Dustin is the reason we can even write a single line of code in React. Thanks for your leadership, Dustin.
 - [Luis Hernandez](https://github.com/luishrd) - Luis, thanks for teaching us about the Bros and Homies. Your leadership in Lambda School back-end week lets us build servers and move mountains.
