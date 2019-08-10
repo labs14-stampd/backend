@@ -91,7 +91,7 @@ In order for the app to function correctly, you must set up the correct environm
 
 ## Technology Stack
 
-The following is a short list of the major dependencies used (with the reasons we used them) followed by a complete and exhaustive one with all production and development packages incorporated in the server build.
+The following is a short list of the major dependencies used (with the reasons we used them) followed by complete and exhaustive ones with all production and development packages incorporated in the server build.
 
 #### Node and Express
 
