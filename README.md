@@ -28,6 +28,8 @@ Easy. Verified. Blockchain. Credentials with Stampd.
 
 ## Table of Contents
 
+- [Introduction](#introduction)
+- [Contributors](#contributors)
 - [Getting Started](#getting-started)
   - [Installation and Setup](#installation-and-setup)
   - [Environment Variables](#environment-variables)
