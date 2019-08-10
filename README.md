@@ -60,7 +60,7 @@ Easy. Verified. Blockchain. Credentials with Stampd.
 
 ## Getting Started
 
-This repository contains a **yarn.lock** file. Please do not remove this file from your local code, as the integrity of the application cannot be gauranteed if versions that may be incompatible with each other are used by installing the newest version of each dependency.
+This repository contains a **yarn.lock** file. Please do not remove this file from your local code, as the integrity of the application cannot be gauranteed (especially with packages such as **Web3**) if versions that may be incompatible with each other are used by installing the newest version of each dependency.
 
 #### Installation and Setup
 
