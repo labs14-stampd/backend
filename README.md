@@ -118,6 +118,7 @@ The following is a short list of the major dependencies used (with the reasons w
 
 #### Production Dependencies
 
+- [@sentry/node](https://www.npmjs.com/package/@sentry/node)
 - [cors](https://expressjs.com/en/resources/middleware/cors.html)
 - [dotenv](https://www.npmjs.com/package/dotenv)
 - [ethereumjs-tx](https://github.com/ethereumjs/ethereumjs-tx)
@@ -130,7 +131,6 @@ The following is a short list of the major dependencies used (with the reasons w
 - [jwt-decode](https://github.com/auth0/jwt-decode)
 - [knex](http://knexjs.org/)
 - [pg](https://www.npmjs.com/package/pg)
-- [sentry](https://sentry.io/welcome/)
 - [web3](https://github.com/ethereum/web3.js/)
 
 #### Development Dependencies
