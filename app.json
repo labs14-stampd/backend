@@ -1,0 +1,8 @@
+{
+  "name": "stampd-server",
+  "description": "The server for the Stampd application",
+  "repository": "https://github.com/labs14-stampd/backend",
+  "logo": "",
+  "keywords": ["Stampd", "GraphQL", "PostgreSQL", "Express", "Blockchain"],
+  "_comment": "This file is used to house the data used in the README.md Heroku button"
+}

@@ -33,7 +33,7 @@ const Mutation = new GraphQLObjectType({
       type: CredentialType,
       description: 'Issues a new credential to a student',
       args: {
-        name: {
+        credName: {
           type: new GraphQLNonNull(GraphQLString),
           description: 'Name of the new credential'
         },
@@ -52,6 +52,10 @@ const Mutation = new GraphQLObjectType({
         type: {
           type: new GraphQLNonNull(GraphQLString),
           description: 'Type of new credential'
+        },
+        ownerName: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'Name associated with credential'
         },
         studentEmail: {
           type: new GraphQLNonNull(GraphQLString),
@@ -94,9 +98,7 @@ const Mutation = new GraphQLObjectType({
             .encodeABI();
           if (data.length) {
             args.txHash = await txFunc(data);
-            console.log('in addcred resolver', args);
             args.valid = true;
-
             return Credential.insert(args).then(res => {
               return res;
             });
@@ -115,7 +117,7 @@ const Mutation = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLID),
           description: 'The unique ID of the user to be deleted'
         },
-        name: {
+        credName: {
           type: GraphQLString,
           description: 'Name of the new credential'
         },
@@ -135,6 +137,10 @@ const Mutation = new GraphQLObjectType({
         type: {
           type: GraphQLString,
           description: 'Type of new credential'
+        },
+        ownerName: {
+          type: GraphQLString,
+          description: 'Name associated with credential'
         },
         studentEmail: {
           type: GraphQLString,
@@ -168,26 +174,30 @@ const Mutation = new GraphQLObjectType({
           // ^^^ This is the id in the 'users' table
         }
       },
-      resolve(parent, args) {
+      async resolve(parent, args) {
         if (!args.id || typeof Number(args.id) !== 'number') {
           return new Error('Please include a Credential ID and try again.');
-        }
-        const credentialHash = web3.utils.sha3(JSON.stringify(args));
-        const data = contract.methods.addCredential(credentialHash).encodeABI();
-        txFunc(data, receipt => {
-          // set txHash of object to the transactionHash returned in receipt
-          args.txHash = receipt.logs[0].transactionHash;
-          return Credential.update(args.id, args)
-            .then(res => {
-              if (res) {
-                return res;
-              }
-              return new Error('The credential could not be updated.');
-            })
-            .catch(() => {
-              return new Error('There was an error completing your request.');
+        }        
+        try {
+          const credentialHash = web3.utils.sha3(JSON.stringify(args));
+          args.credHash = credentialHash;
+          const data = contract.methods
+            .addCredential(credentialHash)
+            .encodeABI();
+          if (data.length) {
+            args.txHash = await txFunc(data);
+            args.valid = true;
+            return Credential.update(args.id, args).then(res => {
+              return res;
             });
-        });
+          }
+          return new Error('The credential could not be updated.');
+        } catch (error) {
+          return new Error('There was an error completing your request.');
+        }
+
+
+    
       }
     }, // Update Credential
     removeCredential: {
@@ -221,13 +231,18 @@ const Mutation = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLID),
           description: 'The unique id of the credential to be deleted'
         },
-        name: {
+        credName: {
           type: GraphQLString,
           description: 'Name of the new credential'
         },
         description: {
           type: GraphQLString,
           description: 'Description of the new credential'
+        }, 
+        credHash: {
+          type: GraphQLString,
+          description:
+            'Hash of credential information to be stored on blockchain'
         },
         txHash: {
           type: GraphQLString,
@@ -236,6 +251,10 @@ const Mutation = new GraphQLObjectType({
         type: {
           type: GraphQLString,
           description: 'Type of new credential'
+        },
+        ownerName: {
+          type: GraphQLString,
+          description: 'Name associated with credential'
         },
         studentEmail: {
           type: GraphQLString,
@@ -275,19 +294,9 @@ const Mutation = new GraphQLObjectType({
         }
 
         try {
-          const {
-            id,
-            txHash,
-            valid,
-            expirationDate,
-            created_at,
-            updated_at,
-            ...cred
-          } = args;
-          const credHash = web3.utils.sha3(JSON.stringify(cred));
           const data = contract.methods
             .invalidateCredential(
-              '0x64bd5b55628ba944fbc12ef8b2e63f35b364170cd99f4adf8a7aa3f4142e6cd3'
+              args.credHash
             )
             .encodeABI();
           if (data.length) {
@@ -315,7 +324,7 @@ const Mutation = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLID),
           description: 'The unique id of the credential to be validated'
         },
-        name: {
+        credName: {
           type: GraphQLString,
           description: 'Name of the new credential'
         },
@@ -335,6 +344,10 @@ const Mutation = new GraphQLObjectType({
         type: {
           type: GraphQLString,
           description: 'Type of new credential'
+        },
+        ownerName: {
+          type: GraphQLString,
+          description: 'Name associated with credential'
         },
         studentEmail: {
           type: GraphQLString,
@@ -373,19 +386,10 @@ const Mutation = new GraphQLObjectType({
           return new Error('Please include a credential ID and try again.');
         }
         try {
-          const {
-            id,
-            txHash,
-            valid,
-            expirationDate,
-            created_at,
-            updated_at,
-            ...cred
-          } = args;
-          const credHash = web3.utils.sha3(JSON.stringify(cred));
+          
           const data = contract.methods
             .validateCredential(
-              '0x64bd5b55628ba944fbc12ef8b2e63f35b364170cd99f4adf8a7aa3f4142e6cd3'
+              args.credHash
             )
             .encodeABI();
           if (data.length) {
