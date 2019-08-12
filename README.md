@@ -51,6 +51,7 @@ Easy. Verified. Blockchain. Credentials with Stampd.
 - [Query and Mutation List](#query-and-mutation-list)
   - [Queries](#queries)
   - [Mutations](#mutations)
+- [Testing](#testing)
 - [Project Management](#project-management)
 - [Contributing and Getting Involved](#contributing-and-getting-involved)
   - [Issue and Bug Requests](#issue-and-bug-requests)
