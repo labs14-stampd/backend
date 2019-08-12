@@ -15,7 +15,7 @@ exports.seed = function seedSchoolDetails(knex) {
           phone: '555-5555',
           type: 'University',
           url: 'https://www.midweast.edu/',
-          userId: 3
+          userId: 1
         },
         {
           // id: 2,

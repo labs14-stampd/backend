@@ -18,7 +18,7 @@ exports.seed = function seedCredentials(knex) {
           criteria: 'Complete Engineering of a gavitational field',
           issuedOn: '2016-01-01T06:00:00.000Z',
           expirationDate: '2029-01-01T06:00:00.000Z',
-          schoolId: 4 // This is actually the id from 'users' table
+          schoolId: 1 // This is actually the id from 'users' table
         },
         {
           // id: 2,
@@ -35,7 +35,7 @@ exports.seed = function seedCredentials(knex) {
           criteria: 'Complete Horsemanship at the Classical Level',
           issuedOn: '2016-01-01T06:00:00.000Z',
           expirationDate: '2029-01-01T06:00:00.000Z',
-          schoolId: 5 // This is actually the id from 'users' table
+          schoolId: 1 // This is actually the id from 'users' table
         },
         {
           // id: 3,

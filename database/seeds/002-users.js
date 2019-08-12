@@ -9,7 +9,7 @@ exports.seed = function seedUsers(knex) {
           email: 'teamstampd@gmail.com',
           profilePicture: '',
           sub: '1',
-          roleId: 1
+          roleId: 2
         },
         {
           // id: 2,
