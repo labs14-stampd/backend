@@ -15,7 +15,7 @@ exports.seed = function seedSchoolDetails(knex) {
           phone: '555-5555',
           type: 'University',
           url: 'https://www.midweast.edu/',
-          userId: 1
+          userId: 3
         },
         {
           // id: 2,
@@ -29,7 +29,7 @@ exports.seed = function seedSchoolDetails(knex) {
           phone: '2-610-2004',
           type: 'University',
           url: 'https://www.bestestweastern.edu/',
-          userId: 4
+          userId: 2
         },
         {
           // id: 3,
