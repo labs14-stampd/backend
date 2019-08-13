@@ -225,7 +225,6 @@ const Mutation = new GraphQLObjectType({
             .encodeABI();
           if(data.length){
             const result = await txFunc(data);
-            console.log('result ', result);
             return Credential.remove(args.id)
               .then(res => {
                 if (res) {
