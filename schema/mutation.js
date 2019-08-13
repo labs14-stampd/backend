@@ -177,7 +177,7 @@ const Mutation = new GraphQLObjectType({
       async resolve(parent, args) {
         if (!args.id || typeof Number(args.id) !== 'number') {
           return new Error('Please include a Credential ID and try again.');
-        }
+        }        
         try {
           const credentialHash = web3.utils.sha3(JSON.stringify(args));
           args.credHash = credentialHash;
@@ -197,7 +197,7 @@ const Mutation = new GraphQLObjectType({
         }
 
 
-
+    
       }
     }, // Update Credential
     removeCredential: {
@@ -207,37 +207,20 @@ const Mutation = new GraphQLObjectType({
         id: {
           type: new GraphQLNonNull(GraphQLID),
           description: 'The unique ID of the credential to be deleted'
-        },
-        credHash: {
-          type: GraphQLString,
-          description:
-            'Hash of credential information to be stored on blockchain'
         }
       },
-      async resolve(parent, args) {
-        console.log('in delete resolver', args);
+      resolve(parent, args) {
         if (!args.id || typeof Number(args.id) !== 'number') {
           return new Error('Please include a credential ID and try again.');
         }
-        try{
-          const data = contract.methods
-            .removeCredential(args.credHash)
-            .encodeABI();
-          if(data.length){
-            const result = await txFunc(data);
-            console.log('result ', result);
-            return Credential.remove(args.id)
-              .then(res => {
-                if (res) {
-                  return { id: args.id };
-                }
-                return new Error('The credential could not be deleted.');
-              });
-          }
-        }catch(error){
-          return new Error('There was an error completing your request.');
-        }
-
+        return Credential.remove(args.id)
+          .then(res => {
+            if (res) {
+              return { id: args.id };
+            }
+            return new Error('The credential could not be deleted.');
+          })
+          .catch(err => ({ error: err }));
       }
     }, // Remove Credential
     invalidateCredential: {
@@ -255,7 +238,7 @@ const Mutation = new GraphQLObjectType({
         description: {
           type: GraphQLString,
           description: 'Description of the new credential'
-        },
+        }, 
         credHash: {
           type: GraphQLString,
           description:
@@ -403,7 +386,7 @@ const Mutation = new GraphQLObjectType({
           return new Error('Please include a credential ID and try again.');
         }
         try {
-
+          
           const data = contract.methods
             .validateCredential(
               args.credHash

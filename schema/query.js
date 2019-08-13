@@ -163,6 +163,7 @@ const RootQuery = new GraphQLObjectType({
           
           //data will be true or false, depending on validity of credential
           const data = await contract.methods.verifyCredential(cred.credHash).call();
+          console.log('data', data)
           } catch(error){
             return error;
           }
