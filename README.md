@@ -2,7 +2,7 @@
   <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy">
 </a>
 
-![eslint](https://img.shields.io/badge/eslint-airbnb-hotpink) ![MIT](https://img.shields.io/packagist/l/doctrine/orm.svg)
+![node](https://img.shields.io/badge/node-v10.16.x-brightgreen) ![express](https://img.shields.io/badge/express-v4.17.1-ff69b4) ![express-graphql](https://img.shields.io/badge/express--graphql-v0.9.0-yellow) ![web3](https://img.shields.io/badge/web3-1.0.0--beta.34-%2381FCED) ![ethereumjs-tx](https://img.shields.io/badge/ethereumjs--tx-v1.3.7-blue) ![pg](https://img.shields.io/badge/pg-v7.11.0-blueviolet) ![knex](https://img.shields.io/badge/knex-v0.19.0-yellowgreen) ![graphql](https://img.shields.io/badge/graphql-v14.4.2-ff69b) ![sentry](https://img.shields.io/badge/sentry-v5.5.0-yellow) ![jsonwebtoken](https://img.shields.io/badge/jsonwebtoken-v8.5.1-9cf) ![jwt-decode](https://img.shields.io/badge/jwt--decode-v2.2.0-brightgreen) ![eslint](https://img.shields.io/badge/eslint-airbnb-hotpink) ![jest](https://img.shields.io/badge/jest-v24.8.0-blue) ![supertest](https://img.shields.io/badge/supertest-v4.0.2-orange) ![MIT](https://img.shields.io/packagist/l/doctrine/orm.svg)
 
 #
 
@@ -342,6 +342,7 @@ mutation {
 Testing is performed using the following dependency:
 
 - [jest](https://jestjs.io/)
+- [supertest](https://github.com/visionmedia/supertest)
 
 ## Project Management
 
