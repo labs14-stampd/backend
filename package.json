@@ -9,13 +9,13 @@
   "scripts": {
     "server": "nodemon index.js",
     "start": "node index.js",
-    "test": "cross-env DB_ENV=testing jest --watch --verbose",
     "lint": "npx eslint --fix --ext .js ./",
     "rollback": "npx knex migrate:rollback",
     "migrate": "npx knex migrate:latest",
     "seed": "npx knex seed:run",
     "redo": "yarn rollback && yarn migrate && yarn seed",
-    "test-redo": "npx knex migrate:rollback --env=testing && npx knex migrate:latest --env=testing && npx knex seed:run --env=testing"
+    "test-redo": "npx knex migrate:rollback --env=testing && npx knex migrate:latest --env=testing && npx knex seed:run --env=testing",
+    "test": "yarn test-redo && cross-env DB_ENV=testing jest --watch --verbose"
   },
   "repository": {
     "type": "git",
