@@ -1,158 +1,375 @@
-🚫 Note: All lines that start with 🚫 are instructions and should be deleted before this is posted to your portfolio. This is intended to be a guideline. Feel free to add your own flare to it.
+<a href="https://heroku.com/deploy">
+  <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy">
+</a>
 
-🚫 The numbers 1️⃣ through 3️⃣ next to each item represent the week that part of the docs needs to be comepleted by.  Make sure to delete the numbers by the end of Labs.
+![node](https://img.shields.io/badge/node-v10.16.x-brightgreen) ![express](https://img.shields.io/badge/express-v4.17.1-ff69b4) ![express-graphql](https://img.shields.io/badge/express--graphql-v0.9.0-yellow) ![web3](https://img.shields.io/badge/web3-1.0.0--beta.34-%2381FCED) ![ethereumjs-tx](https://img.shields.io/badge/ethereumjs--tx-v1.3.7-blue) ![pg](https://img.shields.io/badge/pg-v7.11.0-blueviolet) ![knex](https://img.shields.io/badge/knex-v0.19.0-yellowgreen) ![graphql](https://img.shields.io/badge/graphql-v14.4.2-ff69b) ![sentry](https://img.shields.io/badge/sentry-v5.5.0-yellow) ![jsonwebtoken](https://img.shields.io/badge/jsonwebtoken-v8.5.1-9cf) ![jwt-decode](https://img.shields.io/badge/jwt--decode-v2.2.0-brightgreen) ![eslint](https://img.shields.io/badge/eslint-airbnb-hotpink) ![jest](https://img.shields.io/badge/jest-v24.8.0-blue) ![supertest](https://img.shields.io/badge/supertest-v4.0.2-orange) ![MIT](https://img.shields.io/packagist/l/doctrine/orm.svg)
 
-🚫 Each student has a required minimum number of meaningful PRs each week per the rubric.  Contributing to docs does NOT count as a PR to meet your weekly requirements.
+#
 
-# API Documentation
+<h1 align="center"><img src="./assets/readme-header.png" /></h1>
 
-#### 1️⃣ Backend delpoyed at [🚫name service here](🚫add URL here) <br>
+# Stampd Server
 
-## 1️⃣ Getting started
+## Introduction
 
-To get the server running locally:
+The education industry has a big problem; in addition to the student debt crisis and other issues, post-student life is often a complete mess. One of these key areas is the credentialing process. Employers and students are often left hanging while employment verifications or the general verification process takes days (or even weeks) to finish. This leaves employers at risk of being understaffed, schools in danger of being short-staffed in their registrars' offices, and students in a position of losing out on great jobs. This is exactly the part where Stampd comes in.
 
-🚫 adjust these scripts to match your project
+Stampd is a blockchain-based project that allows educational institutions to permanently issue fully verified credentials that are stamped to the Ethereum blockchain. Using blockchain technology, educational institutions can have a fast and cost-effective way to take care of their students; within minutes, a school can issue a credential and email it out, while employers can have peace of mind in knowing that there's no secret way the credential could have been modified or tampered with. This enables fast hires, low budgetary costs, and happy employees.
 
-- Clone this repo
-- **yarn install** to install all required dependencies
-- **yarn server** to start the local server
-- **yarn test** to start server using testing environment
+Easy. Verified. Blockchain. Credentials with Stampd.
 
-### Backend framework goes here
+## Contributors
 
-🚫 Why did you choose this framework?
+|                                            [Aljoe Bacus](https://github.com/joepound)                                             |                                               [Brannan Conrad](https://github.com/BrannanC)                                               |                                      [Byron Holmes](https://github.com/byronholmes2018)                                       |                                            [Megan Jeffcoat](https://github.com/meganjeffcoat)                                            |                                           [CJ Tantay](https://github.com/cjbt)                                            |                                         [Nathan Thomas](https://github.com/nwthomas)                                          |
+| :-------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------: |
+|      [<img src="https://avatars2.githubusercontent.com/u/14357797?s=460&v=4" width = "150" />](https://github.com/joepound)       |          [<img src="https://avatars1.githubusercontent.com/u/39506884?s=460&v=4" width = "150" />](https://github.com/BrannanC)           | [<img src="https://avatars1.githubusercontent.com/u/40626585?s=460&v=4" width = "150" />](https://github.com/byronholmes2018) |       [<img src="https://avatars3.githubusercontent.com/u/44781690?s=400&v=4" width = "150" />](https://github.com/meganjeffcoat)        |     [<img src="https://avatars3.githubusercontent.com/u/8962594?s=460&v=4" width = "150" />](https://github.com/cjbt)     |    [<img src="https://avatars3.githubusercontent.com/u/28681364?s=460&v=4" width = "150" />](https://github.com/nwthomas)     |
+|                       [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/joepound)                       |                           [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/BrannanC)                           |                 [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/byronholmes2018)                  |                        [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/meganjeffcoat)                        |                     [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/cjbt)                     |                     [<img src="https://github.com/favicon.ico" width="20"> ](https://github.com/nwthomas)                     |
+| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/aljoe-luis-bacus/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/brannan-conrad-18852616b/) |                                                                                                                               | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/megan-jeffcoat-b46b8287/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/cjtantay/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="20"> ](https://www.linkedin.com/in/nwthomas-dev/) |
 
--    Point One
--    Point Two
--    Point Three
--    Point Four
+## Table of Contents
 
-## 2️⃣ Endpoints
+- [Introduction](#introduction)
+- [Contributors](#contributors)
+- [Getting Started](#getting-started)
+  - [Installation and Setup](#installation-and-setup)
+  - [Environment Variables](#environment-variables)
+- [Technology Stack](#technology-stack)
+  - [Node and Express](#node-and-express)
+  - [GraphQL](#graphql)
+  - [PostgreSQL](#postgresql)
+  - [Web3](#web3)
+  - [Production Dependencies](#production-dependencies)
+  - [Development Dependencies](#development-dependencies)
+- [API Examples](#api-documentation)
+  - [Example Query](#example-query)
+  - [Example Mutation](#example-mutation)
+- [Data Models](#data-models)
+  - [Role](#role)
+  - [User](#user)
+  - [School Details](#school-details)
+  - [Credential](#credential)
+- [Query and Mutation List](#query-and-mutation-list)
+  - [Queries](#queries)
+  - [Mutations](#mutations)
+- [Testing](#testing)
+- [Project Management](#project-management)
+- [Contributing and Getting Involved](#contributing-and-getting-involved)
+  - [Issue and Bug Requests](#issue-and-bug-requests)
+  - [Feature Requests](#feature-requests)
+  - [Pull Request Guidelines](#pull-request-guidelines)
+- [Additional Documentation](#additional-documentation)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
-🚫This is a placeholder, replace the endpoints, access controll, and descriptioin to match your project
+## Getting Started
 
-#### Organization Routes
+This repository contains a **yarn.lock** file. Please do not remove this file from your local code, as the integrity of the application cannot be gauranteed (especially with packages such as **Web3**) if versions that may be incompatible with each other are used by installing the newest version of each dependency.
 
-| Method | Endpoint                | Access Control | Description                                  |
-| ------ | ----------------------- | -------------- | -------------------------------------------- |
-| GET    | `/organizations/:orgId` | all users      | Returns the information for an organization. |
-| PUT    | `/organizatoins/:orgId` | owners         | Modify an existing organization.             |
-| DELETE | `/organizations/:orgId` | owners         | Delete an organization.                      |
+#### Installation and Setup
 
-#### User Routes
+To get the server running locally, clone this repo and use the following commands/steps:
 
-| Method | Endpoint                | Access Control      | Description                                        |
-| ------ | ----------------------- | ------------------- | -------------------------------------------------- |
-| GET    | `/users/current`        | all users           | Returns info for the logged in user.               |
-| GET    | `/users/org/:userId`    | owners, supervisors | Returns all users for an organization.             |
-| GET    | `/users/:userId`        | owners, supervisors | Returns info for a single user.                    |
-| POST   | `/users/register/owner` | none                | Creates a new user as owner of a new organization. |
-| PUT    | `/users/:userId`        | owners, supervisors |                                                    |
-| DELETE | `/users/:userId`        | owners, supervisors |                                                    |
+1. Install `Node Version Manager` (or `nvm`) by following the installation instructions [here](https://github.com/nvm-sh/nvm) (due to dependency reasons, this project requires the use of `Node.js` version 10, and `nvm` allows us to do this)
+2. Use the **yarn** command in the root directory to install all required dependencies
+3. Use the **nvm use 10** command to switch the `Node.js` version used to `10`
+4. Use the **yarn server** command in the root directory to start the local server
+5. Use the **yarn test** to start server using testing environment
 
-# Data Model
+#### Environment Variables
 
-🚫This is just an example. Replace this with your data model
+In order for the app to function correctly, you must set up the correct environment variables. Please create a `.env` file that includes the following:
 
-#### 2️⃣ ORGANIZATIONS
+```
+* PORT = Port to run server on
+* TESTING_DATABASE_URL = Url for testing database
+* DATABASE_URL = Url for database
+* NODE_SERVER_SENTRY = Sentry URI for continuous integration
+* PK = Secret used for hashing JWTs
+* REACT_APP_AUTH_TOKEN = Another secret used for hashing other JWTs
+* CONTRACT_ADDRESS = Address of contract deployed to Ethereum blockchain
+* INFURA = URL of Infura API
+* PRIVATE_KEY = Private key for Infura
+* ACCOUNT_1 = Owner address for Ethereum contract
+```
+
+## Technology Stack
+
+The following is a short list of the major dependencies used (with the reasons we used them) followed by complete and exhaustive ones with all production and development packages incorporated in the server build.
+
+#### Node and Express
+
+- Javascript in the language of choice for the back-end
+- Express allows for easy API creation
+- Middleware patterns are easy and fluid in Express
+
+#### GraphQL
+
+- Built on top of Express
+- One endpoint allows for fast development speed
+- Schema is built into GraphQL Playground
+
+#### PostgreSQL
+
+- Works well with Heroku
+
+#### Web3
+
+- Web3 allows for a direct connection to the Ethereum Virtual Machine, or EVM
+- Builds out suite of tools for connecting, posting, and retrieving data through the use of wallets
+
+#### Production Dependencies
+
+- [@sentry/node](https://www.npmjs.com/package/@sentry/node)
+- [cors](https://expressjs.com/en/resources/middleware/cors.html)
+- [dotenv](https://www.npmjs.com/package/dotenv)
+- [ethereumjs-tx](https://github.com/ethereumjs/ethereumjs-tx)
+- [express](https://expressjs.com/)
+- [express-graphql](https://github.com/graphql/express-graphql)
+- [graphql](https://www.npmjs.com/package/graphql)
+- [graphql-playground-middleware-express](https://www.npmjs.com/package/graphql-playground-middleware-express)
+- [helmet](https://helmetjs.github.io/)
+- [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)
+- [jwt-decode](https://github.com/auth0/jwt-decode)
+- [knex](http://knexjs.org/)
+- [pg](https://www.npmjs.com/package/pg)
+- [web3](https://github.com/ethereum/web3.js/)
+
+#### Development Dependencies
+
+- [cross-env](https://www.npmjs.com/package/cross-env)
+- [eslint](https://eslint.org/)
+- [eslint-config-airbnb-base](https://www.npmjs.com/package/eslint-config-airbnb-base)
+- [eslint-config-prettier](https://github.com/prettier/eslint-config-prettier)
+- [eslint-plugin-import](https://www.npmjs.com/package/eslint-plugin-import)
+- [eslint-plugin-prettier](https://github.com/prettier/eslint-plugin-prettier)
+- [jest](https://jestjs.io/)
+- [nodemon](https://www.npmjs.com/package/nodemon)
+- [prettier](https://github.com/prettier/prettier)
+- [supertest](https://github.com/visionmedia/supertest)
+
+## API Examples
+
+The server is deployed at [https://stampd-backend.herokuapp.com/](https://stampd-backend.herokuapp.com/).
+
+The server IDE GraphQL Playground is deployed at [https://stampd-backend.herokuapp.com/playground](https://stampd-backend.herokuapp.com/playground).
+
+Here are some examples of a GraphQL query and mutation on this server along with corresponding JSON that is returned:
+
+#### Example Query
+
+```graphql
+query {
+  getSchoolDetailsBySchoolId(id: 1) {
+    name
+    street1
+    street2
+    city
+    state
+    zip
+    type
+    phone
+    url
+    user {
+      email
+    }
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "getSchoolDetailsBySchoolId": {
+      "name": "School of the Midweast",
+      "street1": "Midway St.",
+      "street2": null,
+      "city": "Midway City",
+      "state": "MA",
+      "zip": "5050",
+      "type": "University",
+      "phone": "555-5555",
+      "url": "https://www.midweast.edu/",
+      "user": {
+        "email": "schoolzrus@rocketmail.com"
+      }
+    }
+  }
+}
+```
+
+#### Example Mutation
+
+```graphql
+mutation {
+  addNewCredential(
+    criteria: "Asserts student has completed all requirements for certification in welding at Elgin Community College"
+    description: "Basic concepts of oxy-acetylene welding and electric welding for beginners."
+    expirationDate: "none"
+    imageUrl: "www.fakeurl.com"
+    issuedOn: "7/7/1917"
+    credName: "Certification in Welding"
+    ownerName: "Gary Oldman"
+    schoolId: "1"
+    studentEmail: "fakestudent@gmail.com"
+    type: "Certificate"
+  ) {
+    id
+    credHash
+    txHash
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "addNewCredential": {
+      "id": "4",
+      "credHash": "0x8ae1d6e7efb7e492997844b76aa80b009a3d67f153ec09f119cfdb876d73d59d",
+      "txHash": "0x36f54937d5c1dce9fa949f4fa8fee048e6e20a0fa9949b98e847262d649a7f6d"
+    }
+  }
+}
+```
+
+## Data Models
+
+#### Role
 
 ---
 
 ```
 {
-  id: UUID
-  name: STRING
-  industry: STRING
-  paid: BOOLEAN
-  customer_id: STRING
-  subscription_id: STRING
+  id: ID
+  type: String!
+  users: [User]
 }
 ```
 
-#### USERS
+#### USER
 
 ---
 
 ```
 {
-  id: UUID
-  organization_id: UUID foreign key in ORGANIZATIONS table
-  first_name: STRING
-  last_name: STRING
-  role: STRING [ 'owner', 'supervisor', 'employee' ]
-  email: STRING
-  phone: STRING
-  cal_visit: BOOLEAN
-  emp_visit: BOOLEAN
-  emailpref: BOOLEAN
-  phonepref: BOOLEAN
+  id: ID
+  username: String
+  email: String!
+  profilePicture: String
+  roleId: ID
+  sub: String!
+  token: String
+  tokenExpiration: Int
+  role: Role
+  schoolDetails: SchoolDetails
 }
 ```
 
-## 2️⃣ Actions
+#### School Details
 
-🚫 This is an example, replace this with the actions that pertain to your backend
+---
 
-`getOrgs()` -> Returns all organizations
+```
+{
+  id: ID
+  name: String!
+  taxId: String!
+  street1: String
+  street2: String
+  city: String
+  state: String
+  zip: String
+  type: String
+  phone: String!
+  url: String!
+  userId: ID!
+  user: User
+  credentials: [Credential]
+}
+```
 
-`getOrg(orgId)` -> Returns a single organization by ID
+#### Credential
 
-`addOrg(org)` -> Returns the created org
+---
 
-`updateOrg(orgId)` -> Update an organization by ID
+```
+{
+  id: ID
+  credName: String!
+  description: String!
+  credHash: String
+  txHash: String
+  type: String!
+  ownerName: String!
+  studentEmail: String!
+  imageUrl: String!
+  criteria: String!
+  valid: Boolean
+  issuedOn: String!
+  expirationDate: String
+  schoolId: ID!
+  schoolsUserInfo: User
+}
+```
 
-`deleteOrg(orgId)` -> Delete an organization by ID
-<br>
-<br>
-<br>
-`getUsers(orgId)` -> if no param all users
+## Query and Mutation List
 
-`getUser(userId)` -> Returns a single user by user ID
+#### Queries
 
-`addUser(user object)` --> Creates a new user and returns that user. Also creates 7 availabilities defaulted to hours of operation for their organization.
+- `getAllUsers` -> gets all users
+- `getUserById(id: ID)` -> Gets a user by userId
+- `getAllSchoolDetails` -> Gets all school details (for testing only)
+- `getSchoolDetailsBySchoolId(id: ID)` -> Gets school details by schoolId
+- `getAllCredentials` -> Gets all credentials
+- `getCredentialById(id: ID)` -> Gets credential by credential ID
+- `getCredentialsBySchoolId(id: ID)` -> Get all of a schools credentials
+- `verifyCredential` -> Verifies a credential on the blockchain
 
-`updateUser(userId, changes object)` -> Updates a single user by ID.
+#### Mutations
 
-`deleteUser(userId)` -> deletes everything dependent on the user
+- `addUser( authToken: String! roleId: ID )` -> Adds a new user
+- `updateUser( id: ID! username: String email: String roleId: ID )` -> Updates a users information
+- `deleteUser(id: ID!)` -> Deletes a user by id
+- `addSchoolDetail( name: String! taxId: String! street1: String street2: String city: String state: String zip: String type: String phone: String! url: String! userId: ID! )` -> Adds details for a school
+- `updateSchoolDetail( id: ID! name: String taxId: String street1: String street2: String city: String state: String zip: String type: String phone: String url: String userId: ID )` -> Updates a schools details
+- `addNewCredential( credName: String! description: String! txHash: String credHash: String type: String! ownerName: String! studentEmail: String! imageUrl: String! criteria: String! valid: Boolean issuedOn: String! expirationDate: String schoolId: ID! )` -> Adds a new credential to the database and blockchain
+- `updateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` -> Updates a credential and reissues it on the blockchain
+- `removeCredential(id: ID!): Credential invalidateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` -> Deletes a credential
+- `validateCredential( id: ID! credName: String description: String credHash: String txHash: String type: String ownerName: String studentEmail: String imageUrl: String criteria: String valid: Boolean issuedOn: String expirationDate: String schoolId: ID )` Updates a credential to valid and reissues it on the blockchain
 
-## 3️⃣ Environment Variables
+## Testing
 
-In order for the app to function correctly, the user must set up their own environment variables.
+Testing is performed using the following dependency:
 
-create a .env file that includes the following:
+- [jest](https://jestjs.io/)
+- [supertest](https://github.com/visionmedia/supertest)
 
-🚫 These are just examples, replace them with the specifics for your app
-    
-    *  STAGING_DB - optional development db for using functionality not available in SQLite
-    *  NODE_ENV - set to "development" until ready for "production"
-    *  JWT_SECRET - you can generate this by using a python shell and running import random''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&amp;*(-*=+)') for i in range(50)])
-    *  SENDGRID_API_KEY - this is generated in your Sendgrid account
-    *  stripe_secret - this is generated in the Stripe dashboard
-    
-## Contributing
+## Project Management
 
-When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
+The following documents and links contain all the project management documents for Stampd. Included are a Trello board, the project vision document (which contains links to the UX wireframes and layouts), and the Google Drive with our user interviews:
 
-Please note we have a [code of conduct](./code_of_conduct.md). Please follow it in all your interactions with the project.
+- [Trello Board](https://trello.com/b/uvhiXJ58/stampd)
+- [Project Vision Document](https://www.notion.so/Stampd-495609cb1e06435daf900fdaf5ee55f1)
+- [User Interviews](https://drive.google.com/drive/folders/17dBTV1TwsZ6fkYOwTTcnmQUYVyi7ptS0?usp=sharing)
 
-### Issue/Bug Request
+## Contributing and Getting Involved
 
- **If you are having an issue with the existing project code, please submit a bug report under the following guidelines:**
- - Check first to see if your issue has already been reported.
- - Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
- - Create a live example of the problem.
- - Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes,  where you believe the issue is originating from, and any potential solutions you have considered.
+If you spot a bug or would like to request a feature, we welcome and are grateful for any contributions from the community. Please review the process for contributing to this project by reading the [contribution guidelines](CONTRIBUTING.md).
 
-### Feature Requests
+Also, please note we have a [code of conduct](./CODE_OF_CONDUCT.md). Please follow it in all your interactions with the project.
+
+#### Issue and Bug Requests
+
+If you are having an issue with the existing project code, please submit a bug report under the following guidelines:
+
+- Check first to see if your issue has already been reported.
+- Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
+- Create a live example of the problem.
+- Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes, where you believe the issue is originating from, and any potential solutions you have considered.
+
+#### Feature Requests
 
 We would love to hear from you about new features which would improve this app and further the aims of our project. Please provide as much detail and information as possible to show us why you think your new feature should be implemented.
-
-### Pull Requests
-
-If you have developed a patch, bug fix, or new feature that would improve this app, please submit a pull request. It is best to communicate your ideas with the developers first before investing a great deal of time into a pull request to ensure that it will mesh smoothly with the project.
-
-Remember that this project is licensed under the MIT license, and by submitting a pull request, you agree that your work will be, too.
 
 #### Pull Request Guidelines
 
@@ -162,11 +379,20 @@ Remember that this project is licensed under the MIT license, and by submitting 
 - Include the relevant issue number, if applicable.
 - You may merge the Pull Request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
 
-### Attribution
+## Additional Documentation
 
-These contribution guidelines have been adapted from [this good-Contributing.md-template](https://gist.github.com/PurpleBooth/b24679402957c63ec426).
+See [Front-end Documentation](https://github.com/labs14-stampd/frontend) for details on the front-end client of our project.
 
-## Documentation
+## License
 
-See [Frontend Documentation](🚫link to your frontend readme here) for details on the fronend of our project.
-🚫 Add DS iOS and/or Andriod links here if applicable.
+[MIT](LICENSE)
+
+## Acknowledgements
+
+- [Lambda School](https://lambdaschool.com/) - Thank you for educating us, equipping us with our current skillset, and pushing us towards success.
+- [Josh Knell](https://github.com/BigKnell) - The Big Boss. The Big Cheese. Thanks for teaching us the basics and for keeping it real. Banjo on.
+- [Dustin Myers](https://github.com/dustinmyers) - The Legend himself. Dustin is the reason we can even write a single line of code in React. Thanks for your leadership, Dustin.
+- [Luis Hernandez](https://github.com/luishrd) - Luis, thanks for teaching us about the Bros and Homies. Your leadership in Lambda School back-end week lets us build servers and move mountains.
+- [John Mitchell](https://github.com/jrmmba8314) - You opened up the statically-typed world of Java to us. Thank you for being a steady hand at the wheel when we needed it.
+- [Dan Levy](https://danlevy.net/) - Thanks for all of your advice, Dan. You consistently come through with gold when we need it. Your advice is invaluable, and you care about students.
+- [Coffee](https://en.wikipedia.org/wiki/Coffee) - We'd like to thank coffee for the productivity of this Labs project. Seriously. Thanks.
