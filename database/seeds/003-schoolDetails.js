@@ -43,7 +43,77 @@ exports.seed = function seedSchoolDetails(knex) {
           phone: '999-9999',
           type: 'College',
           url: 'https://www.weastern.edu/',
+          userId: 7
+        },
+        {
+          // id: 4,
+          name: 'School of the Norf',
+          taxId: '000000003',
+          street1: 'Compton streats',
+          street2: null,
+          city: 'Los Angel-less',
+          state: 'HA',
+          zip: '00000',
+          phone: '999-9999',
+          type: 'College',
+          url: 'https://www.norfofthewoods.edu/',
           userId: 5
+        },
+        {
+          // id: 5,
+          name: 'School of the Hupplepuff',
+          taxId: '000000004',
+          street1: 'Sweet streats',
+          street2: null,
+          city: 'Sweet City',
+          state: 'HA',
+          zip: '00000',
+          phone: '999-9999',
+          type: 'College',
+          url: 'https://www.hp.edu/',
+          userId: 6
+        },
+        {
+          // id: 6,
+          name: 'School of the slytherin',
+          taxId: '000000005',
+          street1: 'Sweet streats',
+          street2: null,
+          city: 'Sweet City',
+          state: 'HA',
+          zip: '00000',
+          phone: '999-9999',
+          type: 'College',
+          url: 'https://www.wow.edu/',
+          userId: 4
+        },
+        {
+          // id: 7,
+          name: 'School of the gryff',
+          taxId: '000000006',
+          street1: 'Sweet streats',
+          street2: null,
+          city: 'Sweet City',
+          state: 'HA',
+          zip: '00000',
+          phone: '999-9999',
+          type: 'College',
+          url: 'https://www.nice.edu/',
+          userId: 8
+        },
+        {
+          // id: 8,
+          name: 'School of the otherone',
+          taxId: '000000007',
+          street1: 'Sweet streats',
+          street2: null,
+          city: 'Sweet City',
+          state: 'HA',
+          zip: '00000',
+          phone: '999-9999',
+          type: 'College',
+          url: 'https://www.kayn.edu/',
+          userId: 1
         }
       ])
     );
