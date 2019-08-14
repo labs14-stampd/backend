@@ -10,7 +10,6 @@ module.exports = {
     type: StudentDetailsType,
     description: 'Adds school details to an existing user',
     args: {
-      id: { type: GraphQLID, description: 'The unique ID of the school' },
       fullName: {
         type: GraphQLString,
         description: 'The full name of the student'
@@ -57,7 +56,6 @@ module.exports = {
     type: StudentDetailsType,
     description: 'Updates school details for a user',
     args: {
-      id: { type: GraphQLID, description: 'The unique ID of the school' },
       fullName: {
         type: GraphQLString,
         description: 'The full name of the student'
