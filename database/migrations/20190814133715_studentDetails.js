@@ -4,10 +4,10 @@ exports.up = function createSchoolDetails(knex) {
       .increments('id')
       .unsigned()
       .primary();
-    tbl
-      .string('name', 256)
-      .unique()
-      .notNull();
+    tbl.string('firstName', 256);
+    tbl.string('lastName', 256);
+    tbl.string('middleName', 256);
+    tbl.string('fullName', 256);
     tbl.string('street1', 256);
     tbl.string('street2', 256);
     tbl.string('city', 256);

@@ -6,7 +6,10 @@ exports.seed = function seedsStudentDetails(knex) {
       // Inserts seed entries
       return knex('studentDetails').insert([
         {
-          name: 'Clint Kunz',
+          fullName: 'Clint Kunz',
+          firstName: 'Clint',
+          middleName: 'Z',
+          lastName: 'Kunz',
           street1: 'Midway St.',
           street2: null,
           city: 'Utahy',
@@ -16,7 +19,10 @@ exports.seed = function seedsStudentDetails(knex) {
           userId: 6
         },
         {
-          name: 'Brannan Conrad',
+          fullName: 'Brannan Conrad',
+          firstName: 'Brannan',
+          middleName: 'G',
+          lastName: 'Conrad',
           street1: 'Chicago',
           street2: null,
           city: 'Savoy',
@@ -26,7 +32,10 @@ exports.seed = function seedsStudentDetails(knex) {
           userId: 7
         },
         {
-          name: 'Aljoe Bacus',
+          fullName: 'Joe Bacus',
+          firstName: 'Joe',
+          middleName: 'M',
+          lastName: 'Bacus',
           street1: 'NM',
           street2: null,
           city: 'avg joe',
