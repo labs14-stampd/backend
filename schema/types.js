@@ -4,6 +4,7 @@ const Roles = require('../models/roleModel.js');
 const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
 const Students = require('../models/studentModel');
+const UserEmails = require('../models/userEmailsModel');
 
 const {
   GraphQLObjectType,
@@ -84,6 +85,13 @@ const UserType = new GraphQLObjectType({
           return Students.findByUserId(parent.id);
         }
         return null;
+      }
+    },
+    emailList: {
+      type: new GraphQLList(GraphQLString),
+      description: 'List of additional user emails associated with an account',
+      resolve(parent) {
+        return UserEmails.findByUserId(parent.id);
       }
     }
   })
