@@ -52,7 +52,7 @@ module.exports = {
             token = jwt({
               userId: res.id,
               email: res.email,
-              roleId: user.roleId
+              roleId: res.roleId
             });
             return {
               ...res,
