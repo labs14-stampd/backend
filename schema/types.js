@@ -80,7 +80,7 @@ const UserType = new GraphQLObjectType({
       type: StudentDetailsType, // eslint-disable-line no-use-before-define
       description: 'The school details associated with the user',
       resolve(parent) {
-        if (parent.roleId === 2) {
+        if (parent.roleId === 3) {
           return Students.findByUserId(parent.id);
         }
         return null;
@@ -138,8 +138,9 @@ const StudentDetailsType = new GraphQLObjectType({
     credentials: {
       type: new GraphQLList(CredentialType), // eslint-disable-line no-use-before-define
       description: 'The credentials associated with the school',
-      resolve(parent) {
-        return Credentials.findBy(parent.user.email);
+      async resolve(parent) {
+        const user = await Users.findById(parent.userId);
+        return Credentials.findBy({ studentEmail: user.email });
         // This is the email of the corresponding student account
       }
     }
