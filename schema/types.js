@@ -3,6 +3,7 @@ const Users = require('../models/userModel.js');
 const Roles = require('../models/roleModel.js');
 const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
+const Students = require('../models/studentModel');
 
 const {
   GraphQLObjectType,
@@ -69,7 +70,77 @@ const UserType = new GraphQLObjectType({
       type: SchoolDetailsType, // eslint-disable-line no-use-before-define
       description: 'The school details associated with the user',
       resolve(parent) {
-        return Schools.findByUserId(parent.id);
+        if (parent.roleId === 2) {
+          return Schools.findByUserId(parent.id);
+        }
+        return null;
+      }
+    },
+    studentDetails: {
+      type: StudentDetailsType, // eslint-disable-line no-use-before-define
+      description: 'The school details associated with the user',
+      resolve(parent) {
+        if (parent.roleId === 2) {
+          return Students.findByUserId(parent.id);
+        }
+        return null;
+      }
+    }
+  })
+});
+
+const StudentDetailsType = new GraphQLObjectType({
+  name: 'StudentDetails',
+  fields: () => ({
+    id: { type: GraphQLID, description: 'The unique ID of the school' },
+    fullName: {
+      type: GraphQLString,
+      description: 'The full name of the student'
+    },
+    firstName: {
+      type: GraphQLString,
+      description: 'The first name of the student'
+    },
+    lastName: {
+      type: GraphQLString,
+      description: 'The last name of the student'
+    },
+    middleName: {
+      type: GraphQLString,
+      description: 'The middle name of the student'
+    },
+    street1: {
+      type: GraphQLString,
+      description: "Street line 1 of the school's address"
+    },
+    street2: {
+      type: GraphQLString,
+      description: "Street line 2 of the school's address"
+    },
+    city: { type: GraphQLString, description: 'The city of the school' },
+    state: { type: GraphQLString, description: 'The state of the school' },
+    zip: { type: GraphQLString, description: 'The zip code of the school' },
+    phone: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The phone number of the school'
+    },
+    userId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The ID of the user associated with the school'
+    },
+    user: {
+      type: UserType,
+      description: 'The user associated with the school',
+      resolve(parent) {
+        return Users.findById(parent.userId);
+      }
+    },
+    credentials: {
+      type: new GraphQLList(CredentialType), // eslint-disable-line no-use-before-define
+      description: 'The credentials associated with the school',
+      resolve(parent) {
+        return Credentials.findBy(parent.user.email);
+        // This is the email of the corresponding student account
       }
     }
   })
