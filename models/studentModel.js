@@ -21,7 +21,6 @@ function findByUserId(userId) {
 }
 
 async function insert(details) {
-  console.log(details);
   const [id] = await db('studentDetails').insert(details, 'id');
   return findById(id);
 }
