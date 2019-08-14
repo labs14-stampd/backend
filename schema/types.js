@@ -4,6 +4,7 @@ const Roles = require('../models/roleModel.js');
 const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
 const Students = require('../models/studentModel');
+const UserEmails = require('../models/userEmailsModel');
 
 const {
   GraphQLObjectType,
@@ -85,6 +86,13 @@ const UserType = new GraphQLObjectType({
         }
         return null;
       }
+    },
+    emailList: {
+      type: new GraphQLList(GraphQLString),
+      description: 'List of additional user emails associated with an account',
+      resolve(parent) {
+        return UserEmails.findByUserId(parent.id);
+      }
     }
   })
 });
@@ -121,7 +129,7 @@ const StudentDetailsType = new GraphQLObjectType({
     state: { type: GraphQLString, description: 'The state of the school' },
     zip: { type: GraphQLString, description: 'The zip code of the school' },
     phone: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: 'The phone number of the school'
     },
     userId: {
@@ -272,5 +280,6 @@ module.exports = {
   UserType,
   RoleType,
   SchoolDetailsType,
-  CredentialType
+  CredentialType,
+  StudentDetailsType
 };
