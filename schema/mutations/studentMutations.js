@@ -38,7 +38,7 @@ module.exports = {
       state: { type: GraphQLString, description: 'The state of the school' },
       zip: { type: GraphQLString, description: 'The zip code of the school' },
       phone: {
-        type: new GraphQLNonNull(GraphQLString),
+        type: GraphQLString,
         description: 'The phone number of the school'
       },
       userId: {
@@ -84,7 +84,7 @@ module.exports = {
       state: { type: GraphQLString, description: 'The state of the school' },
       zip: { type: GraphQLString, description: 'The zip code of the school' },
       phone: {
-        type: new GraphQLNonNull(GraphQLString),
+        type: GraphQLString,
         description: 'The phone number of the school'
       },
       userId: {
