@@ -19,7 +19,8 @@ const {
   updateSchoolDetail,
   addUserEmail,
   addStudentDetail,
-  updateStudentDetail
+  updateStudentDetail,
+  deleteUserEmail
 } = require('./mutations');
 
 const Mutation = new GraphQLObjectType({
@@ -30,6 +31,7 @@ const Mutation = new GraphQLObjectType({
     deleteUser,
     //* *********** User Emails ************/
     addUserEmail,
+    deleteUserEmail,
     //* *********** School Details ************/
     addSchoolDetail,
     updateSchoolDetail,
