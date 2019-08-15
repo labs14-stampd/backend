@@ -297,10 +297,13 @@ describe('deleteUser GQL mutation: ', () => {
   it('• should actually delete the corresponding user from the database', async () => {
     // Confirm that the user to delete actually existed at first
     const userToDelete = await dbHelper.findById(expectedUserIdToDelete);
-    try { // Try catch for throwing error with custom message - if the matcher fails, an exception will occur, leading to the catch block
+    try {
+      // Try catch for throwing error with custom message - if the matcher fails, an exception will occur, leading to the catch block
       expect(userToDelete).toBeTruthy();
     } catch {
-      throw new Error("Testing error: the ID to delete must belong to an existing user in the data seeds!"); // Testing error message if try block fails
+      throw new Error(
+        'Testing error: the ID to delete must belong to an existing user in the data seeds!'
+      ); // Testing error message if try block fails
     }
 
     // Delete the randomly selected user
