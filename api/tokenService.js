@@ -4,7 +4,7 @@ const secret = process.env.PK;
 
 function generateToken(user) {
   const payload = {
-    subject: user.id,
+    subject: user.userId,
     email: user.email,
     roleId: user.roleId
   };

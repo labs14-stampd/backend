@@ -16,8 +16,8 @@ exports.seed = function seedCredentials(knex) {
           imageUrl: '',
           valid: true,
           criteria: 'Complete Engineering of a gavitational field',
-          issuedOn: '2016-01-01T06:00:00.000Z',
-          expirationDate: '2029-01-01T06:00:00.000Z',
+          issuedOn: '08/08/2016',
+          expirationDate: '09/09/2040',
           schoolId: 3 // This is actually the id from 'users' table
         },
         {
@@ -33,8 +33,8 @@ exports.seed = function seedCredentials(knex) {
           imageUrl: '',
           valid: false,
           criteria: 'Complete Horsemanship at the Classical Level',
-          issuedOn: '2016-01-01T06:00:00.000Z',
-          expirationDate: '2029-01-01T06:00:00.000Z',
+          issuedOn: '08/09/2011',
+          expirationDate: '09/09/2040',
           schoolId: 3 // This is actually the id from 'users' table
         },
         {
@@ -51,8 +51,8 @@ exports.seed = function seedCredentials(knex) {
           valid: true,
           criteria:
             'Complete Underwater Blowtorching at an Advanced Proficiency',
-          issuedOn: '2016-01-01T06:00:00.000Z',
-          expirationDate: '2029-01-01T06:00:00.000Z',
+          issuedOn: '02/02/2017',
+          expirationDate: '09/09/2040',
           schoolId: 3 // This is actually the id from 'users' table
         }
       ])

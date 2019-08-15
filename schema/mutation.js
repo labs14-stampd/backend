@@ -16,7 +16,11 @@ const {
   updateUser,
   deleteUser,
   addSchoolDetail,
-  updateSchoolDetail
+  updateSchoolDetail,
+  addUserEmail,
+  addStudentDetail,
+  updateStudentDetail,
+  deleteUserEmail
 } = require('./mutations');
 
 const Mutation = new GraphQLObjectType({
@@ -25,9 +29,15 @@ const Mutation = new GraphQLObjectType({
     addUser,
     updateUser,
     deleteUser,
+    //* *********** User Emails ************/
+    addUserEmail,
+    deleteUserEmail,
     //* *********** School Details ************/
     addSchoolDetail,
     updateSchoolDetail,
+    //* ************ User Emails **************/
+    addStudentDetail,
+    updateStudentDetail,
     //* *********** Credential Details ************/
     addNewCredential: {
       type: CredentialType,
@@ -177,7 +187,7 @@ const Mutation = new GraphQLObjectType({
       async resolve(parent, args) {
         if (!args.id || typeof Number(args.id) !== 'number') {
           return new Error('Please include a Credential ID and try again.');
-        }        
+        }
         try {
           const credentialHash = web3.utils.sha3(JSON.stringify(args));
           args.credHash = credentialHash;
@@ -195,9 +205,6 @@ const Mutation = new GraphQLObjectType({
         } catch (error) {
           return new Error('There was an error completing your request.');
         }
-
-
-    
       }
     }, // Update Credential
     removeCredential: {
@@ -207,20 +214,35 @@ const Mutation = new GraphQLObjectType({
         id: {
           type: new GraphQLNonNull(GraphQLID),
           description: 'The unique ID of the credential to be deleted'
+        },
+        credHash: {
+          type: GraphQLString,
+          description:
+            'Hash of credential information to be stored on blockchain'
         }
       },
-      resolve(parent, args) {
+      async resolve(parent, args) {
+        console.log('in delete resolver', args);
         if (!args.id || typeof Number(args.id) !== 'number') {
           return new Error('Please include a credential ID and try again.');
         }
-        return Credential.remove(args.id)
-          .then(res => {
-            if (res) {
-              return { id: args.id };
-            }
-            return new Error('The credential could not be deleted.');
-          })
-          .catch(err => ({ error: err }));
+        try {
+          const data = contract.methods
+            .removeCredential(args.credHash)
+            .encodeABI();
+          if (data.length) {
+            const result = await txFunc(data);
+            console.log('result ', result);
+            return Credential.remove(args.id).then(res => {
+              if (res) {
+                return { id: args.id };
+              }
+              return new Error('The credential could not be deleted.');
+            });
+          }
+        } catch (error) {
+          return new Error('There was an error completing your request.');
+        }
       }
     }, // Remove Credential
     invalidateCredential: {
@@ -238,7 +260,7 @@ const Mutation = new GraphQLObjectType({
         description: {
           type: GraphQLString,
           description: 'Description of the new credential'
-        }, 
+        },
         credHash: {
           type: GraphQLString,
           description:
@@ -295,9 +317,7 @@ const Mutation = new GraphQLObjectType({
 
         try {
           const data = contract.methods
-            .invalidateCredential(
-              args.credHash
-            )
+            .invalidateCredential(args.credHash)
             .encodeABI();
           if (data.length) {
             args.txHash = await txFunc(data);
@@ -386,11 +406,8 @@ const Mutation = new GraphQLObjectType({
           return new Error('Please include a credential ID and try again.');
         }
         try {
-          
           const data = contract.methods
-            .validateCredential(
-              args.credHash
-            )
+            .validateCredential(args.credHash)
             .encodeABI();
           if (data.length) {
             args.txHash = await txFunc(data);
