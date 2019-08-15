@@ -3,6 +3,10 @@ exports.seed = async function seedRoles(knex) {
   await knex.raw('ALTER SEQUENCE credentials_id_seq RESTART WITH 1');
   await knex('schoolDetails').del();
   await knex.raw('ALTER SEQUENCE "schoolDetails_id_seq" RESTART WITH 1');
+  await knex('studentDetails').del();
+  await knex.raw('ALTER SEQUENCE "studentDetails_id_seq" RESTART WITH 1');
+  await knex('userEmails').del();
+  await knex.raw('ALTER SEQUENCE "userEmails_id_seq" RESTART WITH 1');
   await knex('users').del();
   await knex.raw('ALTER SEQUENCE users_id_seq RESTART WITH 1');
   return knex('roles')
