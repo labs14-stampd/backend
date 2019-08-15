@@ -116,8 +116,6 @@ const UserType = new GraphQLObjectType({
   })
 });
 
-
-
 const StudentDetailsType = new GraphQLObjectType({
   name: 'StudentDetails',
   fields: () => ({
@@ -169,8 +167,19 @@ const StudentDetailsType = new GraphQLObjectType({
       description: 'The credentials associated with the school',
       async resolve(parent) {
         const user = await Users.findById(parent.userId);
-        return Credentials.findBy({ studentEmail: user.email });
+        const emailList = await UserEmails.findBy({ userId: parent.userId });
+        const creds = await Credentials.findBy({ studentEmail: user.email });
         // This is the email of the corresponding student account
+        let listCreds = [];
+        await Promise.all(
+          emailList.map(async x => {
+            const mapCreds = await Credentials.findBy({
+              studentEmail: x.email
+            });
+            listCreds = [...listCreds, ...mapCreds];
+          })
+        );
+        return [...creds, ...listCreds];
       }
     }
   })
