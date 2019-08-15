@@ -4,7 +4,10 @@ exports.up = function createSchoolDetails(knex) {
       .increments('id')
       .unsigned()
       .primary();
-    tbl.string('email').notNullable();
+    tbl
+      .string('email')
+      .notNullable()
+      .unique();
     tbl
       .integer('userId')
       .unsigned()
@@ -13,7 +16,7 @@ exports.up = function createSchoolDetails(knex) {
       .onDelete('CASCADE')
       .notNull()
       .unique();
-    tbl.bool('verified').defaultTo(false);
+    tbl.boolean('valid').defaultTo(false);
   });
 };
 

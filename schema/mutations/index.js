@@ -1,4 +1,10 @@
-const { addUser, updateUser, deleteUser } = require('./userMutations.js');
+const {
+  addUser,
+  updateUser,
+  deleteUser,
+  addUserEmail,
+  deleteUserEmail
+} = require('./userMutations.js');
 const { addSchoolDetail, updateSchoolDetail } = require('./schoolMutations.js');
 const {
   addStudentDetail,
@@ -9,6 +15,8 @@ module.exports = {
   addUser,
   updateUser,
   deleteUser,
+  addUserEmail,
+  deleteUserEmail,
   addSchoolDetail,
   updateSchoolDetail,
   addStudentDetail,

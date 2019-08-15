@@ -34,6 +34,25 @@ const RoleType = new GraphQLObjectType({
   })
 });
 
+const UserEmailType = new GraphQLObjectType({
+  name: 'UserEmails',
+  fields: () => ({
+    id: { type: GraphQLID, description: 'The unique ID of the user email' },
+    email: {
+      type: GraphQLString,
+      description: 'The email of the user'
+    },
+    userId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'User the email belongs to.'
+    },
+    valid: {
+      type: GraphQLBoolean,
+      description: 'Boolean for whether email was verified.'
+    }
+  })
+});
+
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
@@ -88,7 +107,7 @@ const UserType = new GraphQLObjectType({
       }
     },
     emailList: {
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLList(UserEmailType),
       description: 'List of additional user emails associated with an account',
       resolve(parent) {
         return UserEmails.findByUserId(parent.id);
@@ -96,6 +115,8 @@ const UserType = new GraphQLObjectType({
     }
   })
 });
+
+
 
 const StudentDetailsType = new GraphQLObjectType({
   name: 'StudentDetails',
@@ -281,5 +302,6 @@ module.exports = {
   RoleType,
   SchoolDetailsType,
   CredentialType,
+  UserEmailType,
   StudentDetailsType
 };
