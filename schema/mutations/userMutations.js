@@ -1,10 +1,11 @@
 const graphql = require('graphql');
 const jwt = require('../../api/tokenService.js');
 const User = require('../../models/userModel.js');
-const { UserType } = require('../types.js');
+const UserEmails = require('../../models/userEmailsModel');
+const { UserType, UserEmailType } = require('../types.js');
 const getDecoded = require('../../api/getDecoded.js');
 
-const { GraphQLString, GraphQLNonNull, GraphQLID } = graphql;
+const { GraphQLString, GraphQLNonNull, GraphQLID, GraphQLBoolean } = graphql;
 
 module.exports = {
   addUser: {
@@ -127,5 +128,32 @@ module.exports = {
         })
         .catch(err => ({ error: err }));
     }
-  } // Delete User
+  }, // Delete User
+  addUserEmail: {
+    type: UserEmailType,
+    description: 'Adds additional emails to a user',
+    args: {
+      email: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: 'The email of the user'
+      },
+      userId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'User the email belongs to.'
+      },
+      valid: {
+        type: GraphQLBoolean,
+        description: 'Boolean for whether email was verified.'
+      }
+    },
+    resolve(parent, args) {
+      return UserEmails.insert(args)
+        .then(res => {
+          return res;
+        })
+        .catch(err => {
+          return { error: err, message: "Unique constraint" };
+        });
+    }
+  } // Add user email
 };

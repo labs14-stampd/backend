@@ -18,8 +18,8 @@ function findByUserId(userId) {
   return db('userEmails').where({ userId });
 }
 
-async function insert(creds) {
-  const [id] = await db('userEmails').insert(creds, 'id');
+async function insert(body) {
+  const [id] = await db('userEmails').insert(body, 'id');
   return findById(id);
 }
 
