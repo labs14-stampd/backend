@@ -152,8 +152,31 @@ module.exports = {
           return res;
         })
         .catch(err => {
-          return { error: err, message: "Unique constraint" };
+          return { error: err, message: 'Unique constraint' };
         });
     }
-  } // Add user email
+  }, // Add user email
+  deleteUserEmail: {
+    type: UserEmailType,
+    description: 'Deletes an email associated with a unique user',
+    args: {
+      id: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The unique ID of the user to be deleted'
+      }
+    },
+    resolve(parent, args) {
+      if (!args.id || typeof Number(args.id) !== 'number') {
+        return new Error('Please include a user ID and try again.');
+      }
+      return UserEmails.remove(args.id)
+        .then(res => {
+          if (res) {
+            return { id: args.id };
+          }
+          return new Error('The email could not be deleted.');
+        })
+        .catch(err => ({ error: err }));
+    }
+  } // Delete User Email
 };

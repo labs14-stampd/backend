@@ -2,7 +2,8 @@ const {
   addUser,
   updateUser,
   deleteUser,
-  addUserEmail
+  addUserEmail,
+  deleteUserEmail
 } = require('./userMutations.js');
 const { addSchoolDetail, updateSchoolDetail } = require('./schoolMutations.js');
 const {
@@ -15,6 +16,7 @@ module.exports = {
   updateUser,
   deleteUser,
   addUserEmail,
+  deleteUserEmail,
   addSchoolDetail,
   updateSchoolDetail,
   addStudentDetail,
