@@ -2,11 +2,10 @@ const db = require('../database/dbConfig');
 const StudentDetails = require('./../models/studentModel');
 const User = require('../models/userModel');
 
-beforeAll( async () => {
-  await db.seed.run();
-});
-
 describe('StudentDetails Model', () => {
+  beforeEach(async () => {
+    await db.seed.run();
+  });
   describe('insert', () => {
     beforeEach(async () => {
       const user = await User.insert({
@@ -26,7 +25,7 @@ describe('StudentDetails Model', () => {
         zip: '00000',
         phone: '(000)000-0000',
         userId: user.id
-      }
+      };
 
       await StudentDetails.insert(student);
     });
@@ -69,17 +68,17 @@ describe('StudentDetails Model', () => {
         zip: '00000',
         phone: '(000)000-0000',
         userId: user.id
-      }
+      };
 
       const updateStudent = {
         fullName: 'Test Updated',
         firstName: 'Test',
         middleName: 'S',
         lastName: 'Updated'
-      }
+      };
 
-      await StudentDetails.insert(student);
-      await StudentDetails.update(user.id, updateStudent)
+      const inserted = await StudentDetails.insert(student);
+      await StudentDetails.update(inserted.id, updateStudent);
     });
     afterEach(() => {
       return db('users').delete();

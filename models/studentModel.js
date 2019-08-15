@@ -1,39 +1,39 @@
 const db = require('../database/dbConfig.js');
 
 function find() {
-  return db('studenDetails');
+  return db('studentDetails');
 }
 
 function findBy(filter) {
-  return db('studenDetails').where(filter);
+  return db('studentDetails').where(filter);
 }
 
 function findById(id) {
-  return db('studenDetails')
+  return db('studentDetails')
     .where({ id })
     .first();
 }
 
 function findByUserId(userId) {
-  return db('studenDetails')
+  return db('studentDetails')
     .where({ userId })
     .first();
 }
 
 async function insert(creds) {
-  const [id] = await db('studenDetails').insert(creds, 'id');
+  const [id] = await db('studentDetails').insert(creds, 'id');
   return findById(id);
 }
 
 async function update(id, changes) {
-  await db('studenDetails')
+  await db('studentDetails')
     .where({ id })
     .update(changes);
   return findById(id);
 }
 
 function remove(id) {
-  return db('studenDetails')
+  return db('studentDetails')
     .where({ id })
     .del();
 }
