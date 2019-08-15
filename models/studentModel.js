@@ -20,8 +20,13 @@ function findByUserId(userId) {
     .first();
 }
 
+<<<<<<< HEAD
 async function insert(creds) {
   const [id] = await db('studentDetails').insert(creds, 'id');
+=======
+async function insert(details) {
+  const [id] = await db('studentDetails').insert(details, 'id');
+>>>>>>> 239075d90ab007439ad6eb0c208d7104fefde100
   return findById(id);
 }
 

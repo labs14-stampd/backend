@@ -16,7 +16,11 @@ const {
   updateUser,
   deleteUser,
   addSchoolDetail,
-  updateSchoolDetail
+  updateSchoolDetail,
+  addUserEmail,
+  addStudentDetail,
+  updateStudentDetail,
+  deleteUserEmail
 } = require('./mutations');
 
 const Mutation = new GraphQLObjectType({
@@ -25,9 +29,15 @@ const Mutation = new GraphQLObjectType({
     addUser,
     updateUser,
     deleteUser,
+    //* *********** User Emails ************/
+    addUserEmail,
+    deleteUserEmail,
     //* *********** School Details ************/
     addSchoolDetail,
     updateSchoolDetail,
+    //* ************ User Emails **************/
+    addStudentDetail,
+    updateStudentDetail,
     //* *********** Credential Details ************/
     addNewCredential: {
       type: CredentialType,
@@ -195,9 +205,6 @@ const Mutation = new GraphQLObjectType({
         } catch (error) {
           return new Error('There was an error completing your request.');
         }
-
-
-
       }
     }, // Update Credential
     removeCredential: {
@@ -219,25 +226,23 @@ const Mutation = new GraphQLObjectType({
         if (!args.id || typeof Number(args.id) !== 'number') {
           return new Error('Please include a credential ID and try again.');
         }
-        try{
+        try {
           const data = contract.methods
             .removeCredential(args.credHash)
             .encodeABI();
-          if(data.length){
+          if (data.length) {
             const result = await txFunc(data);
             console.log('result ', result);
-            return Credential.remove(args.id)
-              .then(res => {
-                if (res) {
-                  return { id: args.id };
-                }
-                return new Error('The credential could not be deleted.');
-              });
+            return Credential.remove(args.id).then(res => {
+              if (res) {
+                return { id: args.id };
+              }
+              return new Error('The credential could not be deleted.');
+            });
           }
-        }catch(error){
+        } catch (error) {
           return new Error('There was an error completing your request.');
         }
-
       }
     }, // Remove Credential
     invalidateCredential: {
@@ -312,9 +317,7 @@ const Mutation = new GraphQLObjectType({
 
         try {
           const data = contract.methods
-            .invalidateCredential(
-              args.credHash
-            )
+            .invalidateCredential(args.credHash)
             .encodeABI();
           if (data.length) {
             args.txHash = await txFunc(data);
@@ -403,11 +406,8 @@ const Mutation = new GraphQLObjectType({
           return new Error('Please include a credential ID and try again.');
         }
         try {
-
           const data = contract.methods
-            .validateCredential(
-              args.credHash
-            )
+            .validateCredential(args.credHash)
             .encodeABI();
           if (data.length) {
             args.txHash = await txFunc(data);
