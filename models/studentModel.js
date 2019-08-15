@@ -20,8 +20,8 @@ function findByUserId(userId) {
     .first();
 }
 
-async function insert(creds) {
-  const [id] = await db('studentDetails').insert(creds, 'id');
+async function insert(details) {
+  const [id] = await db('studentDetails').insert(details, 'id');
   return findById(id);
 }
 
