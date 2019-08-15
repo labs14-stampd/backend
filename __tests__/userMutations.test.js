@@ -154,7 +154,7 @@ describe('updateUser GQL mutation: ', () => {
 
   beforeEach(() => {
     // Randomly generate valid test ID's before each test
-    expectedUserIdToUpdate = Math.ceil(Math.random() * ROLE_COUNT);
+    expectedUserIdToUpdate = Math.ceil(Math.random() * USER_COUNT);
     expectedUpdatedRoleId = Math.ceil(Math.random() * ROLE_COUNT);
   });
 
@@ -217,8 +217,8 @@ describe('updateUser GQL mutation: ', () => {
     expect(actualUpdatedUser.username).toBe(EXPECTED_UPDATED_USERNAME);
     expect(actualUpdatedUser.email).toBe(EXPECTED_UPDATED_EMAIL);
     expect(actualUpdatedUser.profilePicture).toBe(EXPECTED_PROFILE_PICTURE);
-    expect(actualUpdatedUser.sub).toBe(EXPECTED_SUB);
     expect(actualUpdatedUser.roleId).toBe(expectedUpdatedRoleId);
+    expect(actualUpdatedUser.sub).toBe(EXPECTED_SUB);
   });
 });
 
@@ -254,6 +254,100 @@ describe('updateUser GQL mutation error handling: ', () => {
 
     const res = await graphql(schema, MUTATION, null);
     expect(res.data.updateUser).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+});
+
+describe('deleteUser GQL mutation: ', () => {
+  let expectedUserIdToDelete; // user to delete for each deleteUser mutation test will be randomly selected among seed data
+
+  beforeEach(() => {
+    // Randomly generate valid test ID's before each test
+    expectedUserIdToDelete = Math.ceil(Math.random() * USER_COUNT);
+  });
+
+  const deleteUserMutationWithId = id => `
+    mutation {
+      deleteUser (
+        id: ${id}
+      ) {
+        id
+        username
+        profilePicture
+        roleId
+      }
+    }
+  `;
+
+  it('• should return the expected data when deleting a user', async () => {
+    const res = await graphql(
+      schema,
+      deleteUserMutationWithId(expectedUserIdToDelete),
+      null
+    );
+    const actual = res.data.deleteUser;
+
+    // All fields except for ID should be null after user deletion (mutation string will not return non-nullable fields to avoid GQL errors)
+    expect(actual.id).toBe(expectedUserIdToDelete.toString()); // the GraphQL response object will have String-type ID's
+    expect(actual.username).toBeNull();
+    expect(actual.profilePicture).toBeNull();
+    expect(actual.roleId).toBeNull();
+  });
+
+  it('• should actually delete the corresponding user from the database', async () => {
+    // Confirm that the user to delete actually existed at first
+    const userToDelete = await dbHelper.findById(expectedUserIdToDelete);
+    try { // Try catch for throwing error with custom message - if the matcher fails, an exception will occur, leading to the catch block
+      expect(userToDelete).toBeTruthy();
+    } catch {
+      throw new Error("Testing error: the ID to delete must belong to an existing user in the data seeds!"); // Testing error message if try block fails
+    }
+
+    // Delete the randomly selected user
+    await graphql(
+      schema,
+      deleteUserMutationWithId(expectedUserIdToDelete),
+      null
+    );
+
+    // Attempt to find the user if it still exists (should resolve to falsy value (null/undefined) after deletion)
+    const deletedUser = await dbHelper.findById(expectedUserIdToDelete);
+    expect(deletedUser).toBeFalsy();
+  });
+});
+
+describe('deleteUser GQL mutation error handling: ', () => {
+  test('• when "id" parameter is missing', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Please include a user ID and try again.';
+
+    const MUTATION = `
+      mutation {
+        deleteUser {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.deleteUser).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when attempting to delete a non-existent user', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'User with the given ID not found';
+
+    const MUTATION = `
+      mutation {
+        deleteUser (
+          id: 0
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.deleteUser).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 });
