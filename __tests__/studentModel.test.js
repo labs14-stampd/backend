@@ -3,6 +3,9 @@ const StudentDetails = require('./../models/studentModel');
 const User = require('../models/userModel');
 
 describe('StudentDetails Model', () => {
+  beforeEach(async () => {
+    await db.seed.run();
+  });
   describe('insert', () => {
     beforeEach(async () => {
       await db.seed.run();
