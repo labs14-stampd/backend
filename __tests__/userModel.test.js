@@ -69,4 +69,23 @@ describe('Users Model', () => {
       // future feature
     });
   });
+  describe('remove', () => {
+    it('should remove a user', async () => {
+      const user = await Users.insert({
+        username: 'Removed User',
+        email: 'RU@edu.com',
+        profilePicture: '',
+        sub: 'testRemoved',
+        roleId: 3
+      });
+      // before remove
+      expect(user.username).toBe('Removed User');
+      // on remove
+      const removedUser = await Users.remove(user.id);
+      expect(removedUser).toBe(1);
+      // after remove
+      const removed = await Users.findBy({ email: 'RU@edu.com' });
+      expect(removed).toHaveLength(0);
+    });
+  });
 });
