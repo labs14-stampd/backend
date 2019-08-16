@@ -34,4 +34,35 @@ describe('Credentials Model', () => {
       expect(credential.schoolId).toBe(3);
     });
   });
+  describe('update', () => {
+    // To be decided if in scope of feature canvas
+  });
+
+  describe('remove', () => {
+    it('should remove a credential', async () => {
+      const credential = await Credentials.insert({
+        credName: 'Doctorate in Testing',
+        description:
+          'Certifies that this person is capable of testing while testing',
+        type: 'PhD',
+        ownerName: 'Test',
+        studentEmail: 'testing@edu.com',
+        imageUrl: '',
+        criteria: 'Complete Engineering of a Testing',
+        issuedOn: '08/08/2016',
+        expirationDate: '09/09/2040',
+        schoolId: 3
+      });
+      // before remove
+      expect(credential.credName).toBe('Doctorate in Testing');
+      // on remove
+      const removedCredential = await Credentials.remove(credential.id);
+      expect(removedCredential).toBe(1);
+      // after remove
+      const removed = await Credentials.findBy({
+        studentEmail: 'testing@edu.com'
+      });
+      expect(removed).toHaveLength(0);
+    });
+  });
 });
