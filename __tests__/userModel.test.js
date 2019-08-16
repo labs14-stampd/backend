@@ -22,4 +22,51 @@ describe('Users Model', () => {
       expect(user.roleId).toBe(2);
     });
   });
+  describe('insert', () => {
+    it('should insert new admin', async () => {
+      await Users.insert({
+        username: 'ByronHolmes',
+        email: 'BH@admin.com',
+        profilePicture: '',
+        sub: 'admin',
+        roleId: 1
+      });
+      const [school] = await Users.findBy({ email: 'BH@admin.com' });
+      expect(school.username).toBe('ByronHolmes');
+      expect(school.email).toBe('BH@admin.com');
+      expect(school.sub).toBe('admin');
+      expect(school.roleId).toBe(1);
+    });
+    it('should insert new school', async () => {
+      await Users.insert({
+        username: 'Test University',
+        email: 'TU@edu.com',
+        profilePicture: '',
+        sub: 'test',
+        roleId: 2
+      });
+      const [school] = await Users.findBy({ email: 'TU@edu.com' });
+      expect(school.username).toBe('Test University');
+      expect(school.email).toBe('TU@edu.com');
+      expect(school.sub).toBe('test');
+      expect(school.roleId).toBe(2);
+    });
+    it('should insert new student', async () => {
+      await Users.insert({
+        username: 'Test Student',
+        email: 'TS@edu.com',
+        profilePicture: '',
+        sub: 'testStudent',
+        roleId: 3
+      });
+      const [school] = await Users.findBy({ email: 'TS@edu.com' });
+      expect(school.username).toBe('Test Student');
+      expect(school.email).toBe('TS@edu.com');
+      expect(school.sub).toBe('testStudent');
+      expect(school.roleId).toBe(3);
+    });
+    it('should insert new employer', async () => {
+      // future feature
+    });
+  });
 });
