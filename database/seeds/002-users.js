@@ -68,6 +68,14 @@ exports.seed = function seedUsers(knex) {
           profilePicture: '',
           sub: '8',
           roleId: 3
+        },
+        {
+          // id: 9,
+          username: 'test_school',
+          email: 'skollboii@studytest.edu',
+          profilePicture: '',
+          sub: '9',
+          roleId: 2
         }
       ])
     );

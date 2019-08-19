@@ -17,10 +17,10 @@ afterAll(async () => {
 
 // should be based on current seed data
 const ROLE_COUNT = 4;
-const USER_COUNT = 8;
+const USER_COUNT = 9;
 
-describe('• addUser GQL mutation: ', () => {
-  const EXPECTED_NEW_USER_ID = 9; // derived from seeds (ID value auto-increments)
+describe('addUser GQL mutation: ', () => {
+  const EXPECTED_NEW_USER_ID = USER_COUNT + 1; // derived from seeds (ID value auto-increments)
   const EXPECTED_EMAIL = 'johndoe@ymail.com';
   const EXPECTED_USERNAME = 'johndoe';
 
