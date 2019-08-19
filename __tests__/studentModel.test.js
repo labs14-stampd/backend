@@ -6,9 +6,13 @@ describe('StudentDetails Model', () => {
   beforeEach(async () => {
     await db.seed.run();
   });
+  afterAll(async () => {
+    await db.seed.run();
+    await db.destroy();
+  }); 
+
   describe('insert', () => {
     beforeEach(async () => {
-      await db.seed.run();
       const user = await User.insert({
         username: 'testUser',
         email: 'testUser@test.com',
@@ -29,9 +33,6 @@ describe('StudentDetails Model', () => {
       };
 
       await StudentDetails.insert(student);
-    });
-    afterEach(() => {
-      return db('users').delete();
     });
     it(' should check whether all properties are inserted correctly', async () => {
       const [student] = await StudentDetails.findBy({ firstName: 'Test' });

@@ -5,6 +5,11 @@ describe('Credentials Model', () => {
   beforeEach(async () => {
     await db.seed.run();
   });
+  afterAll(async () => {
+    await db.seed.run();
+    await db.destroy();
+  }); 
+
   describe('insert', () => {
     it('should insert new credential', async () => {
       await Credentials.insert({
@@ -57,6 +62,7 @@ describe('Credentials Model', () => {
       expect(credential.credName).toBe('Doctorate in Testing');
       // on remove
       const removedCredential = await Credentials.remove(credential.id);
+      console.log(removedCredential);
       expect(removedCredential).toBe(1);
       // after remove
       const removed = await Credentials.findBy({

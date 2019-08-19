@@ -2,9 +2,9 @@ const db = require('../database/dbConfig');
 const Roles = require('./../models/roleModel');
 
 describe('Roles Model', () => {
-  beforeEach(async () => {
-    await db.seed.run();
-  });
+  afterAll(async () => {
+    await db.destroy()
+  })
   describe('Admin', () => {
     it(' should check if id of 1 is admin', async () => {
       const role = await Roles.findById(1);

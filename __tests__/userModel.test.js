@@ -5,6 +5,10 @@ describe('Users Model', () => {
   beforeEach(async () => {
     await db.seed.run();
   });
+  afterAll(async () => {
+    await db.seed.run();
+    await db.destroy();
+  }); 
   describe('Teamstampd@gmail.com', () => {
     it('should check if teamstampd@gmail.com is in the database', async () => {
       const [user] = await Users.findBy({ email: 'teamstampd@gmail.com' });
@@ -21,6 +25,9 @@ describe('Users Model', () => {
       const [user] = await Users.findBy({ email: 'teamstampd@gmail.com' });
       expect(user.roleId).toBe(2);
     });
+  });
+  afterEach(async () => {
+    await db('users').delete();
   });
   describe('insert', () => {
     it('should insert new admin', async () => {
