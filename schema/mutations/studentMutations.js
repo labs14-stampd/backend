@@ -74,27 +74,31 @@ module.exports = {
       },
       street1: {
         type: GraphQLString,
-        description: "Street line 1 of the school's address"
+        description: "Street line 1 of the Student's address"
       },
       street2: {
         type: GraphQLString,
-        description: "Street line 2 of the school's address"
+        description: "Street line 2 of the Student's address"
       },
-      city: { type: GraphQLString, description: 'The city of the school' },
-      state: { type: GraphQLString, description: 'The state of the school' },
-      zip: { type: GraphQLString, description: 'The zip code of the school' },
+      city: { type: GraphQLString, description: 'The city of the Student' },
+      state: { type: GraphQLString, description: 'The state of the Student' },
+      zip: { type: GraphQLString, description: 'The zip code of the Student' },
       phone: {
         type: GraphQLString,
-        description: 'The phone number of the school'
+        description: 'The phone number of the Student'
       },
       userId: {
         type: new GraphQLNonNull(GraphQLID),
-        description: 'The ID of the user associated with the school'
+        description: 'The ID of the user associated with the Student'
+      },
+      id: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The ID of the student details'
       }
     },
     resolve(parent, args) {
       if (!args.id || typeof Number(args.id) !== 'number') {
-        return new Error('Please include a SchoolDetails ID and try again.');
+        return new Error('Please include a StudentDetails ID and try again.');
       }
       return Student.update(args.id, args)
         .then(res => {
