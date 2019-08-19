@@ -1,7 +1,10 @@
 const nodemailer = require('nodemailer');
 
 console.log('in nodemailer.js');
-const sendMail = async (recipient) => {
+const sendMail = async ({
+    recipientName,
+    recipientEmail
+}) => {
     // Generate SMTP service account from ethereal.email
     let account = await nodemailer.createTestAccount();
 
@@ -23,7 +26,7 @@ const sendMail = async (recipient) => {
     let message = {
         // Comma separated list of recipients
         from: `"Team Stampd" <${process.env.NODEMAILER_ADDRESS}>`,
-        to: `Byron Holmes <${recipient}>`,
+        to: `"${recipientName}" <${recipientEmail}>`,
 
 
 
@@ -50,9 +53,7 @@ const sendMail = async (recipient) => {
             {
                 filename: 'image.png',
                 content: Buffer.from(
-                    'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD/' +
-                    '//+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4U' +
-                    'g9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC',
+                    '',
                     'base64'
                 ),
 
