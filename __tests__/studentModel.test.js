@@ -9,14 +9,15 @@ describe('StudentDetails Model', () => {
   afterAll(async () => {
     await db.seed.run();
     await db.destroy();
-  }); 
+  });
 
   describe('insert', () => {
     beforeEach(async () => {
       const user = await User.insert({
         username: 'testUser',
         email: 'testUser@test.com',
-        sub: 'testUser'
+        sub: 'testUser',
+        roleId: 3
       });
       const student = {
         fullName: 'Test User',
