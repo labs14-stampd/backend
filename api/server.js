@@ -4,7 +4,9 @@ const expressPlayground = require('graphql-playground-middleware-express')
   .default;
 const applyMiddleware = require('./middleware.js');
 const schema = require('../schema/schema.js');
-const sendMail = require('../utils/sendMail.js');
+const {
+  sendMail
+} = require('../utils/sendMail.js');
 
 const server = express();
 
@@ -18,13 +20,8 @@ server.get('/', (req, res) => {
   res.send('The Stampd Server is alive and well 🎉');
 });
 
-server.post('/confirmation/:testParam', (req, res) => {
-  console.log(req.params.testParam)
-  sendMail.sendMail({
-    recipientName: 'Waldo pepper',
-    recipientEmail: req.params.testParam
-  });
-  res.send('Email attempted');
+server.post('/confirmation/:url', (req, res) => {
+  res.send('confirmation route is alive and well');
 })
 
 server.use(

@@ -1,15 +1,12 @@
 const nodemailer = require('nodemailer');
 
-console.log('in nodemailer.js');
 const sendMail = async ({
     recipientName,
     recipientEmail
 }) => {
-    console.log('in sendMail', recipientName, recipientEmail);
     // Generate SMTP service account from ethereal.email
     let account = await nodemailer.createTestAccount();
 
-    console.log('Credentials obtained, sending message...');
 
     // NB! Store the account object values somewhere if you want
     // to re-use the same account for future mail deliveries
