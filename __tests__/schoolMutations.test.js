@@ -83,7 +83,7 @@ describe('addSchoolDetail GQL mutation: ', () => {
   });
 
   it('• should actually insert a new school details entry into the database', async () => {
-    // Initial mutation to add the user
+    // Initial mutation to add the school
     await graphql(schema, MUTATION, null);
 
     const actualNewSchoolDetail = await dbHelper.findById(
@@ -249,7 +249,7 @@ describe('updateSchoolDetail GQL mutation: ', () => {
   });
 
   // The mutation string below will be reused for this group of tests
-  updateSchoolDetailMutationWithSchoolDetailId = id => `
+  const updateSchoolDetailMutationWithSchoolDetailId = id => `
     mutation {
       updateSchoolDetail(
         id: ${id}
@@ -308,7 +308,7 @@ describe('updateSchoolDetail GQL mutation: ', () => {
   });
 
   it('• should actually update the corresponding information for a school details entry in the database', async () => {
-    // Initial mutation to update the user
+    // Initial mutation to update the school
     await graphql(
       schema,
       updateSchoolDetailMutationWithSchoolDetailId(
@@ -316,22 +316,23 @@ describe('updateSchoolDetail GQL mutation: ', () => {
       ),
       null
     );
-    const actualNewSchoolDetail = await dbHelper.findById(
+
+    const actualUpdatedSchoolDetail = await dbHelper.findById(
       // DB helper method to find the updated school details entry by ID
       expectedSchoolDetailsIdToUpdate
     );
-    expect(actualNewSchoolDetail.id).toBe(expectedSchoolDetailsIdToUpdate);
-    expect(actualNewSchoolDetail.name).toBe(EXPECTED_UPDATED_NAME);
-    expect(actualNewSchoolDetail.taxId).toBe(EXPECTED_UPDATED_TAX_ID);
-    expect(actualNewSchoolDetail.street1).toBe(EXPECTED_UPDATED_STREET1);
-    expect(actualNewSchoolDetail.street2).toBe(EXPECTED_UPDATED_STREET2);
-    expect(actualNewSchoolDetail.city).toBe(EXPECTED_UPDATED_CITY);
-    expect(actualNewSchoolDetail.state).toBe(EXPECTED_UPDATED_STATE);
-    expect(actualNewSchoolDetail.zip).toBe(EXPECTED_UPDATED_ZIP);
-    expect(actualNewSchoolDetail.type).toBe(EXPECTED_UPDATED_TYPE);
-    expect(actualNewSchoolDetail.phone).toBe(EXPECTED_UPDATED_PHONE);
-    expect(actualNewSchoolDetail.url).toBe(EXPECTED_UPDATED_URL);
-    expect(actualNewSchoolDetail.userId).toBe(
+    expect(actualUpdatedSchoolDetail.id).toBe(expectedSchoolDetailsIdToUpdate);
+    expect(actualUpdatedSchoolDetail.name).toBe(EXPECTED_UPDATED_NAME);
+    expect(actualUpdatedSchoolDetail.taxId).toBe(EXPECTED_UPDATED_TAX_ID);
+    expect(actualUpdatedSchoolDetail.street1).toBe(EXPECTED_UPDATED_STREET1);
+    expect(actualUpdatedSchoolDetail.street2).toBe(EXPECTED_UPDATED_STREET2);
+    expect(actualUpdatedSchoolDetail.city).toBe(EXPECTED_UPDATED_CITY);
+    expect(actualUpdatedSchoolDetail.state).toBe(EXPECTED_UPDATED_STATE);
+    expect(actualUpdatedSchoolDetail.zip).toBe(EXPECTED_UPDATED_ZIP);
+    expect(actualUpdatedSchoolDetail.type).toBe(EXPECTED_UPDATED_TYPE);
+    expect(actualUpdatedSchoolDetail.phone).toBe(EXPECTED_UPDATED_PHONE);
+    expect(actualUpdatedSchoolDetail.url).toBe(EXPECTED_UPDATED_URL);
+    expect(actualUpdatedSchoolDetail.userId).toBe(
       EXPECTED_UPDATED_SCHOOLDETAIL_USER_ID
     );
   });
