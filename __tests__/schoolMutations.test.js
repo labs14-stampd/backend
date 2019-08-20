@@ -15,23 +15,23 @@ afterAll(async () => {
 });
 
 // should be based on current seed data
-const USER_COUNT = 8;
+const USER_COUNT = 9;
 const SCHOOLDETAIL_COUNT = 8;
 
-const EXPECTED_NEW_SCHOOLDETAIL_ID = SCHOOLDETAIL_COUNT + 1;
-const EXPECTED_NAME = 'Test School';
-const EXPECTED_TAX_ID = '40-4040404';
-const EXPECTED_STREET1 = '404 St.';
-const EXPECTED_STREET2 = 'Forohfor Town';
-const EXPECTED_CITY = 'Lost City';
-const EXPECTED_STATE = 'HA';
-const EXPECTED_ZIP = '40404';
-const EXPECTED_TYPE = 'testing';
-const EXPECTED_PHONE = '404-404-0404';
-const EXPECTED_URL = 'anavela.bolnamber.nt.fnd';
-const EXPECTED_NEW_SCHOOLDETAIL_USER_ID = USER_COUNT + 1;
-
 describe('addSchoolDetail GQL mutation: ', () => {
+  const EXPECTED_NEW_SCHOOLDETAIL_ID = SCHOOLDETAIL_COUNT + 1;
+  const EXPECTED_NAME = 'Test School';
+  const EXPECTED_TAX_ID = '40-4040404';
+  const EXPECTED_STREET1 = '404 St.';
+  const EXPECTED_STREET2 = 'Forohfor Town';
+  const EXPECTED_CITY = 'Lost City';
+  const EXPECTED_STATE = 'HA';
+  const EXPECTED_ZIP = '40404';
+  const EXPECTED_TYPE = 'testing';
+  const EXPECTED_PHONE = '404-404-0404';
+  const EXPECTED_URL = 'anavela.bolnamber.nt.fnd';
+  const EXPECTED_NEW_SCHOOLDETAIL_USER_ID = USER_COUNT;
+
   const MUTATION = `
     mutation {
       addSchoolDetail(
@@ -206,6 +206,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
     const EXPECTED_ERROR_MESSAGE =
       'The provided user ID does not correspond to any existing user.';
 
+    // The mutation string below will be reused for this group of tests
     const MUTATION = `
       mutation {
         addSchoolDetail (
@@ -222,6 +223,175 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
 
     const res = await graphql(schema, MUTATION, null);
     expect(res.data.addSchoolDetail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+});
+
+describe('updateSchoolDetail GQL mutation: ', () => {
+  let expectedSchoolDetailsIdToUpdate; // school details entry to update for each updateSchoolDetail mutation test will be randomly selected among seed data
+  const EXPECTED_UPDATED_NAME = 'Test School';
+  const EXPECTED_UPDATED_TAX_ID = '40-4040404';
+  const EXPECTED_UPDATED_STREET1 = '404 St.';
+  const EXPECTED_UPDATED_STREET2 = 'Forohfor Town';
+  const EXPECTED_UPDATED_CITY = 'Lost City';
+  const EXPECTED_UPDATED_STATE = 'HA';
+  const EXPECTED_UPDATED_ZIP = '40404';
+  const EXPECTED_UPDATED_TYPE = 'testing';
+  const EXPECTED_UPDATED_PHONE = '404-404-0404';
+  const EXPECTED_UPDATED_URL = 'anavela.bolnamber.nt.fnd';
+  const EXPECTED_UPDATED_SCHOOLDETAIL_USER_ID = USER_COUNT;
+
+  beforeEach(() => {
+    // Randomly generate valid test ID's before each test
+    expectedSchoolDetailsIdToUpdate = Math.ceil(
+      Math.random() * SCHOOLDETAIL_COUNT
+    );
+  });
+
+  // The mutation string below will be reused for this group of tests
+  updateSchoolDetailMutationWithSchoolDetailId = id => `
+    mutation {
+      updateSchoolDetail(
+        id: ${id}
+        name: "${EXPECTED_UPDATED_NAME}"
+        taxId: "${EXPECTED_UPDATED_TAX_ID}"
+        street1: "${EXPECTED_UPDATED_STREET1}"
+        street2: "${EXPECTED_UPDATED_STREET2}"
+        city: "${EXPECTED_UPDATED_CITY}"
+        state: "${EXPECTED_UPDATED_STATE}"
+        zip: "${EXPECTED_UPDATED_ZIP}"
+        type: "${EXPECTED_UPDATED_TYPE}"
+        phone: "${EXPECTED_UPDATED_PHONE}"
+        url: "${EXPECTED_UPDATED_URL}"
+        userId: ${EXPECTED_UPDATED_SCHOOLDETAIL_USER_ID}
+      ) {
+        id
+        name
+        taxId
+        street1
+        street2
+        city
+        state
+        zip
+        type
+        phone
+        url
+        userId
+      }
+    }
+  `;
+
+  it('• should return the expected data when updating information for a school details entry', async () => {
+    const res = await graphql(
+      schema,
+      updateSchoolDetailMutationWithSchoolDetailId(
+        expectedSchoolDetailsIdToUpdate
+      ),
+      null
+    );
+    const actual = res.data.updateSchoolDetail;
+
+    expect(actual.id).toBe(expectedSchoolDetailsIdToUpdate.toString()); // the GraphQL response object will have String-type ID's
+    expect(actual.name).toBe(EXPECTED_UPDATED_NAME);
+    expect(actual.taxId).toBe(EXPECTED_UPDATED_TAX_ID);
+    expect(actual.street1).toBe(EXPECTED_UPDATED_STREET1);
+    expect(actual.street2).toBe(EXPECTED_UPDATED_STREET2);
+    expect(actual.city).toBe(EXPECTED_UPDATED_CITY);
+    expect(actual.state).toBe(EXPECTED_UPDATED_STATE);
+    expect(actual.zip).toBe(EXPECTED_UPDATED_ZIP);
+    expect(actual.type).toBe(EXPECTED_UPDATED_TYPE);
+    expect(actual.phone).toBe(EXPECTED_UPDATED_PHONE);
+    expect(actual.url).toBe(EXPECTED_UPDATED_URL);
+    expect(actual.userId).toBe(
+      EXPECTED_UPDATED_SCHOOLDETAIL_USER_ID.toString()
+    ); // the GraphQL response object will have String-type ID's
+  });
+
+  it('• should actually update the corresponding information for a school details entry in the database', async () => {
+    // Initial mutation to update the user
+    await graphql(
+      schema,
+      updateSchoolDetailMutationWithSchoolDetailId(
+        expectedSchoolDetailsIdToUpdate
+      ),
+      null
+    );
+    const actualNewSchoolDetail = await dbHelper.findById(
+      // DB helper method to find the updated school details entry by ID
+      expectedSchoolDetailsIdToUpdate
+    );
+    expect(actualNewSchoolDetail.id).toBe(expectedSchoolDetailsIdToUpdate);
+    expect(actualNewSchoolDetail.name).toBe(EXPECTED_UPDATED_NAME);
+    expect(actualNewSchoolDetail.taxId).toBe(EXPECTED_UPDATED_TAX_ID);
+    expect(actualNewSchoolDetail.street1).toBe(EXPECTED_UPDATED_STREET1);
+    expect(actualNewSchoolDetail.street2).toBe(EXPECTED_UPDATED_STREET2);
+    expect(actualNewSchoolDetail.city).toBe(EXPECTED_UPDATED_CITY);
+    expect(actualNewSchoolDetail.state).toBe(EXPECTED_UPDATED_STATE);
+    expect(actualNewSchoolDetail.zip).toBe(EXPECTED_UPDATED_ZIP);
+    expect(actualNewSchoolDetail.type).toBe(EXPECTED_UPDATED_TYPE);
+    expect(actualNewSchoolDetail.phone).toBe(EXPECTED_UPDATED_PHONE);
+    expect(actualNewSchoolDetail.url).toBe(EXPECTED_UPDATED_URL);
+    expect(actualNewSchoolDetail.userId).toBe(
+      EXPECTED_UPDATED_SCHOOLDETAIL_USER_ID
+    );
+  });
+});
+
+describe('updateSchoolDetail GQL mutation error handling: ', () => {
+  test('• when "id" parameter is missing', async () => {
+    const EXPECTED_ERROR_MESSAGE =
+      'Please include a school details entry ID and try again.';
+
+    const MUTATION = `
+      mutation {
+        updateSchoolDetail {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.updateSchoolDetail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when attempting to update a non-existent school details entry', async () => {
+    const EXPECTED_ERROR_MESSAGE =
+      'School details entry with the given ID not found';
+
+    const MUTATION = `
+      mutation {
+        updateSchoolDetail (
+          id: 0
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.updateSchoolDetail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when provided user ID does not belong to an existing user', async () => {
+    const EXPECTED_ERROR_MESSAGE =
+      'The provided user ID does not correspond to any existing user.';
+
+    // The mutation string below will be reused for this group of tests
+    const MUTATION = `
+      mutation {
+        updateSchoolDetail (
+          id: 1
+          userId: 0
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.updateSchoolDetail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 });

@@ -217,7 +217,7 @@ describe('updateUser GQL mutation: ', () => {
     // Initial mutation to update the user
     await graphql(schema, updateUserMutationWithArgs(EXPECTED_UPDATES), null);
 
-    const actualUpdatedUser = await dbHelper.findById(expectedUserIdToUpdate);
+    const actualUpdatedUser = await dbHelper.findById(expectedUserIdToUpdate); // DB helper method to find the updated school details entry by ID
     expect(actualUpdatedUser.id).toBe(expectedUserIdToUpdate);
     expect(actualUpdatedUser.username).toBe(EXPECTED_UPDATED_USERNAME);
     expect(actualUpdatedUser.email).toBe(EXPECTED_UPDATED_EMAIL);
