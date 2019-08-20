@@ -105,13 +105,6 @@ const UserType = new GraphQLObjectType({
         }
         return null;
       }
-    },
-    emailList: {
-      type: new GraphQLList(UserEmailType),
-      description: 'List of additional user emails associated with an account',
-      resolve(parent) {
-        return UserEmails.findByUserId(parent.id);
-      }
     }
   })
 });
@@ -180,6 +173,13 @@ const StudentDetailsType = new GraphQLObjectType({
           })
         );
         return [...creds, ...listCreds];
+      }
+    },
+    emailList: {
+      type: new GraphQLList(UserEmailType),
+      description: 'List of additional user emails associated with an account',
+      resolve(parent) {
+        return UserEmails.findByUserId(parent.userId);
       }
     }
   })

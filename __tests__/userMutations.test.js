@@ -5,24 +5,29 @@ const db = require('../database/dbConfig');
 const decoded = require('../api/getDecoded');
 const dbHelper = require('../models/userModel');
 
-// Re-seed before all mutation tests and after each mutation test to ensure that each test will work with a clean set of data
-const cleanUpSeeds = () => db.seed.run();
-beforeAll(cleanUpSeeds);
-afterEach(cleanUpSeeds);
+beforeEach(async () => {
+  // Re-seed before all mutation tests to ensure that each test will work with a clean set of data
+  await db.seed.run();
+});
+afterAll(async () => {
+  // Re-seed after all tests in this test suite to ensure that the next test suite will work with a clean set of data
+  await db.seed.run();
+  await db.destroy(); // Necessary to prevent connections from not closing (which could eventually clog the Postgres database if left unchecked)
+});
 
 // should be based on current seed data
 const ROLE_COUNT = 4;
-const USER_COUNT = 8;
+const USER_COUNT = 9;
 
-describe('• addUser GQL mutation: ', () => {
-  const EXPECTED_NEW_USER_ID = 9; // derived from seeds (ID value auto-increments)
+describe('addUser GQL mutation: ', () => {
+  const EXPECTED_NEW_USER_ID = USER_COUNT + 1; // derived from seeds (ID value auto-increments)
   const EXPECTED_EMAIL = 'johndoe@ymail.com';
   const EXPECTED_USERNAME = 'johndoe';
 
-  let expectedNewUserRoleID; // role ID to use for each addUser mutation test will be randomly generated
+  let expectedNewUserRoleId; // role ID to use for each addUser mutation test will be randomly generated
 
   // This addUser mutation will be run in some manner before every test using a provided role ID as a parameter
-  const addUserMutationUsingRoleID = roleId => `
+  const addUserMutationUsingRoleId = roleId => `
     mutation {
       addUser(
         authToken: "${process.env.TEST_TOKEN}"
@@ -39,13 +44,13 @@ describe('• addUser GQL mutation: ', () => {
 
   beforeEach(() => {
     // A randomly generated valid role ID will be used to insert a new user in every test within this scope
-    expectedNewUserRoleID = Math.ceil(Math.random() * ROLE_COUNT);
+    expectedNewUserRoleId = Math.ceil(Math.random() * ROLE_COUNT);
   });
 
   it('• should return the expected data when adding a user that does not yet exist in the database', async () => {
     const res = await graphql(
       schema,
-      addUserMutationUsingRoleID(expectedNewUserRoleID),
+      addUserMutationUsingRoleId(expectedNewUserRoleId),
       null
     );
     const actual = res.data.addUser;
@@ -54,18 +59,18 @@ describe('• addUser GQL mutation: ', () => {
     expect(actual.id).toBe(EXPECTED_NEW_USER_ID.toString()); // the GraphQL response object will have String-type ID's
     expect(actual.email).toBe(EXPECTED_EMAIL);
     expect(actual.username).toBe(EXPECTED_USERNAME);
-    expect(actual.roleId).toBe(expectedNewUserRoleID.toString()); // the GraphQL response object will have String-type ID's
+    expect(actual.roleId).toBe(expectedNewUserRoleId.toString()); // the GraphQL response object will have String-type ID's
 
     expect(decodedActualToken.subject).toBe(EXPECTED_NEW_USER_ID);
     expect(decodedActualToken.email).toBe(EXPECTED_EMAIL);
-    expect(decodedActualToken.roleId).toBe(expectedNewUserRoleID);
+    expect(decodedActualToken.roleId).toBe(expectedNewUserRoleId);
   });
 
   it("• should actually insert a new user's information into the database", async () => {
     // Initial mutation to add the user
     await graphql(
       schema,
-      addUserMutationUsingRoleID(expectedNewUserRoleID),
+      addUserMutationUsingRoleId(expectedNewUserRoleId),
       null
     );
 
@@ -75,7 +80,7 @@ describe('• addUser GQL mutation: ', () => {
     expect(actualNewUser.email).toBe(EXPECTED_EMAIL);
     expect(actualNewUser.profilePicture).toBeNull(); // profile picture is not set and should be null by default
     expect(actualNewUser.sub).toBeTruthy(); // string type assumed; sub should not be null, undefined or empty string
-    expect(actualNewUser.roleId).toBe(expectedNewUserRoleID);
+    expect(actualNewUser.roleId).toBe(expectedNewUserRoleId);
   });
 
   // Currently dependent on the test "should actually insert a new user's information into the database"
@@ -83,14 +88,14 @@ describe('• addUser GQL mutation: ', () => {
     // Add a new user instead of utilizing seed data so that the mutation can be executed again later using a test token
     await graphql(
       schema,
-      addUserMutationUsingRoleID(expectedNewUserRoleID),
+      addUserMutationUsingRoleId(expectedNewUserRoleId),
       null
     );
 
     const TEST_NONEXISTENT_USER_ID = 0; // The returned role ID should be the actual user's role ID (not this deliberately incorrect value)
     const res = await graphql(
       schema,
-      addUserMutationUsingRoleID(TEST_NONEXISTENT_USER_ID),
+      addUserMutationUsingRoleId(TEST_NONEXISTENT_USER_ID),
       null
     );
     const actual = res.data.addUser;
@@ -99,11 +104,11 @@ describe('• addUser GQL mutation: ', () => {
     expect(actual.id).toBe(EXPECTED_NEW_USER_ID.toString()); // the GraphQL response object will have String-type ID's
     expect(actual.email).toBe(EXPECTED_EMAIL);
     expect(actual.username).toBe(EXPECTED_USERNAME);
-    expect(actual.roleId).toBe(expectedNewUserRoleID.toString()); // the GraphQL response object will have String-type ID's
+    expect(actual.roleId).toBe(expectedNewUserRoleId.toString()); // the GraphQL response object will have String-type ID's
 
     expect(decodedActualToken.subject).toBe(EXPECTED_NEW_USER_ID);
     expect(decodedActualToken.email).toBe(EXPECTED_EMAIL);
-    expect(decodedActualToken.roleId).toBe(expectedNewUserRoleID);
+    expect(decodedActualToken.roleId).toBe(expectedNewUserRoleId);
   });
 });
 
@@ -212,7 +217,7 @@ describe('updateUser GQL mutation: ', () => {
     // Initial mutation to update the user
     await graphql(schema, updateUserMutationWithArgs(EXPECTED_UPDATES), null);
 
-    const actualUpdatedUser = await dbHelper.findById(expectedUserIdToUpdate);
+    const actualUpdatedUser = await dbHelper.findById(expectedUserIdToUpdate); // DB helper method to find the updated school details entry by ID
     expect(actualUpdatedUser.id).toBe(expectedUserIdToUpdate);
     expect(actualUpdatedUser.username).toBe(EXPECTED_UPDATED_USERNAME);
     expect(actualUpdatedUser.email).toBe(EXPECTED_UPDATED_EMAIL);

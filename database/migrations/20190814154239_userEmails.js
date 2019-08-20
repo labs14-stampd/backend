@@ -14,8 +14,7 @@ exports.up = function createSchoolDetails(knex) {
       .references('id')
       .inTable('users')
       .onDelete('CASCADE')
-      .notNull()
-      .unique();
+      .notNull();
     tbl.boolean('valid').defaultTo(false);
   });
 };
