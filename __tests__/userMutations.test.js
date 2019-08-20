@@ -3,7 +3,8 @@ const schema = require('../schema/schema');
 const db = require('../database/dbConfig');
 
 const decoded = require('../api/getDecoded');
-const dbHelper = require('../models/userModel');
+const userDbHelper = require('../models/userModel');
+const emailDbHelper = require('../models/userEmailsModel');
 
 beforeEach(async () => {
   // Re-seed before all mutation tests to ensure that each test will work with a clean set of data
@@ -18,6 +19,7 @@ afterAll(async () => {
 // should be based on current seed data
 const ROLE_COUNT = 4;
 const USER_COUNT = 9;
+const USEREMAIL_COUNT = 4;
 
 describe('addUser GQL mutation: ', () => {
   const EXPECTED_NEW_USER_ID = USER_COUNT + 1; // derived from seeds (ID value auto-increments)
@@ -74,7 +76,7 @@ describe('addUser GQL mutation: ', () => {
       null
     );
 
-    const actualNewUser = await dbHelper.findById(EXPECTED_NEW_USER_ID); // DB helper method to find the newly added user by ID
+    const actualNewUser = await userDbHelper.findById(EXPECTED_NEW_USER_ID); // DB helper method to find the newly added user by ID
     expect(actualNewUser.id).toBe(EXPECTED_NEW_USER_ID);
     expect(actualNewUser.username).toBe(EXPECTED_USERNAME);
     expect(actualNewUser.email).toBe(EXPECTED_EMAIL);
@@ -203,7 +205,7 @@ describe('updateUser GQL mutation: ', () => {
 
   it("• should actually update the corresponding user's information in the database (without affecting other fields)", async () => {
     // Get original user data to check that data fields without specified values are not updated
-    const originalUser = await dbHelper.findById(expectedUserIdToUpdate);
+    const originalUser = await userDbHelper.findById(expectedUserIdToUpdate);
     const EXPECTED_PROFILE_PICTURE = originalUser.profilePicture;
     const EXPECTED_SUB = originalUser.sub;
 
@@ -217,7 +219,9 @@ describe('updateUser GQL mutation: ', () => {
     // Initial mutation to update the user
     await graphql(schema, updateUserMutationWithArgs(EXPECTED_UPDATES), null);
 
-    const actualUpdatedUser = await dbHelper.findById(expectedUserIdToUpdate); // DB helper method to find the updated school details entry by ID
+    const actualUpdatedUser = await userDbHelper.findById(
+      expectedUserIdToUpdate
+    ); // DB helper method to find the updated school details entry by ID
     expect(actualUpdatedUser.id).toBe(expectedUserIdToUpdate);
     expect(actualUpdatedUser.username).toBe(EXPECTED_UPDATED_USERNAME);
     expect(actualUpdatedUser.email).toBe(EXPECTED_UPDATED_EMAIL);
@@ -301,7 +305,7 @@ describe('deleteUser GQL mutation: ', () => {
 
   it('• should actually delete the corresponding user from the database', async () => {
     // Confirm that the user to delete actually existed at first
-    const userToDelete = await dbHelper.findById(expectedUserIdToDelete);
+    const userToDelete = await userDbHelper.findById(expectedUserIdToDelete);
     try {
       // Try catch for throwing error with custom message - if the matcher fails, an exception will occur, leading to the catch block
       expect(userToDelete).toBeTruthy();
@@ -319,7 +323,7 @@ describe('deleteUser GQL mutation: ', () => {
     );
 
     // Attempt to find the user if it still exists (should resolve to falsy value (null/undefined) after deletion)
-    const deletedUser = await dbHelper.findById(expectedUserIdToDelete);
+    const deletedUser = await userDbHelper.findById(expectedUserIdToDelete);
     expect(deletedUser).toBeFalsy();
   });
 });
@@ -356,6 +360,121 @@ describe('deleteUser GQL mutation error handling: ', () => {
 
     const res = await graphql(schema, MUTATION, null);
     expect(res.data.deleteUser).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+});
+
+describe('addUserEmail GQL mutation: ', () => {
+  const EXPECTED_NEW_USEREMAIL_ID = USEREMAIL_COUNT + 1;
+  const EXPECTED_EMAIL = 'test@test.test';
+  let expectedValid;
+  let expectedNewUserId;
+
+  beforeEach(() => {
+    // Randomize field values of the incoming user email entry
+    expectedNewUserId = Math.ceil(Math.random() * USER_COUNT);
+    expectedValid = Boolean(Math.floor(Math.random() * 2));
+  });
+
+  // The mutation string below will be reused for this group of tests
+  const addUserEmailMutationWithEmail = email => `
+    mutation {
+      addUserEmail (
+        email: "${email}"
+        valid: ${expectedValid}
+        userId: ${expectedNewUserId}
+      ) {
+        id
+        email
+        valid
+        userId
+      }
+    }
+  `;
+
+  it('• should return the expected data when adding new user email information', async () => {
+    const res = await graphql(
+      schema,
+      addUserEmailMutationWithEmail(EXPECTED_EMAIL),
+      null
+    );
+    const actual = res.data.addUserEmail;
+
+    expect(actual.id).toBe(EXPECTED_NEW_USEREMAIL_ID.toString()); // the GraphQL response object will have String-type ID's
+    expect(actual.email).toBe(EXPECTED_EMAIL);
+    expect(actual.valid).toBe(expectedValid);
+    expect(actual.userId).toBe(expectedNewUserId.toString()); // the GraphQL response object will have String-type ID's
+  });
+
+  it('• should actually insert the new user email information into the database', async () => {
+    // Initial mutation to add the new user email information
+    await graphql(schema, addUserEmailMutationWithEmail(EXPECTED_EMAIL), null);
+
+    const actualNewUserEmail = await emailDbHelper.findById(
+      // DB helper method to find the newly added user email information by ID
+      EXPECTED_NEW_USEREMAIL_ID
+    );
+    expect(actualNewUserEmail.id).toBe(EXPECTED_NEW_USEREMAIL_ID);
+    expect(actualNewUserEmail.email).toBe(EXPECTED_EMAIL);
+    expect(actualNewUserEmail.valid).toBe(expectedValid);
+    expect(actualNewUserEmail.userId).toBe(expectedNewUserId);
+  });
+});
+
+describe('addUserEmail GQL mutation error handling: ', () => {
+  test('• when "email" parameter is missing', async () => {
+    const EXPECTED_ERROR_MESSAGE =
+      'Please supply the text for the email address.';
+
+    const MUTATION = `
+      mutation {
+        addUserEmail {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.addUserEmail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when "userId" parameter is missing', async () => {
+    const EXPECTED_ERROR_MESSAGE =
+      'Please add an available user ID to assign the new email address to.';
+
+    const MUTATION = `
+      mutation {
+        addUserEmail (
+          email: "test@test.test"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.addUserEmail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when provided user ID does not belong to an existing user', async () => {
+    const EXPECTED_ERROR_MESSAGE =
+      'The provided user ID does not correspond to any existing user.';
+
+    const MUTATION = `
+      mutation {
+        addUserEmail {
+          email: "test@test.test"
+          userId: 0
+        } {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.addUserEmail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 });
