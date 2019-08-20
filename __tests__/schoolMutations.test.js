@@ -32,6 +32,7 @@ describe('addSchoolDetail GQL mutation: ', () => {
   const EXPECTED_URL = 'anavela.bolnamber.nt.fnd';
   const EXPECTED_NEW_SCHOOLDETAIL_USER_ID = USER_COUNT;
 
+  // The mutation string below will be reused for this group of tests
   const MUTATION = `
     mutation {
       addSchoolDetail(
@@ -206,7 +207,6 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
     const EXPECTED_ERROR_MESSAGE =
       'The provided user ID does not correspond to any existing user.';
 
-    // The mutation string below will be reused for this group of tests
     const MUTATION = `
       mutation {
         addSchoolDetail (
@@ -378,7 +378,6 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
     const EXPECTED_ERROR_MESSAGE =
       'The provided user ID does not correspond to any existing user.';
 
-    // The mutation string below will be reused for this group of tests
     const MUTATION = `
       mutation {
         updateSchoolDetail (
