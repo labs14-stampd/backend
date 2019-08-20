@@ -5,6 +5,7 @@ const sendMail = async ({
     recipientName,
     recipientEmail
 }) => {
+    console.log('in sendMail', recipientName, recipientEmail);
     // Generate SMTP service account from ethereal.email
     let account = await nodemailer.createTestAccount();
 

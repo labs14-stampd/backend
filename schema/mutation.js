@@ -8,7 +8,6 @@ const {
   web3,
   contract
 } = require('../web3/web3.js');
-const mailer = require('../utils/sendMail.js');
 
 const {
   GraphQLObjectType,
