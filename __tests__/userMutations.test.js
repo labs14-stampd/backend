@@ -322,7 +322,7 @@ describe('deleteUser GQL mutation: ', () => {
       null
     );
 
-    // Attempt to find the user if it still exists (should resolve to falsy value (null/undefined) after deletion)
+    // Attempt to find the user if it still exists (should resolve to falsy value - null/undefined - after deletion)
     const deletedUser = await userDbHelper.findById(expectedUserIdToDelete);
     expect(deletedUser).toBeFalsy();
   });
@@ -475,6 +475,105 @@ describe('addUserEmail GQL mutation error handling: ', () => {
 
     const res = await graphql(schema, MUTATION, null);
     expect(res.data.addUserEmail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+});
+
+describe('deleteUserEmail GQL mutation: ', () => {
+  let expectedUserEmailIdToDelete;
+
+  beforeEach(() => {
+    // Randomly generate valid test ID's before each test
+    expectedUserEmailIdToDelete = Math.ceil(Math.random() * USEREMAIL_COUNT);
+  });
+
+  const deleteUserEmailMutationWithId = id => `
+    mutation {
+      deleteUserEmail (
+        id: ${id}
+      ) {
+        id
+        email
+        valid
+      }
+    }
+  `;
+
+  it('• should return the expected data when deleting user email information', async () => {
+    const res = await graphql(
+      schema,
+      deleteUserEmailMutationWithId(expectedUserEmailIdToDelete),
+      null
+    );
+    const actual = res.data.deleteUserEmail;
+
+    // All fields except for ID should be null after user deletion (mutation string will not return non-nullable fields to avoid GQL errors)
+    expect(actual.id).toBe(expectedUserEmailIdToDelete.toString()); // the GraphQL response object will have String-type ID's
+    expect(actual.email).toBeNull();
+    expect(actual.valid).toBeNull();
+  });
+
+  it('• should actually delete the corresponding user email information from the database', async () => {
+    // Confirm that the user email information to delete actually existed at first
+    const userEmailToDelete = await userDbHelper.findById(
+      expectedUserEmailIdToDelete
+    );
+    try {
+      // Try catch for throwing error with custom message - if the matcher fails, an exception will occur, leading to the catch block
+      expect(userEmailToDelete).toBeTruthy();
+    } catch {
+      throw new Error(
+        'Testing error: the ID to delete must belong to some existing user email information in the data seeds!'
+      ); // Testing error message if try block fails
+    }
+
+    // Delete the randomly selected user email information
+    await graphql(
+      schema,
+      deleteUserEmailMutationWithId(expectedUserEmailIdToDelete),
+      null
+    );
+
+    // Attempt to find the user email information if it still exists (should resolve to falsy value - null/undefined - after deletion)
+    const deletedUserEmail = await emailDbHelper.findById(
+      expectedUserEmailIdToDelete
+    );
+    expect(deletedUserEmail).toBeFalsy();
+  });
+});
+
+describe('deleteUserEmail GQL mutation error handling: ', () => {
+  test('• when "id" parameter is missing', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Please include an email ID and try again.';
+
+    const MUTATION = `
+      mutation {
+        deleteUserEmail {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.deleteUserEmail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when attempting to delete non-existent user email information', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Email with the given ID not found';
+
+    const MUTATION = `
+      mutation {
+        deleteUserEmail (
+          id: 0
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.deleteUserEmail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 });
