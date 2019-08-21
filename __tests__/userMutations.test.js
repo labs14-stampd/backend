@@ -3,26 +3,33 @@ const schema = require('../schema/schema');
 const db = require('../database/dbConfig');
 
 const decoded = require('../api/getDecoded');
-const dbHelper = require('../models/userModel');
+const userDbHelper = require('../models/userModel');
+const emailDbHelper = require('../models/userEmailsModel');
 
-// Re-seed before all mutation tests and after each mutation test to ensure that each test will work with a clean set of data
-const cleanUpSeeds = () => db.seed.run();
-beforeAll(cleanUpSeeds);
-afterEach(cleanUpSeeds);
+beforeEach(async () => {
+  // Re-seed before all mutation tests to ensure that each test will work with a clean set of data
+  await db.seed.run();
+});
+afterAll(async () => {
+  // Re-seed after all tests in this test suite to ensure that the next test suite will work with a clean set of data
+  await db.seed.run();
+  await db.destroy(); // Necessary to prevent connections from not closing (which could eventually clog the Postgres database if left unchecked)
+});
 
 // should be based on current seed data
 const ROLE_COUNT = 4;
-const USER_COUNT = 8;
+const USER_COUNT = 9;
+const USEREMAIL_COUNT = 4;
 
-describe('• addUser GQL mutation: ', () => {
-  const EXPECTED_NEW_USER_ID = 9; // derived from seeds (ID value auto-increments)
+describe('addUser GQL mutation: ', () => {
+  const EXPECTED_NEW_USER_ID = USER_COUNT + 1; // derived from seeds (ID value auto-increments)
   const EXPECTED_EMAIL = 'johndoe@ymail.com';
   const EXPECTED_USERNAME = 'johndoe';
 
-  let expectedNewUserRoleID; // role ID to use for each addUser mutation test will be randomly generated
+  let expectedNewUserRoleId; // role ID to use for each addUser mutation test will be randomly generated
 
   // This addUser mutation will be run in some manner before every test using a provided role ID as a parameter
-  const addUserMutationUsingRoleID = roleId => `
+  const addUserMutationUsingRoleId = roleId => `
     mutation {
       addUser(
         authToken: "${process.env.TEST_TOKEN}"
@@ -39,13 +46,13 @@ describe('• addUser GQL mutation: ', () => {
 
   beforeEach(() => {
     // A randomly generated valid role ID will be used to insert a new user in every test within this scope
-    expectedNewUserRoleID = Math.ceil(Math.random() * ROLE_COUNT);
+    expectedNewUserRoleId = Math.ceil(Math.random() * ROLE_COUNT);
   });
 
   it('• should return the expected data when adding a user that does not yet exist in the database', async () => {
     const res = await graphql(
       schema,
-      addUserMutationUsingRoleID(expectedNewUserRoleID),
+      addUserMutationUsingRoleId(expectedNewUserRoleId),
       null
     );
     const actual = res.data.addUser;
@@ -54,28 +61,28 @@ describe('• addUser GQL mutation: ', () => {
     expect(actual.id).toBe(EXPECTED_NEW_USER_ID.toString()); // the GraphQL response object will have String-type ID's
     expect(actual.email).toBe(EXPECTED_EMAIL);
     expect(actual.username).toBe(EXPECTED_USERNAME);
-    expect(actual.roleId).toBe(expectedNewUserRoleID.toString()); // the GraphQL response object will have String-type ID's
+    expect(actual.roleId).toBe(expectedNewUserRoleId.toString()); // the GraphQL response object will have String-type ID's
 
     expect(decodedActualToken.subject).toBe(EXPECTED_NEW_USER_ID);
     expect(decodedActualToken.email).toBe(EXPECTED_EMAIL);
-    expect(decodedActualToken.roleId).toBe(expectedNewUserRoleID);
+    expect(decodedActualToken.roleId).toBe(expectedNewUserRoleId);
   });
 
   it("• should actually insert a new user's information into the database", async () => {
     // Initial mutation to add the user
     await graphql(
       schema,
-      addUserMutationUsingRoleID(expectedNewUserRoleID),
+      addUserMutationUsingRoleId(expectedNewUserRoleId),
       null
     );
 
-    const actualNewUser = await dbHelper.findById(EXPECTED_NEW_USER_ID); // DB helper method to find the newly added user by ID
+    const actualNewUser = await userDbHelper.findById(EXPECTED_NEW_USER_ID); // DB helper method to find the newly added user by ID
     expect(actualNewUser.id).toBe(EXPECTED_NEW_USER_ID);
     expect(actualNewUser.username).toBe(EXPECTED_USERNAME);
     expect(actualNewUser.email).toBe(EXPECTED_EMAIL);
     expect(actualNewUser.profilePicture).toBeNull(); // profile picture is not set and should be null by default
     expect(actualNewUser.sub).toBeTruthy(); // string type assumed; sub should not be null, undefined or empty string
-    expect(actualNewUser.roleId).toBe(expectedNewUserRoleID);
+    expect(actualNewUser.roleId).toBe(expectedNewUserRoleId);
   });
 
   // Currently dependent on the test "should actually insert a new user's information into the database"
@@ -83,14 +90,14 @@ describe('• addUser GQL mutation: ', () => {
     // Add a new user instead of utilizing seed data so that the mutation can be executed again later using a test token
     await graphql(
       schema,
-      addUserMutationUsingRoleID(expectedNewUserRoleID),
+      addUserMutationUsingRoleId(expectedNewUserRoleId),
       null
     );
 
     const TEST_NONEXISTENT_USER_ID = 0; // The returned role ID should be the actual user's role ID (not this deliberately incorrect value)
     const res = await graphql(
       schema,
-      addUserMutationUsingRoleID(TEST_NONEXISTENT_USER_ID),
+      addUserMutationUsingRoleId(TEST_NONEXISTENT_USER_ID),
       null
     );
     const actual = res.data.addUser;
@@ -99,11 +106,11 @@ describe('• addUser GQL mutation: ', () => {
     expect(actual.id).toBe(EXPECTED_NEW_USER_ID.toString()); // the GraphQL response object will have String-type ID's
     expect(actual.email).toBe(EXPECTED_EMAIL);
     expect(actual.username).toBe(EXPECTED_USERNAME);
-    expect(actual.roleId).toBe(expectedNewUserRoleID.toString()); // the GraphQL response object will have String-type ID's
+    expect(actual.roleId).toBe(expectedNewUserRoleId.toString()); // the GraphQL response object will have String-type ID's
 
     expect(decodedActualToken.subject).toBe(EXPECTED_NEW_USER_ID);
     expect(decodedActualToken.email).toBe(EXPECTED_EMAIL);
-    expect(decodedActualToken.roleId).toBe(expectedNewUserRoleID);
+    expect(decodedActualToken.roleId).toBe(expectedNewUserRoleId);
   });
 });
 
@@ -198,7 +205,7 @@ describe('updateUser GQL mutation: ', () => {
 
   it("• should actually update the corresponding user's information in the database (without affecting other fields)", async () => {
     // Get original user data to check that data fields without specified values are not updated
-    const originalUser = await dbHelper.findById(expectedUserIdToUpdate);
+    const originalUser = await userDbHelper.findById(expectedUserIdToUpdate);
     const EXPECTED_PROFILE_PICTURE = originalUser.profilePicture;
     const EXPECTED_SUB = originalUser.sub;
 
@@ -212,7 +219,9 @@ describe('updateUser GQL mutation: ', () => {
     // Initial mutation to update the user
     await graphql(schema, updateUserMutationWithArgs(EXPECTED_UPDATES), null);
 
-    const actualUpdatedUser = await dbHelper.findById(expectedUserIdToUpdate);
+    const actualUpdatedUser = await userDbHelper.findById(
+      expectedUserIdToUpdate
+    ); // DB helper method to find the updated school details entry by ID
     expect(actualUpdatedUser.id).toBe(expectedUserIdToUpdate);
     expect(actualUpdatedUser.username).toBe(EXPECTED_UPDATED_USERNAME);
     expect(actualUpdatedUser.email).toBe(EXPECTED_UPDATED_EMAIL);
@@ -296,7 +305,7 @@ describe('deleteUser GQL mutation: ', () => {
 
   it('• should actually delete the corresponding user from the database', async () => {
     // Confirm that the user to delete actually existed at first
-    const userToDelete = await dbHelper.findById(expectedUserIdToDelete);
+    const userToDelete = await userDbHelper.findById(expectedUserIdToDelete);
     try {
       // Try catch for throwing error with custom message - if the matcher fails, an exception will occur, leading to the catch block
       expect(userToDelete).toBeTruthy();
@@ -313,8 +322,8 @@ describe('deleteUser GQL mutation: ', () => {
       null
     );
 
-    // Attempt to find the user if it still exists (should resolve to falsy value (null/undefined) after deletion)
-    const deletedUser = await dbHelper.findById(expectedUserIdToDelete);
+    // Attempt to find the user if it still exists (should resolve to falsy value - null/undefined - after deletion)
+    const deletedUser = await userDbHelper.findById(expectedUserIdToDelete);
     expect(deletedUser).toBeFalsy();
   });
 });
@@ -351,6 +360,220 @@ describe('deleteUser GQL mutation error handling: ', () => {
 
     const res = await graphql(schema, MUTATION, null);
     expect(res.data.deleteUser).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+});
+
+describe('addUserEmail GQL mutation: ', () => {
+  const EXPECTED_NEW_USEREMAIL_ID = USEREMAIL_COUNT + 1;
+  const EXPECTED_EMAIL = 'test@test.test';
+  let expectedValid;
+  let expectedNewUserId;
+
+  beforeEach(() => {
+    // Randomize field values of the incoming user email entry
+    expectedNewUserId = Math.ceil(Math.random() * USER_COUNT);
+    expectedValid = Boolean(Math.floor(Math.random() * 2));
+  });
+
+  // The mutation string below will be reused for this group of tests
+  const addUserEmailMutationWithEmail = email => `
+    mutation {
+      addUserEmail (
+        email: "${email}"
+        valid: ${expectedValid}
+        userId: ${expectedNewUserId}
+      ) {
+        id
+        email
+        valid
+        userId
+      }
+    }
+  `;
+
+  it('• should return the expected data when adding new user email information', async () => {
+    const res = await graphql(
+      schema,
+      addUserEmailMutationWithEmail(EXPECTED_EMAIL),
+      null
+    );
+    const actual = res.data.addUserEmail;
+
+    expect(actual.id).toBe(EXPECTED_NEW_USEREMAIL_ID.toString()); // the GraphQL response object will have String-type ID's
+    expect(actual.email).toBe(EXPECTED_EMAIL);
+    expect(actual.valid).toBe(expectedValid);
+    expect(actual.userId).toBe(expectedNewUserId.toString()); // the GraphQL response object will have String-type ID's
+  });
+
+  it('• should actually insert the new user email information into the database', async () => {
+    // Initial mutation to add the new user email information
+    await graphql(schema, addUserEmailMutationWithEmail(EXPECTED_EMAIL), null);
+
+    const actualNewUserEmail = await emailDbHelper.findById(
+      // DB helper method to find the newly added user email information by ID
+      EXPECTED_NEW_USEREMAIL_ID
+    );
+    expect(actualNewUserEmail.id).toBe(EXPECTED_NEW_USEREMAIL_ID);
+    expect(actualNewUserEmail.email).toBe(EXPECTED_EMAIL);
+    expect(actualNewUserEmail.valid).toBe(expectedValid);
+    expect(actualNewUserEmail.userId).toBe(expectedNewUserId);
+  });
+});
+
+describe('addUserEmail GQL mutation error handling: ', () => {
+  test('• when "email" parameter is missing', async () => {
+    const EXPECTED_ERROR_MESSAGE =
+      'Please supply the text for the email address.';
+
+    const MUTATION = `
+      mutation {
+        addUserEmail {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.addUserEmail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when "userId" parameter is missing', async () => {
+    const EXPECTED_ERROR_MESSAGE =
+      'Please add an available user ID to assign the new email address to.';
+
+    const MUTATION = `
+      mutation {
+        addUserEmail (
+          email: "test@test.test"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.addUserEmail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when provided user ID does not belong to an existing user', async () => {
+    const EXPECTED_ERROR_MESSAGE =
+      'The provided user ID does not correspond to any existing user.';
+
+    const MUTATION = `
+      mutation {
+        addUserEmail {
+          email: "test@test.test"
+          userId: 0
+        } {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.addUserEmail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+});
+
+describe('deleteUserEmail GQL mutation: ', () => {
+  let expectedUserEmailIdToDelete;
+
+  beforeEach(() => {
+    // Randomly generate valid test ID's before each test
+    expectedUserEmailIdToDelete = Math.ceil(Math.random() * USEREMAIL_COUNT);
+  });
+
+  const deleteUserEmailMutationWithId = id => `
+    mutation {
+      deleteUserEmail (
+        id: ${id}
+      ) {
+        id
+        email
+        valid
+      }
+    }
+  `;
+
+  it('• should return the expected data when deleting user email information', async () => {
+    const res = await graphql(
+      schema,
+      deleteUserEmailMutationWithId(expectedUserEmailIdToDelete),
+      null
+    );
+    const actual = res.data.deleteUserEmail;
+
+    // All fields except for ID should be null after user deletion (mutation string will not return non-nullable fields to avoid GQL errors)
+    expect(actual.id).toBe(expectedUserEmailIdToDelete.toString()); // the GraphQL response object will have String-type ID's
+    expect(actual.email).toBeNull();
+    expect(actual.valid).toBeNull();
+  });
+
+  it('• should actually delete the corresponding user email information from the database', async () => {
+    // Confirm that the user email information to delete actually existed at first
+    const userEmailToDelete = await userDbHelper.findById(
+      expectedUserEmailIdToDelete
+    );
+    try {
+      // Try catch for throwing error with custom message - if the matcher fails, an exception will occur, leading to the catch block
+      expect(userEmailToDelete).toBeTruthy();
+    } catch {
+      throw new Error(
+        'Testing error: the ID to delete must belong to some existing user email information in the data seeds!'
+      ); // Testing error message if try block fails
+    }
+
+    // Delete the randomly selected user email information
+    await graphql(
+      schema,
+      deleteUserEmailMutationWithId(expectedUserEmailIdToDelete),
+      null
+    );
+
+    // Attempt to find the user email information if it still exists (should resolve to falsy value - null/undefined - after deletion)
+    const deletedUserEmail = await emailDbHelper.findById(
+      expectedUserEmailIdToDelete
+    );
+    expect(deletedUserEmail).toBeFalsy();
+  });
+});
+
+describe('deleteUserEmail GQL mutation error handling: ', () => {
+  test('• when "id" parameter is missing', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Please include an email ID and try again.';
+
+    const MUTATION = `
+      mutation {
+        deleteUserEmail {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.deleteUserEmail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when attempting to delete non-existent user email information', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Email with the given ID not found';
+
+    const MUTATION = `
+      mutation {
+        deleteUserEmail (
+          id: 0
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.deleteUserEmail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 });

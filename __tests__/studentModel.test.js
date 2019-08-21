@@ -2,17 +2,22 @@ const db = require('../database/dbConfig');
 const StudentDetails = require('./../models/studentModel');
 const User = require('../models/userModel');
 
-beforeAll( async () => {
-  await db.seed.run();
-});
-
 describe('StudentDetails Model', () => {
+  beforeEach(async () => {
+    await db.seed.run();
+  });
+  afterAll(async () => {
+    await db.seed.run();
+    await db.destroy();
+  });
+
   describe('insert', () => {
     beforeEach(async () => {
       const user = await User.insert({
         username: 'testUser',
         email: 'testUser@test.com',
-        sub: 'testUser'
+        sub: 'testUser',
+        roleId: 3
       });
       const student = {
         fullName: 'Test User',
@@ -26,14 +31,11 @@ describe('StudentDetails Model', () => {
         zip: '00000',
         phone: '(000)000-0000',
         userId: user.id
-      }
+      };
 
       await StudentDetails.insert(student);
     });
-    afterEach(() => {
-      return db('users').delete();
-    });
-    it('shoud check whether all properties are inserted correctly', async () => {
+    it(' should check whether all properties are inserted correctly', async () => {
       const [student] = await StudentDetails.findBy({ firstName: 'Test' });
       expect(student.fullName).toBe('Test User');
       expect(student.firstName).toBe('Test');
@@ -51,6 +53,7 @@ describe('StudentDetails Model', () => {
   });
   describe('update', () => {
     beforeEach(async () => {
+      await db.seed.run();
       const user = await User.insert({
         username: 'testUser',
         email: 'testUser@test.com',
@@ -69,17 +72,17 @@ describe('StudentDetails Model', () => {
         zip: '00000',
         phone: '(000)000-0000',
         userId: user.id
-      }
+      };
 
-      const updateStudent = {
+      const updatedStudent = {
         fullName: 'Test Updated',
         firstName: 'Test',
         middleName: 'S',
         lastName: 'Updated'
-      }
+      };
 
-      await StudentDetails.insert(student);
-      await StudentDetails.update(user.id, updateStudent)
+      const inserted = await StudentDetails.insert(student);
+      await StudentDetails.update(inserted.id, updatedStudent);
     });
     afterEach(() => {
       return db('users').delete();
