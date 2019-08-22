@@ -5,7 +5,13 @@ const Credentials = require('../models/credentialModel.js');
 const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
 const { txFunc, web3, contract } = require('../web3/web3.js');
 
-const { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLNonNull } = graphql;
+const {
+  GraphQLObjectType,
+  GraphQLList,
+  GraphQLID,
+  GraphQLNonNull,
+  GraphQLString
+} = graphql;
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
@@ -140,6 +146,19 @@ const RootQuery = new GraphQLObjectType({
         }
       }
     },
+    getCredentialsByEmail: {
+      type: new GraphQLList(CredentialType),
+      description: 'Get all credentials associated with a specific email',
+      args: { email: { type: new GraphQLNonNull(GraphQLString) } },
+      resolve: async (parent, args) => {
+        try {
+          const res = await Credentials.findBy({ studentEmail: args.email });
+          return res;
+        } catch {
+          return new Error('there was an error completing your request.');
+        }
+      }
+    },
     verifyCredential: {
       type: CredentialType,
       description: 'Checks that a credential exists and is currently valid',
@@ -160,15 +179,17 @@ const RootQuery = new GraphQLObjectType({
             updated_at,
             ...cred
           } = await Credentials.findById(args.id);
-          
+
           //data will be true or false, depending on validity of credential
-          const data = await contract.methods.verifyCredential(cred.credHash).call();
-          } catch(error){
-            return error;
-          }
+          const data = await contract.methods
+            .verifyCredential(cred.credHash)
+            .call();
+        } catch (error) {
+          return error;
         }
       }
-    } // fields
+    }
+  } // fields
 });
 
 module.exports = {
