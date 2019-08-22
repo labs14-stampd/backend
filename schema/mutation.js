@@ -222,7 +222,6 @@ const Mutation = new GraphQLObjectType({
         }
       },
       async resolve(parent, args) {
-        console.log('in delete resolver', args);
         if (!args.id || typeof Number(args.id) !== 'number') {
           return new Error('Please include a credential ID and try again.');
         }
@@ -232,7 +231,6 @@ const Mutation = new GraphQLObjectType({
             .encodeABI();
           if (data.length) {
             const result = await txFunc(data);
-            console.log('result ', result);
             return Credential.remove(args.id).then(res => {
               if (res) {
                 return { id: args.id };
