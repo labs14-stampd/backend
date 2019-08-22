@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const secret = process.env.PK;
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const expressPlayground = require('graphql-playground-middleware-express')

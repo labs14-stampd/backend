@@ -2,17 +2,13 @@ const graphql = require('graphql');
 const User = require('../models/userModel.js');
 const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
+const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
+const { txFunc, web3, contract } = require('../web3/web3.js');
+const jwt = require('jsonwebtoken');
+const secret = process.env.PK;
+const { sendMagicLink } = require('../utils/sendMail.js');
 const {
-  UserType,
-  SchoolDetailsType,
-  CredentialType
-} = require('./types.js');
-const {
-  txFunc,
-  web3,
-  contract
-} = require('../web3/web3.js');
-const {
+  GraphQLString,
   GraphQLObjectType,
   GraphQLList,
   GraphQLID,
@@ -108,7 +104,6 @@ const RootQuery = new GraphQLObjectType({
           const res = await Credentials.find();
           if (res.length) {
             return res;
-
           }
           return new Error('No credentials could be found');
         } catch {
@@ -193,9 +188,50 @@ const RootQuery = new GraphQLObjectType({
           } = await Credentials.findById(args.id);
 
           //data will be true or false, depending on validity of credential
-          const data = await contract.methods.verifyCredential(cred.credHash).call();
+          const data = await contract.methods
+            .verifyCredential(cred.credHash)
+            .call();
         } catch (error) {
           return error;
+        }
+      }
+    },
+    shareCredential: {
+      type: UserType,
+      description: 'Creates and emails magic link to recipient',
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The unique ID of the credential to be shared'
+        },
+        email: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'The email of the recipient of magic link'
+        }
+      },
+      resolve: async (parent, args) => {
+        console.log(args);
+        try {
+          credential = await Credentials.findById(args.id);
+
+          const payload = {
+            credId: credential.id,
+            txHash: credential.txHash,
+            studentEmail: credential.studentEmail
+          };
+
+          const options = { expiresIn: '1d' };
+
+          const linkJwt = jwt.sign(payload, secret, options);
+          console.log('payload', payload, 'linkJwt', linkJwt);
+          sendMagicLink({
+            recipientEmail: args.email,
+            student: credential.ownerName,
+            jwt: linkJwt
+          });
+          console.log('after magic link');
+        } catch (error) {
+          return new Error('Error', error);
         }
       }
     }

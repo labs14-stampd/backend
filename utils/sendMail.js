@@ -37,14 +37,8 @@ const sendMail = async ({ recipientName, recipientEmail, jwt }) => {
   });
 };
 
-const sendMagicLink = async ({
-  recipientName,
-  recipientEmail,
-  student,
-  jwt
-}) => {
+const sendMagicLink = async ({ recipientEmail, student, jwt }) => {
   // Create a SMTP transporter object
-
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -52,12 +46,11 @@ const sendMagicLink = async ({
       pass: process.env.NODEMAILER_PASSWORD
     }
   });
-
   // Message object
   const message = {
     // Comma separated list of recipients
     from: `"Team Stampd" <${process.env.NODEMAILER_ADDRESS}>`,
-    to: `"${recipientName}" <${recipientEmail}>`,
+    to: `<${recipientEmail}>`,
 
     // Subject of the message
     subject: `${student}'s credential is ready to verify!`,
@@ -72,9 +65,10 @@ const sendMagicLink = async ({
 
   transporter.sendMail(message, (err, info) => {
     if (err) {
+      console.log('error sending mail', error);
       return err.message;
     }
-
+    console.log('sent sucdessfully');
     return nodemailer.getTestMessageUrl(info);
   });
 };
