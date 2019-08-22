@@ -670,9 +670,10 @@ describe('deleteUser GQL mutation error handling: ', () => {
 
 describe('addUserEmail GQL mutation: ', () => {
   const EXPECTED_NEW_USEREMAIL_ID = USEREMAIL_COUNT + 1;
-  const EXPECTED_EMAIL = 'test@test.test';
+  const EXPECTED_EMAIL = 'aquaman@rocketmail.com';
   let expectedValid;
-  let expectedNewUserId;
+  const EXPECTED_NEW_USEREMAIL_USER_ID = 8;
+  const EXPECTED_ADDED_CREDENTIAL_ID = 3;
 
   beforeEach(() => {
     // Randomize field values of the incoming user email entry
@@ -686,12 +687,15 @@ describe('addUserEmail GQL mutation: ', () => {
       addUserEmail (
         email: "${email}"
         valid: ${expectedValid}
-        userId: ${expectedNewUserId}
+        userId: ${EXPECTED_NEW_USEREMAIL_USER_ID}
       ) {
         id
         email
         valid
         userId
+        credentials {
+          id
+        }
       }
     }
   `;
@@ -707,7 +711,8 @@ describe('addUserEmail GQL mutation: ', () => {
     expect(actual.id).toBe(EXPECTED_NEW_USEREMAIL_ID.toString()); // the GraphQL response object will have String-type ID's
     expect(actual.email).toBe(EXPECTED_EMAIL);
     expect(actual.valid).toBe(expectedValid);
-    expect(actual.userId).toBe(expectedNewUserId.toString()); // the GraphQL response object will have String-type ID's
+    expect(actual.userId).toBe(EXPECTED_NEW_USEREMAIL_USER_ID.toString()); // the GraphQL response object will have String-type ID's
+    expect(actual.credentials[0].id).toBe(EXPECTED_ADDED_CREDENTIAL_ID.toString()); // the GraphQL response object will have String-type ID's
   });
 
   it('• should actually insert the new user email information into the database', async () => {
@@ -721,7 +726,7 @@ describe('addUserEmail GQL mutation: ', () => {
     expect(actualNewUserEmail.id).toBe(EXPECTED_NEW_USEREMAIL_ID);
     expect(actualNewUserEmail.email).toBe(EXPECTED_EMAIL);
     expect(actualNewUserEmail.valid).toBe(expectedValid);
-    expect(actualNewUserEmail.userId).toBe(expectedNewUserId);
+    expect(actualNewUserEmail.userId).toBe(EXPECTED_NEW_USEREMAIL_USER_ID);
   });
 });
 
