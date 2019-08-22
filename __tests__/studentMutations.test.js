@@ -14,7 +14,7 @@ afterAll(async () => {
   await db.destroy(); // Necessary to prevent connections from not closing (which could eventually clog the Postgres database if left unchecked)
 });
 
-// should be based on current seed data
+// Should be based on current seed data
 const USER_COUNT = 9;
 const STUDENTDETAIL_COUNT = 3;
 
