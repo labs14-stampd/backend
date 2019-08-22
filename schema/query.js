@@ -214,12 +214,10 @@ const RootQuery = new GraphQLObjectType({
           credential = await Credentials.findById(args.id);
 
           const payload = {
-            credId: credential.id,
-            txHash: credential.txHash,
-            studentEmail: credential.studentEmail
+            credId: credential.id
           };
 
-          const options = { expiresIn: '1d' };
+          const options = { expiresIn: '45d' };
 
           const linkJwt = jwt.sign(payload, secret, options);
           sendMagicLink({

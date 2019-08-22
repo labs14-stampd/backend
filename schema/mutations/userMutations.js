@@ -169,6 +169,8 @@ module.exports = {
 
       return UserEmails.insert(args)
         .then(res => {
+          console.log('in useremails insert');
+          console.log(res);
           const linkJwt = jwt({
             userId: res.id,
             email: args.email,
