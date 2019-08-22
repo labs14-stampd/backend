@@ -1,7 +1,13 @@
 const graphql = require('graphql');
 const Credential = require('../models/credentialModel.js');
-const { CredentialType } = require('./types.js');
-const { txFunc, web3, contract } = require('../web3/web3.js');
+const {
+  CredentialType
+} = require('./types.js');
+const {
+  txFunc,
+  web3,
+  contract
+} = require('../web3/web3.js');
 
 const {
   GraphQLObjectType,
@@ -81,8 +87,7 @@ const Mutation = new GraphQLObjectType({
         },
         valid: {
           type: GraphQLBoolean,
-          description:
-            'A boolean flag indicating if the new credential is still valid'
+          description: 'A boolean flag indicating if the new credential is still valid'
         },
         issuedOn: {
           type: new GraphQLNonNull(GraphQLString),
@@ -94,8 +99,7 @@ const Mutation = new GraphQLObjectType({
         },
         schoolId: {
           type: new GraphQLNonNull(GraphQLID),
-          description:
-            'USER id associated with the school issuing the new credential'
+          description: 'USER id associated with the school issuing the new credential'
           // ^^^ This is the id in the 'users' table
         }
       },
@@ -137,8 +141,7 @@ const Mutation = new GraphQLObjectType({
         },
         credHash: {
           type: GraphQLString,
-          description:
-            'Hash of credential information to be stored on blockchain'
+          description: 'Hash of credential information to be stored on blockchain'
         },
         txHash: {
           type: GraphQLString,
@@ -166,8 +169,7 @@ const Mutation = new GraphQLObjectType({
         },
         valid: {
           type: GraphQLBoolean,
-          description:
-            'A boolean flag indicating if the new credential is still valid'
+          description: 'A boolean flag indicating if the new credential is still valid'
         },
         issuedOn: {
           type: GraphQLString,
@@ -179,8 +181,7 @@ const Mutation = new GraphQLObjectType({
         },
         schoolId: {
           type: GraphQLID,
-          description:
-            'USER id associated with the school issuing the new credential'
+          description: 'USER id associated with the school issuing the new credential'
           // ^^^ This is the id in the 'users' table
         }
       },
@@ -217,8 +218,7 @@ const Mutation = new GraphQLObjectType({
         },
         credHash: {
           type: GraphQLString,
-          description:
-            'Hash of credential information to be stored on blockchain'
+          description: 'Hash of credential information to be stored on blockchain'
         }
       },
       async resolve(parent, args) {
@@ -235,7 +235,9 @@ const Mutation = new GraphQLObjectType({
             console.log('result ', result);
             return Credential.remove(args.id).then(res => {
               if (res) {
-                return { id: args.id };
+                return {
+                  id: args.id
+                };
               }
               return new Error('The credential could not be deleted.');
             });
@@ -263,8 +265,7 @@ const Mutation = new GraphQLObjectType({
         },
         credHash: {
           type: GraphQLString,
-          description:
-            'Hash of credential information to be stored on blockchain'
+          description: 'Hash of credential information to be stored on blockchain'
         },
         txHash: {
           type: GraphQLString,
@@ -292,8 +293,7 @@ const Mutation = new GraphQLObjectType({
         },
         valid: {
           type: GraphQLBoolean,
-          description:
-            'A boolean flag indicating if the new credential is still valid'
+          description: 'A boolean flag indicating if the new credential is still valid'
         },
         issuedOn: {
           type: GraphQLString,
@@ -305,8 +305,7 @@ const Mutation = new GraphQLObjectType({
         },
         schoolId: {
           type: GraphQLID,
-          description:
-            'USER id associated with the school issuing the new credential'
+          description: 'USER id associated with the school issuing the new credential'
           // ^^^ This is the id in the 'users' table
         }
       },
@@ -324,7 +323,9 @@ const Mutation = new GraphQLObjectType({
             args.valid = false;
             return Credential.update(args.id, args).then(res => {
               if (res) {
-                return { id: args.id };
+                return {
+                  id: args.id
+                };
               }
               return new Error('The credential could not be invalidated.');
             });
@@ -354,8 +355,7 @@ const Mutation = new GraphQLObjectType({
         },
         credHash: {
           type: GraphQLString,
-          description:
-            'Hash of credential information to be stored on blockchain'
+          description: 'Hash of credential information to be stored on blockchain'
         },
         txHash: {
           type: GraphQLString,
@@ -383,8 +383,7 @@ const Mutation = new GraphQLObjectType({
         },
         valid: {
           type: GraphQLBoolean,
-          description:
-            'A boolean flag indicating if the new credential is still valid'
+          description: 'A boolean flag indicating if the new credential is still valid'
         },
         issuedOn: {
           type: GraphQLString,
@@ -396,8 +395,7 @@ const Mutation = new GraphQLObjectType({
         },
         schoolId: {
           type: GraphQLID,
-          description:
-            'USER id associated with the school issuing the new credential'
+          description: 'USER id associated with the school issuing the new credential'
           // ^^^ This is the id in the 'users' table
         }
       },
@@ -414,7 +412,9 @@ const Mutation = new GraphQLObjectType({
             args.valid = true;
             return Credential.update(args.id, args).then(res => {
               if (res) {
-                return { id: args.id };
+                return {
+                  id: args.id
+                };
               }
               return new Error('The credential could not be validated.');
             });
