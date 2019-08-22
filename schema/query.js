@@ -2,22 +2,10 @@ const graphql = require('graphql');
 const User = require('../models/userModel.js');
 const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
-const {
-  UserType,
-  SchoolDetailsType,
-  CredentialType
-} = require('./types.js');
-const {
-  txFunc,
-  web3,
-  contract
-} = require('../web3/web3.js');
-const {
-  GraphQLObjectType,
-  GraphQLList,
-  GraphQLID,
-  GraphQLNonNull
-} = graphql;
+const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
+const { txFunc, web3, contract } = require('../web3/web3.js');
+
+const { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLNonNull } = graphql;
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
@@ -40,11 +28,7 @@ const RootQuery = new GraphQLObjectType({
     getUserById: {
       type: UserType,
       description: 'Gets a user by user ID',
-      args: {
-        id: {
-          type: GraphQLID
-        }
-      },
+      args: { id: { type: GraphQLID } },
       resolve: async (parent, args) => {
         if (!args.id) {
           return new Error('Please include a user ID and try again.');
@@ -79,11 +63,7 @@ const RootQuery = new GraphQLObjectType({
     getSchoolDetailsBySchoolId: {
       type: SchoolDetailsType,
       description: 'Gets school by school ID',
-      args: {
-        id: {
-          type: GraphQLID
-        }
-      },
+      args: { id: { type: GraphQLID } },
       resolve: async (parent, args) => {
         if (!args.id) {
           return new Error('Please include a school details ID and try again.');
@@ -108,7 +88,6 @@ const RootQuery = new GraphQLObjectType({
           const res = await Credentials.find();
           if (res.length) {
             return res;
-
           }
           return new Error('No credentials could be found');
         } catch {
@@ -119,11 +98,7 @@ const RootQuery = new GraphQLObjectType({
     getCredentialById: {
       type: CredentialType,
       description: 'Get a credential by ID',
-      args: {
-        id: {
-          type: GraphQLID
-        }
-      },
+      args: { id: { type: GraphQLID } },
       resolve: async (parent, args) => {
         if (!args.id) {
           return new Error('Please include a credential ID and try again.');
@@ -143,11 +118,7 @@ const RootQuery = new GraphQLObjectType({
     getCredentialsBySchoolId: {
       type: new GraphQLList(CredentialType),
       description: 'Get all of a schools credentials',
-      args: {
-        id: {
-          type: GraphQLID
-        }
-      },
+      args: { id: { type: GraphQLID } },
       resolve: async (parent, args) => {
         if (!args.id) {
           return new Error('Please include a school ID and try again.');
@@ -159,9 +130,7 @@ const RootQuery = new GraphQLObjectType({
             return new Error('School with that ID could not be found');
           }
 
-          const res = await Credentials.findBy({
-            schoolId: args.id
-          });
+          const res = await Credentials.findBy({ schoolId: args.id });
           if (res) {
             return res;
           }
@@ -191,15 +160,15 @@ const RootQuery = new GraphQLObjectType({
             updated_at,
             ...cred
           } = await Credentials.findById(args.id);
-
+          
           //data will be true or false, depending on validity of credential
           const data = await contract.methods.verifyCredential(cred.credHash).call();
-        } catch (error) {
-          return error;
+          } catch(error){
+            return error;
+          }
         }
       }
-    }
-  } // fields
+    } // fields
 });
 
 module.exports = {
