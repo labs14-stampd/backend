@@ -2,17 +2,13 @@ const graphql = require('graphql');
 const User = require('../models/userModel.js');
 const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
+const jwt = require('jsonwebtoken');
+const secret = process.env.PK;
+const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
+const { txFunc, web3, contract } = require('../web3/web3.js');
+const { sendMagicLink } = require('../utils/sendMail.js');
 const {
-  UserType,
-  SchoolDetailsType,
-  CredentialType
-} = require('./types.js');
-const {
-  txFunc,
-  web3,
-  contract
-} = require('../web3/web3.js');
-const {
+  GraphQLString,
   GraphQLObjectType,
   GraphQLList,
   GraphQLID,
@@ -108,7 +104,6 @@ const RootQuery = new GraphQLObjectType({
           const res = await Credentials.find();
           if (res.length) {
             return res;
-
           }
           return new Error('No credentials could be found');
         } catch {
@@ -193,10 +188,49 @@ const RootQuery = new GraphQLObjectType({
           } = await Credentials.findById(args.id);
 
           //data will be true or false, depending on validity of credential
-          const data = await contract.methods.verifyCredential(cred.credHash).call();
+          const data = await contract.methods
+            .verifyCredential(cred.credHash)
+            .call();
         } catch (error) {
           return error;
         }
+      }
+    },
+    shareCredential: {
+      type: UserType,
+      description: 'Sends credential information to a specified email address',
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The unique ID of the credential to be shared'
+        },
+        email: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'The email to which magic link will be sent'
+        }
+      },
+      resolve: async (parent, args) => {
+        try {
+          const credential = await Credentials.findById(args.id);
+          if (credential.valid === false) {
+            return new Error(
+              "This credential is not valid, so it can't be shared!"
+            );
+          }
+          const payload = {
+            subject: credential.id,
+            txHash: credential.txHash,
+            imageUrl: credential.imageUrl
+          };
+          const options = { expiresIn: '1d' };
+          const linkJwt = jwt.sign(payload, secret, options);
+          sendMagicLink({
+            recipientName: args.recipientName,
+            recipientEmail: args.email,
+            student: credential.ownerName,
+            jwt: linkJwt
+          });
+        } catch (error) {}
       }
     }
   } // fields
