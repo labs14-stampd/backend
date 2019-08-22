@@ -152,7 +152,7 @@ const RootQuery = new GraphQLObjectType({
       args: { email: { type: new GraphQLNonNull(GraphQLString) } },
       resolve: async (parent, args) => {
         try {
-          const res = await Credentials.findBy({ email: args.email });
+          const res = await Credentials.findBy({ studentEmail: args.email });
           return res;
         } catch {
           return new Error('there was an error completing your request.');
