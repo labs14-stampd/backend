@@ -2,6 +2,7 @@ const graphql = require('graphql');
 const jwt = require('../../api/tokenService.js');
 const User = require('../../models/userModel.js');
 const UserEmails = require('../../models/userEmailsModel');
+const Credentials = require('../../models/credentialModel');
 const { UserType, UserEmailType } = require('../types.js');
 const getDecoded = require('../../api/getDecoded.js');
 
@@ -148,7 +149,10 @@ module.exports = {
     },
     resolve(parent, args) {
       return UserEmails.insert(args)
-        .then(res => {
+        .then(async res => {
+          res.credentials = await Credentials.findBy({
+            studentEmail: args.email
+          });
           return res;
         })
         .catch(err => {

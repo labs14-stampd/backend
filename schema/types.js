@@ -49,6 +49,10 @@ const UserEmailType = new GraphQLObjectType({
     valid: {
       type: GraphQLBoolean,
       description: 'Boolean for whether email was verified.'
+    },
+    credentials: {
+      type: new GraphQLList(CredentialType),
+      description: 'Credentials associated with email address'
     }
   })
 });
