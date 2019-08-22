@@ -210,7 +210,6 @@ const RootQuery = new GraphQLObjectType({
         }
       },
       resolve: async (parent, args) => {
-        console.log(args);
         try {
           credential = await Credentials.findById(args.id);
 
@@ -223,13 +222,11 @@ const RootQuery = new GraphQLObjectType({
           const options = { expiresIn: '1d' };
 
           const linkJwt = jwt.sign(payload, secret, options);
-          console.log('payload', payload, 'linkJwt', linkJwt);
           sendMagicLink({
             recipientEmail: args.email,
             student: credential.ownerName,
             jwt: linkJwt
           });
-          console.log('after magic link');
         } catch (error) {
           return new Error('Error', error);
         }

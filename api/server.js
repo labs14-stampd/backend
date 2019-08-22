@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const secret = process.env.PK;
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const expressPlayground = require('graphql-playground-middleware-express')
@@ -7,7 +6,7 @@ const expressPlayground = require('graphql-playground-middleware-express')
 const UserEmails = require('../models/userEmailsModel');
 const applyMiddleware = require('./middleware.js');
 const schema = require('../schema/schema.js');
-
+const secret = process.env.PK;
 const server = express();
 applyMiddleware(server);
 
@@ -19,20 +18,30 @@ server.get('/', (req, res) => {
 
 server.get('/confirmation/:jwt', (req, res) => {
   try {
-    const verified = jwt.verify(
-      req.params.jwt,
-      process.env.PK,
-      (err, result) => {
-        if (err) {
-          res.send({ error: err });
-        } else {
-          UserEmails.update(result.subject, { valid: 'true' }).then(update => {
-            res.status(200);
-            res.send({ success: 'updated' });
-          });
-        }
+    const verified = jwt.verify(req.params.jwt, secret, (err, result) => {
+      if (err) {
+        res.send({ error: err });
+      } else {
+        UserEmails.update(result.subject, { valid: 'true' }).then(update => {
+          res.status(200);
+          res.send({ success: 'updated' });
+        });
       }
-    );
+    });
+  } catch (e) {
+    res.send({ error: e });
+  }
+});
+
+server.get('/verifyCred/:jwt', (req, res) => {
+  try {
+    jwt.verify(req.params.jwt, secret, (err, result) => {
+      if (err) {
+        res.send({ error: err });
+      } else {
+        res.send({ success: 'validated' });
+      }
+    });
   } catch (e) {
     res.send({ error: e });
   }
