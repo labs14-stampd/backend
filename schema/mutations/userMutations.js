@@ -3,22 +3,11 @@ const jwt = require('../../api/tokenService.js');
 const User = require('../../models/userModel.js');
 const UserEmails = require('../../models/userEmailsModel');
 const Student = require('../../models/studentModel');
-const {
-  UserType,
-  UserEmailType
-} = require('../types.js');
+const { UserType, UserEmailType } = require('../types.js');
 const getDecoded = require('../../api/getDecoded.js');
-const {
-  sendMail
-} = require('../../utils/sendMail.js');
+const { sendMail } = require('../../utils/sendMail.js');
 
-
-const {
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLBoolean
-} = graphql;
+const { GraphQLString, GraphQLNonNull, GraphQLID, GraphQLBoolean } = graphql;
 
 module.exports = {
   addUser: {
@@ -36,16 +25,8 @@ module.exports = {
     },
     resolve(parent, args) {
       let token;
-      const {
-        authToken,
-        ...restArgs
-      } = args;
-      const {
-        sub,
-        email,
-        username,
-        profilePicture
-      } = getDecoded(authToken);
+      const { authToken, ...restArgs } = args;
+      const { sub, email, username, profilePicture } = getDecoded(authToken);
       return User.findBy({
         email
       }).then(user => {
@@ -67,12 +48,12 @@ module.exports = {
           };
         }
         return User.insert({
-            sub,
-            email,
-            username,
-            profilePicture,
-            ...restArgs
-          })
+          sub,
+          email,
+          username,
+          profilePicture,
+          ...restArgs
+        })
           .then(res => {
             token = jwt({
               userId: res.id,
@@ -175,19 +156,28 @@ module.exports = {
     },
     resolve(parent, args) {
       let fullName = '';
-      Student.findByUserId(args.userId).then(res => {
-        fullName = res.fullName;
-      }).catch(err => {
-        return {
-          error: err,
-          message: 'error finding user'
-        }
-      });
+      Student.findByUserId(args.userId)
+        .then(res => {
+          fullName = res.fullName;
+        })
+        .catch(err => {
+          return {
+            error: err,
+            message: 'error finding user'
+          };
+        });
+
       return UserEmails.insert(args)
         .then(res => {
+          const linkJwt = jwt({
+            userId: res.id,
+            email: args.email,
+            roleId: 2
+          });
           sendMail({
             recipientName: fullName,
-            recipientEmail: args.email
+            recipientEmail: args.email,
+            jwt: linkJwt
           });
           return res;
         })
