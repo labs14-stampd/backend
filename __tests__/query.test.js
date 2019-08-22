@@ -856,3 +856,79 @@ describe('getCredentialsBySchoolId GQL query error handling: ', () => {
     expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
 });
+
+describe('getCredentialsByEmail GQL query: ', () => {
+  it('• should return the corresponding credentials data for an email address that has some credentials issued to it', async () => {
+    // Should be based on current seed data
+    const TEST_EMAIL_TO_GET = 'howdy@neighquestr.com';
+    const EXPECTED_CREDENTIALS = [CREDENTIALS_DATA[4], CREDENTIALS_DATA[5]];
+
+    const QUERY = `
+      query {
+        getCredentialsByEmail (
+          email: "${TEST_EMAIL_TO_GET}"
+        ) {
+          id
+          credName
+          description
+          credHash
+          txHash
+          type
+          ownerName
+          studentEmail
+          imageUrl
+          criteria
+          valid
+          issuedOn
+          expirationDate
+          schoolId
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    const actualCredentials = res.data.getCredentialsByEmail;
+
+    expect(actualCredentials.length).toBe(EXPECTED_CREDENTIALS.length);
+    for (let i = 0; i < EXPECTED_CREDENTIALS.length; i++) {
+      expect(actualCredentials[i]).toEqual(EXPECTED_CREDENTIALS[i]);
+    }
+  });
+
+  it('• should return the corresponding credentials data for an email address that does not have any credentials issued to it', async () => {
+    // Should be based on current seed data
+    const TEST_EMAIL_TO_GET = 'nonexistent@example.com';
+
+    const QUERY = `
+      query {
+        getCredentialsByEmail (
+          email: "${TEST_EMAIL_TO_GET}"
+        ) {
+          id
+        }
+      }
+    `; // Query should only ask for ID since the idea is to simply expect an empty list
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getCredentialsByEmail.length).toBe(0);
+  });
+});
+
+describe('getCredentialsByEmail GQL query error handling: ', () => {
+  test('• when "email" parameter is missing', async () => {
+    const EXPECTED_ERROR_MESSAGE =
+      'Please include an email address and try again.';
+
+    const QUERY = `
+      query {
+        getCredentialsByEmail {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getCredentialsByEmail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+});

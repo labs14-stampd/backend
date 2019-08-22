@@ -90,7 +90,7 @@ exports.seed = function seedCredentials(knex) {
           schoolId: 4 // This is actually the id from 'users' table
         },
         {
-          // id: 3,
+          // id: 6,
           credName: "Associate's Degree in Underwater Blow Torching",
           description:
             'Certifies that this person is capable of handling a blow torch underwater',
