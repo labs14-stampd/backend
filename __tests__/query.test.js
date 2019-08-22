@@ -921,7 +921,7 @@ describe('getCredentialsByEmail GQL query error handling: ', () => {
 
     const QUERY = `
       query {
-        getCredentialsByEmail {
+        getCredentialsByEmail { 
           id
         }
       }

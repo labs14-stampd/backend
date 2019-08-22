@@ -149,8 +149,12 @@ const RootQuery = new GraphQLObjectType({
     getCredentialsByEmail: {
       type: new GraphQLList(CredentialType),
       description: 'Get all credentials associated with a specific email',
-      args: { email: { type: new GraphQLNonNull(GraphQLString) } },
+      args: { email: { type: GraphQLString } },
       resolve: async (parent, args) => {
+        if (!args.email) {
+          return new Error('Please include an email address and try again.');
+        }
+
         try {
           const res = await Credentials.findBy({ studentEmail: args.email });
           return res;
