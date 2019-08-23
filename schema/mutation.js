@@ -1,13 +1,7 @@
 const graphql = require('graphql');
 const Credential = require('../models/credentialModel.js');
-const {
-  CredentialType
-} = require('./types.js');
-const {
-  txFunc,
-  web3,
-  contract
-} = require('../web3/web3.js');
+const { CredentialType } = require('./types.js');
+const { txFunc, web3, contract } = require('../web3/web3.js');
 
 const {
   GraphQLObjectType,
@@ -87,7 +81,8 @@ const Mutation = new GraphQLObjectType({
         },
         valid: {
           type: GraphQLBoolean,
-          description: 'A boolean flag indicating if the new credential is still valid'
+          description:
+            'A boolean flag indicating if the new credential is still valid'
         },
         issuedOn: {
           type: new GraphQLNonNull(GraphQLString),
@@ -99,11 +94,14 @@ const Mutation = new GraphQLObjectType({
         },
         schoolId: {
           type: new GraphQLNonNull(GraphQLID),
-          description: 'USER id associated with the school issuing the new credential'
+          description:
+            'USER id associated with the school issuing the new credential'
           // ^^^ This is the id in the 'users' table
         }
       },
-      async resolve(parent, args) {
+      async resolve(parent, args, ctx) {
+        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
+          return new Error('Unauthorized');
         try {
           const credentialHash = web3.utils.sha3(JSON.stringify(args));
           args.credHash = credentialHash;
@@ -141,7 +139,8 @@ const Mutation = new GraphQLObjectType({
         },
         credHash: {
           type: GraphQLString,
-          description: 'Hash of credential information to be stored on blockchain'
+          description:
+            'Hash of credential information to be stored on blockchain'
         },
         txHash: {
           type: GraphQLString,
@@ -169,7 +168,8 @@ const Mutation = new GraphQLObjectType({
         },
         valid: {
           type: GraphQLBoolean,
-          description: 'A boolean flag indicating if the new credential is still valid'
+          description:
+            'A boolean flag indicating if the new credential is still valid'
         },
         issuedOn: {
           type: GraphQLString,
@@ -181,7 +181,8 @@ const Mutation = new GraphQLObjectType({
         },
         schoolId: {
           type: GraphQLID,
-          description: 'USER id associated with the school issuing the new credential'
+          description:
+            'USER id associated with the school issuing the new credential'
           // ^^^ This is the id in the 'users' table
         }
       },
@@ -218,7 +219,8 @@ const Mutation = new GraphQLObjectType({
         },
         credHash: {
           type: GraphQLString,
-          description: 'Hash of credential information to be stored on blockchain'
+          description:
+            'Hash of credential information to be stored on blockchain'
         }
       },
       async resolve(parent, args) {
@@ -263,7 +265,8 @@ const Mutation = new GraphQLObjectType({
         },
         credHash: {
           type: GraphQLString,
-          description: 'Hash of credential information to be stored on blockchain'
+          description:
+            'Hash of credential information to be stored on blockchain'
         },
         txHash: {
           type: GraphQLString,
@@ -291,7 +294,8 @@ const Mutation = new GraphQLObjectType({
         },
         valid: {
           type: GraphQLBoolean,
-          description: 'A boolean flag indicating if the new credential is still valid'
+          description:
+            'A boolean flag indicating if the new credential is still valid'
         },
         issuedOn: {
           type: GraphQLString,
@@ -303,7 +307,8 @@ const Mutation = new GraphQLObjectType({
         },
         schoolId: {
           type: GraphQLID,
-          description: 'USER id associated with the school issuing the new credential'
+          description:
+            'USER id associated with the school issuing the new credential'
           // ^^^ This is the id in the 'users' table
         }
       },
@@ -353,7 +358,8 @@ const Mutation = new GraphQLObjectType({
         },
         credHash: {
           type: GraphQLString,
-          description: 'Hash of credential information to be stored on blockchain'
+          description:
+            'Hash of credential information to be stored on blockchain'
         },
         txHash: {
           type: GraphQLString,
@@ -381,7 +387,8 @@ const Mutation = new GraphQLObjectType({
         },
         valid: {
           type: GraphQLBoolean,
-          description: 'A boolean flag indicating if the new credential is still valid'
+          description:
+            'A boolean flag indicating if the new credential is still valid'
         },
         issuedOn: {
           type: GraphQLString,
@@ -393,7 +400,8 @@ const Mutation = new GraphQLObjectType({
         },
         schoolId: {
           type: GraphQLID,
-          description: 'USER id associated with the school issuing the new credential'
+          description:
+            'USER id associated with the school issuing the new credential'
           // ^^^ This is the id in the 'users' table
         }
       },
