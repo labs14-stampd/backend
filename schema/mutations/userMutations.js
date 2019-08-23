@@ -92,7 +92,7 @@ module.exports = {
       }
     }, // Update User
     resolve(parent, args, ctx) {
-      if (Number(ctx.roleId) !== 3 && Number(ctx.roleId) !== 1)
+      if (Number(ctx.roleId) !== 1 && ctx.userId !== args.id)
         return new Error('Unauthorized');
       return User.update(args.id, args)
         .then(res => {
@@ -119,10 +119,10 @@ module.exports = {
         description: 'The unique ID of the user to be deleted'
       }
     },
-    resolve(parent, args) {
-      if (!args.id || typeof Number(args.id) !== 'number') {
-        return new Error('Please include a user ID and try again.');
-      }
+    resolve(parent, args, ctx) {
+      if (Number(ctx.roleId) !== 1 && ctx.userId !== args.id)
+        return new Error('Unauthorized');
+
       return User.remove(args.id)
         .then(res => {
           if (res) {
@@ -154,7 +154,9 @@ module.exports = {
         description: 'Boolean for whether email was verified.'
       }
     },
-    resolve(parent, args) {
+    resolve(parent, args, ctx) {
+      if (Number(ctx.roleId) !== 1 && ctx.userId !== args.userId)
+        return new Error('Unauthorized');
       let fullName = '';
       Student.findByUserId(args.userId)
         .then(res => {
@@ -203,10 +205,9 @@ module.exports = {
         description: 'The unique ID of the user to be deleted'
       }
     },
-    resolve(parent, args) {
-      if (!args.id || typeof Number(args.id) !== 'number') {
-        return new Error('Please include a user ID and try again.');
-      }
+    resolve(parent, args, ctx) {
+      if (Number(ctx.roleId) !== 1 && Number(ctx.roleId) !== 3)
+        return new Error('Unauthorized');
       return UserEmails.remove(args.id)
         .then(res => {
           if (res) {
