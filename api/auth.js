@@ -22,6 +22,6 @@ module.exports = async (req, res, next) => {
   }
   req.isAuth = true;
   req.roleId = decodedToken.roleId;
-  req.userId = decodedToken.userId;
+  req.userId = decodedToken.subject;
   return next();
 };
