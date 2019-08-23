@@ -43,7 +43,8 @@ module.exports = {
         description: 'The ID of the user associated with the school'
       }
     },
-    resolve(parent, args) {
+    resolve(parent, args, ctx) {
+      if (!ctx.isAuth) return new Error('Unauthorized');
       return School.insert(args)
         .then(res => res)
         .catch(err => new Error(err));
