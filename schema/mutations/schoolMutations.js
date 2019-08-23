@@ -91,10 +91,9 @@ module.exports = {
         description: 'The ID of the user associated with the school'
       }
     },
-    resolve(parent, args) {
-      if (!args.id || typeof Number(args.id) !== 'number') {
-        return new Error('Please include a SchoolDetails ID and try again.');
-      }
+    resolve(parent, args, ctx) {
+      if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
+        return new Error('Unauthorized');
       return School.update(args.id, args)
         .then(res => {
           if (res) {
