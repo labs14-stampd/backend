@@ -186,7 +186,9 @@ const Mutation = new GraphQLObjectType({
           // ^^^ This is the id in the 'users' table
         }
       },
-      async resolve(parent, args) {
+      async resolve(parent, args, ctx) {
+        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
+          return new Error('Unauthorized');
         if (!args.id || typeof Number(args.id) !== 'number') {
           return new Error('Please include a Credential ID and try again.');
         }
