@@ -1,6 +1,8 @@
 const graphql = require('graphql');
 const Student = require('../../models/studentModel');
+const Users = require('../../models/userModel.js');
 const { StudentDetailsType } = require('../types.js');
+const jwt = require('../../api/tokenService');
 
 const { GraphQLString, GraphQLNonNull, GraphQLID } = graphql;
 
@@ -46,10 +48,20 @@ module.exports = {
         description: 'The ID of the user associated with the school'
       }
     },
-    resolve(parent, args) {
-      return Student.insert(args)
-        .then(res => res)
-        .catch(err => new Error(err));
+    async resolve(parent, args, ctx) {
+      if (!ctx.isAuth) return new Error('Unauthorized');
+      try {
+        const newStudent = await Student.insert(args);
+        const user = await Users.findById(args.userId);
+        const token = jwt({
+          userId: newStudent.userId,
+          email: user.email,
+          roleId: user.roleId
+        });
+        return { ...newStudent, token };
+      } catch (error) {
+        return new Error('There was an error completing your request.');
+      }
     }
   }, // Add School Detail
   updateStudentDetail: {
@@ -96,7 +108,9 @@ module.exports = {
         description: 'The ID of the student details'
       }
     },
-    resolve(parent, args) {
+    resolve(parent, args, ctx) {
+      if (Number(ctx.roleId) !== 3 && Number(ctx.roleId) !== 1)
+        return new Error('Unauthorized');
       if (!args.id || typeof Number(args.id) !== 'number') {
         return new Error('Please include a StudentDetails ID and try again.');
       }

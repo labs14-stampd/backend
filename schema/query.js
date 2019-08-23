@@ -19,14 +19,15 @@ const RootQuery = new GraphQLObjectType({
     getAllUsers: {
       type: new GraphQLList(UserType),
       description: 'Gets all users',
-      resolve: async () => {
+      resolve: async (parent, args, ctx) => {
+        if (Number(ctx.roleId) !== 1) return new Error('Unauthorized');
         try {
           const res = await User.find();
           if (res) {
             return res;
           }
           return new Error('The users could not be found.');
-        } catch {
+        } catch (error) {
           return new Error('There was an error completing your request.');
         }
       }
@@ -36,36 +37,19 @@ const RootQuery = new GraphQLObjectType({
       description: 'Gets a user by user ID',
       args: {
         id: {
-          type: GraphQLID
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'ID of the user'
         }
       },
-      resolve: async (parent, args) => {
-        if (!args.id) {
-          return new Error('Please include a user ID and try again.');
-        }
-
+      resolve: async (parent, args, ctx) => {
+        if (!ctx.isAuth) return new Error('Unauthorized');
         try {
           const res = await User.findById(args.id);
           if (res) {
             return res;
           }
           return new Error('The user could not be found.');
-        } catch {
-          return new Error('There was an error completing your request.');
-        }
-      }
-    },
-    getAllSchoolDetails: {
-      type: new GraphQLList(SchoolDetailsType),
-      description: 'Gets all schools',
-      resolve: async () => {
-        try {
-          const res = await Schools.find();
-          if (res.length) {
-            return res;
-          }
-          return new Error('No schools could be found.');
-        } catch {
+        } catch (error) {
           return new Error('There was an error completing your request.');
         }
       }
@@ -75,21 +59,18 @@ const RootQuery = new GraphQLObjectType({
       description: 'Gets school by school ID',
       args: {
         id: {
-          type: GraphQLID
+          type: new GraphQLNonNull(GraphQLID)
         }
       },
-      resolve: async (parent, args) => {
-        if (!args.id) {
-          return new Error('Please include a school details ID and try again.');
-        }
-
+      resolve: async (parent, args, ctx) => {
+        if (Number(ctx.roleId) !== 2) return new Error('Unauthorized');
         try {
           const res = await Schools.findById(args.id);
           if (res) {
             return res;
           }
           return new Error('School details could not be found.');
-        } catch {
+        } catch (error) {
           return new Error('there was an error completing your request.');
         }
       }
@@ -97,14 +78,15 @@ const RootQuery = new GraphQLObjectType({
     getAllCredentials: {
       type: new GraphQLList(CredentialType),
       description: 'Gets all credentials',
-      resolve: async () => {
+      resolve: async (parent, args, ctx) => {
+        if (Number(ctx.roleId) !== 1) return new Error('Unauthorized');
         try {
           const res = await Credentials.find();
           if (res.length) {
             return res;
           }
           return new Error('No credentials could be found');
-        } catch {
+        } catch (error) {
           return new Error('there was an error completing your request.');
         }
       }
@@ -114,21 +96,17 @@ const RootQuery = new GraphQLObjectType({
       description: 'Get a credential by ID',
       args: {
         id: {
-          type: GraphQLID
+          type: new GraphQLNonNull(GraphQLID)
         }
       },
       resolve: async (parent, args) => {
-        if (!args.id) {
-          return new Error('Please include a credential ID and try again.');
-        }
-
         try {
           const res = await Credentials.findById(args.id);
           if (res) {
             return res;
           }
           return new Error('Credential with that ID could not be found');
-        } catch {
+        } catch (error) {
           return new Error('there was an error completing your request.');
         }
       }
@@ -138,14 +116,12 @@ const RootQuery = new GraphQLObjectType({
       description: 'Get all of a schools credentials',
       args: {
         id: {
-          type: GraphQLID
+          type: new GraphQLNonNull(GraphQLID)
         }
       },
-      resolve: async (parent, args) => {
-        if (!args.id) {
-          return new Error('Please include a school ID and try again.');
-        }
-
+      resolve: async (parent, args, ctx) => {
+        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
+          return new Error('Unauthorized');
         try {
           const school = await User.findById(args.id);
           if (!school) {
@@ -159,7 +135,7 @@ const RootQuery = new GraphQLObjectType({
             return res;
           }
           return new Error('School with that ID could not be found');
-        } catch {
+        } catch (error) {
           return new Error('there was an error completing your request.');
         }
       }
@@ -167,16 +143,14 @@ const RootQuery = new GraphQLObjectType({
     getCredentialsByEmail: {
       type: new GraphQLList(CredentialType),
       description: 'Get all credentials associated with a specific email',
-      args: { email: { type: GraphQLString } },
+      args: { email: { type: new GraphQLNonNull(GraphQLString) } },
       resolve: async (parent, args) => {
-        if (!args.email) {
-          return new Error('Please include an email address and try again.');
-        }
-
+        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
+          return new Error('Unauthorized');
         try {
           const res = await Credentials.findBy({ studentEmail: args.email });
           return res;
-        } catch {
+        } catch (error) {
           return new Error('there was an error completing your request.');
         }
       }
@@ -202,7 +176,7 @@ const RootQuery = new GraphQLObjectType({
             ...cred
           } = await Credentials.findById(args.id);
 
-          //data will be true or false, depending on validity of credential
+          // data will be true or false, depending on validity of credential
           const data = await contract.methods
             .verifyCredential(cred.credHash)
             .call();
