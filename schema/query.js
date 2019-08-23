@@ -78,7 +78,8 @@ const RootQuery = new GraphQLObjectType({
     getAllCredentials: {
       type: new GraphQLList(CredentialType),
       description: 'Gets all credentials',
-      resolve: async () => {
+      resolve: async (parent, args, ctx) => {
+        if (Number(ctx.roleId) !== 1) return new Error('Unauthorized');
         try {
           const res = await Credentials.find();
           if (res.length) {
