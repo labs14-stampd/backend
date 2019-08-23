@@ -96,14 +96,10 @@ const RootQuery = new GraphQLObjectType({
       description: 'Get a credential by ID',
       args: {
         id: {
-          type: GraphQLID
+          type: new GraphQLNonNull(GraphQLID)
         }
       },
       resolve: async (parent, args) => {
-        if (!args.id) {
-          return new Error('Please include a credential ID and try again.');
-        }
-
         try {
           const res = await Credentials.findById(args.id);
           if (res) {
