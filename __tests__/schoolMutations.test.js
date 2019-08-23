@@ -14,7 +14,7 @@ afterAll(async () => {
   await db.destroy(); // Necessary to prevent connections from not closing (which could eventually clog the Postgres database if left unchecked)
 });
 
-// should be based on current seed data
+// Should be based on current seed data
 const USER_COUNT = 9;
 const SCHOOLDETAIL_COUNT = 8;
 
@@ -107,6 +107,12 @@ describe('addSchoolDetail GQL mutation: ', () => {
 });
 
 describe('addSchoolDetail GQL mutation error handling: ', () => {
+  const EXPECTED_NAME = 'Test School';
+  const EXPECTED_TAX_ID = '40-4040404';
+  const EXPECTED_PHONE = '404-404-0404';
+  const EXPECTED_URL = 'anavela.bolnamber.nt.fnd';
+  const EXPECTED_NEW_SCHOOLDETAIL_USER_ID = USER_COUNT;
+
   test('• when "name" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE = 'Please add a name for the new school.';
 
@@ -223,6 +229,54 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
 
     const res = await graphql(schema, MUTATION, null);
     expect(res.data.addSchoolDetail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when provided school name is not unique', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'School name must be unique.';
+
+    // Should be based on current seed data
+    const EXISTING_NAME = 'School of the East';
+    const MUTATION = `
+      mutation {
+        addSchoolDetail (
+          name: "${EXISTING_NAME}"
+          taxID: "${EXPECTED_TAX_ID}"
+          phone: "${EXPECTED_PHONE}"
+          url: "${EXPECTED_URL}"
+          userId: ${EXPECTED_NEW_SCHOOLDETAIL_USER_ID}
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.addSchoolDetail).isNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when provided tax ID is not unique', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Tax ID must be unique';
+
+    // Should be based on current seed data
+    const EXISTING_TAX_ID = '000000000';
+    const MUTATION = `
+      mutation {
+        addSchoolDetail (
+          name: "${EXPECTED_NAME}"
+          taxID: "${EXISTING_TAX_ID}"
+          phone: "${EXPECTED_PHONE}"
+          url: "${EXPECTED_URL}"
+          userId: ${EXPECTED_NEW_SCHOOLDETAIL_USER_ID}
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.addSchoolDetail).isNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 });
@@ -392,6 +446,50 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
 
     const res = await graphql(schema, MUTATION, null);
     expect(res.data.updateSchoolDetail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when provided school name is not unique', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'School name must be unique.';
+
+    // Should be based on current seed data
+    const TEST_ID_TO_UPDATE = 1;
+    const EXISTING_NAME = 'School of the East';
+    const MUTATION = `
+      mutation {
+        updateSchoolDetail (
+          id: ${TEST_ID_TO_UPDATE}
+          name: "${EXISTING_NAME}"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.updateSchoolDetail).isNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when provided tax ID is not unique', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Tax ID must be unique.';
+
+    // Should be based on current seed data
+    const TEST_ID_TO_UPDATE = 1;
+    const EXISTING_TAX_ID = '000000001';
+    const MUTATION = `
+      mutation {
+        updateSchoolDetail (
+          id: ${TEST_ID_TO_UPDATE}
+          taxId: "${EXISTING_TAX_ID}"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.updateSchoolDetail).isNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 });

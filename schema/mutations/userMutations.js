@@ -2,6 +2,7 @@ const graphql = require('graphql');
 const jwt = require('../../api/tokenService.js');
 const User = require('../../models/userModel.js');
 const UserEmails = require('../../models/userEmailsModel');
+const Credentials = require('../../models/credentialModel');
 const Student = require('../../models/studentModel');
 const { UserType, UserEmailType } = require('../types.js');
 const getDecoded = require('../../api/getDecoded.js');
@@ -90,10 +91,9 @@ module.exports = {
         description: 'The new roleId of the user'
       }
     }, // Update User
-    resolve(parent, args) {
-      if (!args.id || typeof Number(args.id) !== 'number') {
-        return new Error('Please include a user ID and try again.');
-      }
+    resolve(parent, args, ctx) {
+      if (Number(ctx.roleId) !== 1 && ctx.userId !== Number(args.id))
+        return new Error('Unauthorized');
       return User.update(args.id, args)
         .then(res => {
           if (res) {
@@ -119,10 +119,10 @@ module.exports = {
         description: 'The unique ID of the user to be deleted'
       }
     },
-    resolve(parent, args) {
-      if (!args.id || typeof Number(args.id) !== 'number') {
-        return new Error('Please include a user ID and try again.');
-      }
+    resolve(parent, args, ctx) {
+      if (Number(ctx.roleId) !== 1 && ctx.userId !== args.id)
+        return new Error('Unauthorized');
+
       return User.remove(args.id)
         .then(res => {
           if (res) {
@@ -154,7 +154,9 @@ module.exports = {
         description: 'Boolean for whether email was verified.'
       }
     },
-    resolve(parent, args) {
+    resolve(parent, args, ctx) {
+      if (Number(ctx.roleId) !== 1 && ctx.userId !== args.userId)
+        return new Error('Unauthorized');
       let fullName = '';
       Student.findByUserId(args.userId)
         .then(res => {
@@ -168,7 +170,11 @@ module.exports = {
         });
 
       return UserEmails.insert(args)
-        .then(res => {
+        .then(async res => {
+          res.credentials = await Credentials.findBy({
+            studentEmail: args.email
+          });
+
           const linkJwt = jwt({
             userId: res.id,
             email: args.email,
@@ -179,6 +185,7 @@ module.exports = {
             recipientEmail: args.email,
             jwt: linkJwt
           });
+
           return res;
         })
         .catch(err => {
@@ -198,10 +205,9 @@ module.exports = {
         description: 'The unique ID of the user to be deleted'
       }
     },
-    resolve(parent, args) {
-      if (!args.id || typeof Number(args.id) !== 'number') {
-        return new Error('Please include a user ID and try again.');
-      }
+    resolve(parent, args, ctx) {
+      if (Number(ctx.roleId) !== 1 && Number(ctx.roleId) !== 3)
+        return new Error('Unauthorized');
       return UserEmails.remove(args.id)
         .then(res => {
           if (res) {
