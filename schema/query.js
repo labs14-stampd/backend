@@ -34,7 +34,11 @@ const RootQuery = new GraphQLObjectType({
     getUserById: {
       type: UserType,
       description: 'Gets a user by user ID',
-      args: { id: { type: GraphQLID } },
+      args: {
+        id: {
+          type: GraphQLID
+        }
+      },
       resolve: async (parent, args) => {
         if (!args.id) {
           return new Error('Please include a user ID and try again.');
@@ -69,7 +73,11 @@ const RootQuery = new GraphQLObjectType({
     getSchoolDetailsBySchoolId: {
       type: SchoolDetailsType,
       description: 'Gets school by school ID',
-      args: { id: { type: GraphQLID } },
+      args: {
+        id: {
+          type: GraphQLID
+        }
+      },
       resolve: async (parent, args) => {
         if (!args.id) {
           return new Error('Please include a school details ID and try again.');
@@ -104,7 +112,11 @@ const RootQuery = new GraphQLObjectType({
     getCredentialById: {
       type: CredentialType,
       description: 'Get a credential by ID',
-      args: { id: { type: GraphQLID } },
+      args: {
+        id: {
+          type: GraphQLID
+        }
+      },
       resolve: async (parent, args) => {
         if (!args.id) {
           return new Error('Please include a credential ID and try again.');
@@ -124,7 +136,11 @@ const RootQuery = new GraphQLObjectType({
     getCredentialsBySchoolId: {
       type: new GraphQLList(CredentialType),
       description: 'Get all of a schools credentials',
-      args: { id: { type: GraphQLID } },
+      args: {
+        id: {
+          type: GraphQLID
+        }
+      },
       resolve: async (parent, args) => {
         if (!args.id) {
           return new Error('Please include a school ID and try again.');
@@ -136,7 +152,9 @@ const RootQuery = new GraphQLObjectType({
             return new Error('School with that ID could not be found');
           }
 
-          const res = await Credentials.findBy({ schoolId: args.id });
+          const res = await Credentials.findBy({
+            schoolId: args.id
+          });
           if (res) {
             return res;
           }

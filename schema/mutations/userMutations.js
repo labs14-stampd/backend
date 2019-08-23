@@ -3,8 +3,10 @@ const jwt = require('../../api/tokenService.js');
 const User = require('../../models/userModel.js');
 const UserEmails = require('../../models/userEmailsModel');
 const Credentials = require('../../models/credentialModel');
+const Student = require('../../models/studentModel');
 const { UserType, UserEmailType } = require('../types.js');
 const getDecoded = require('../../api/getDecoded.js');
+const { sendMail } = require('../../utils/sendMail.js');
 
 const { GraphQLString, GraphQLNonNull, GraphQLID, GraphQLBoolean } = graphql;
 
@@ -26,7 +28,9 @@ module.exports = {
       let token;
       const { authToken, ...restArgs } = args;
       const { sub, email, username, profilePicture } = getDecoded(authToken);
-      return User.findBy({ email }).then(user => {
+      return User.findBy({
+        email
+      }).then(user => {
         if (user.sub && user.sub !== sub) {
           return new Error('You must be logged in with a valid account.');
         }
@@ -123,11 +127,15 @@ module.exports = {
       return User.remove(args.id)
         .then(res => {
           if (res) {
-            return { id: args.id };
+            return {
+              id: args.id
+            };
           }
           return new Error('The user could not be deleted.');
         })
-        .catch(err => ({ error: err }));
+        .catch(err => ({
+          error: err
+        }));
     }
   }, // Delete User
   addUserEmail: {
@@ -148,15 +156,42 @@ module.exports = {
       }
     },
     resolve(parent, args) {
+      let fullName = '';
+      Student.findByUserId(args.userId)
+        .then(res => {
+          fullName = res.fullName;
+        })
+        .catch(err => {
+          return {
+            error: err,
+            message: 'error finding user'
+          };
+        });
+
       return UserEmails.insert(args)
         .then(async res => {
           res.credentials = await Credentials.findBy({
             studentEmail: args.email
           });
+
+          const linkJwt = jwt({
+            userId: res.id,
+            email: args.email,
+            roleId: 2
+          });
+          sendMail({
+            recipientName: fullName,
+            recipientEmail: args.email,
+            jwt: linkJwt
+          });
+
           return res;
         })
         .catch(err => {
-          return { error: err, message: 'Unique constraint' };
+          return {
+            error: err,
+            message: 'Unique constraint'
+          };
         });
     }
   }, // Add user email
@@ -176,11 +211,15 @@ module.exports = {
       return UserEmails.remove(args.id)
         .then(res => {
           if (res) {
-            return { id: args.id };
+            return {
+              id: args.id
+            };
           }
           return new Error('The email could not be deleted.');
         })
-        .catch(err => ({ error: err }));
+        .catch(err => ({
+          error: err
+        }));
     }
   } // Delete User Email
 };
