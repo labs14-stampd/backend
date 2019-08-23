@@ -225,7 +225,9 @@ const Mutation = new GraphQLObjectType({
             'Hash of credential information to be stored on blockchain'
         }
       },
-      async resolve(parent, args) {
+      async resolve(parent, args, ctx) {
+        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
+          return new Error('Unauthorized');
         if (!args.id || typeof Number(args.id) !== 'number') {
           return new Error('Please include a credential ID and try again.');
         }
