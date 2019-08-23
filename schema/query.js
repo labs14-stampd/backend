@@ -54,34 +54,16 @@ const RootQuery = new GraphQLObjectType({
         }
       }
     },
-    getAllSchoolDetails: {
-      type: new GraphQLList(SchoolDetailsType),
-      description: 'Gets all schools',
-      resolve: async () => {
-        try {
-          const res = await Schools.find();
-          if (res.length) {
-            return res;
-          }
-          return new Error('No schools could be found.');
-        } catch (error) {
-          return new Error('There was an error completing your request.');
-        }
-      }
-    },
     getSchoolDetailsBySchoolId: {
       type: SchoolDetailsType,
       description: 'Gets school by school ID',
       args: {
         id: {
-          type: GraphQLID
+          type: new GraphQLNonNull(GraphQLID)
         }
       },
-      resolve: async (parent, args) => {
-        if (!args.id) {
-          return new Error('Please include a school details ID and try again.');
-        }
-
+      resolve: async (parent, args, ctx) => {
+        if (Number(ctx.roleId) !== 2) return new Error('Unauthorized');
         try {
           const res = await Schools.findById(args.id);
           if (res) {
@@ -141,7 +123,6 @@ const RootQuery = new GraphQLObjectType({
         }
       },
       resolve: async (parent, args, ctx) => {
-        console.log(ctx.roleId);
         if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
           return new Error('Unauthorized');
         try {
