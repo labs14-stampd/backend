@@ -144,6 +144,7 @@ const StudentDetailsType = new GraphQLObjectType({
     city: { type: GraphQLString, description: 'The city of the school' },
     state: { type: GraphQLString, description: 'The state of the school' },
     zip: { type: GraphQLString, description: 'The zip code of the school' },
+    token: { type: GraphQLString, description: 'JWT token for user' },
     phone: {
       type: GraphQLString,
       description: 'The phone number of the school'
@@ -212,6 +213,7 @@ const SchoolDetailsType = new GraphQLObjectType({
     city: { type: GraphQLString, description: 'The city of the school' },
     state: { type: GraphQLString, description: 'The state of the school' },
     zip: { type: GraphQLString, description: 'The zip code of the school' },
+    token: { type: GraphQLString, description: 'JWT token for user' },
     type: { type: GraphQLString, description: 'The type of the school' },
     phone: {
       type: new GraphQLNonNull(GraphQLString),

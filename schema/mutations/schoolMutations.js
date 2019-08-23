@@ -1,6 +1,8 @@
 const graphql = require('graphql');
 const School = require('../../models/schoolModel.js');
+const Users = require('../../models/userModel.js');
 const { SchoolDetailsType } = require('../types.js');
+const jwt = require('../../api/tokenService');
 
 const { GraphQLString, GraphQLNonNull, GraphQLID } = graphql;
 
@@ -43,11 +45,20 @@ module.exports = {
         description: 'The ID of the user associated with the school'
       }
     },
-    resolve(parent, args, ctx) {
+    async resolve(parent, args, ctx) {
       if (!ctx.isAuth) return new Error('Unauthorized');
-      return School.insert(args)
-        .then(res => res)
-        .catch(err => new Error(err));
+      try {
+        const newSchool = await School.insert(args);
+        const user = await Users.findById(args.userId);
+        const token = jwt({
+          userId: newSchool.userId,
+          email: user.email,
+          roleId: user.roleId
+        });
+        return { ...newSchool, token };
+      } catch (error) {
+        return new Error('There was an error completing your request.');
+      }
     }
   }, // Add School Detail
   updateSchoolDetail: {
