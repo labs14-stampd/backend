@@ -138,14 +138,13 @@ const RootQuery = new GraphQLObjectType({
       description: 'Get all of a schools credentials',
       args: {
         id: {
-          type: GraphQLID
+          type: new GraphQLNonNull(GraphQLID)
         }
       },
-      resolve: async (parent, args) => {
-        if (!args.id) {
-          return new Error('Please include a school ID and try again.');
-        }
-
+      resolve: async (parent, args, ctx) => {
+        console.log(ctx.roleId);
+        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
+          return new Error('Unauthorized');
         try {
           const school = await User.findById(args.id);
           if (!school) {
@@ -167,12 +166,10 @@ const RootQuery = new GraphQLObjectType({
     getCredentialsByEmail: {
       type: new GraphQLList(CredentialType),
       description: 'Get all credentials associated with a specific email',
-      args: { email: { type: GraphQLString } },
+      args: { email: { type: new GraphQLNonNull(GraphQLString) } },
       resolve: async (parent, args) => {
-        if (!args.email) {
-          return new Error('Please include an email address and try again.');
-        }
-
+        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
+          return new Error('Unauthorized');
         try {
           const res = await Credentials.findBy({ studentEmail: args.email });
           return res;
