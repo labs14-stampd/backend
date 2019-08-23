@@ -91,10 +91,9 @@ module.exports = {
         description: 'The new roleId of the user'
       }
     }, // Update User
-    resolve(parent, args) {
-      if (!args.id || typeof Number(args.id) !== 'number') {
-        return new Error('Please include a user ID and try again.');
-      }
+    resolve(parent, args, ctx) {
+      if (Number(ctx.roleId) !== 3 && Number(ctx.roleId) !== 1)
+        return new Error('Unauthorized');
       return User.update(args.id, args)
         .then(res => {
           if (res) {
