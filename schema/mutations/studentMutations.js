@@ -46,7 +46,8 @@ module.exports = {
         description: 'The ID of the user associated with the school'
       }
     },
-    resolve(parent, args) {
+    resolve(parent, args, ctx) {
+      if (ctx.isAuth) return new Error('Unauthorized');
       return Student.insert(args)
         .then(res => res)
         .catch(err => new Error(err));
@@ -96,7 +97,9 @@ module.exports = {
         description: 'The ID of the student details'
       }
     },
-    resolve(parent, args) {
+    resolve(parent, args, ctx) {
+      if (Number(ctx.roleId) !== 3 && Number(ctx.roleId) !== 1)
+        return new Error('Unauthorized');
       if (!args.id || typeof Number(args.id) !== 'number') {
         return new Error('Please include a StudentDetails ID and try again.');
       }
