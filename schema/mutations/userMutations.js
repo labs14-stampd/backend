@@ -92,7 +92,7 @@ module.exports = {
       }
     }, // Update User
     resolve(parent, args, ctx) {
-      if (Number(ctx.roleId) === null && ctx.userId !== args.id)
+      if (Number(ctx.roleId) !== 1 && ctx.userId !== Number(args.id))
         return new Error('Unauthorized');
       return User.update(args.id, args)
         .then(res => {
