@@ -21,14 +21,12 @@ server.get('/confirmation/:jwt', (req, res) => {
     const verified = jwt.verify(
       req.params.jwt,
       process.env.PK,
-      (err, result) => {
+      async (err, result) => {
         if (err) {
           res.send({ error: err });
         } else {
-          UserEmails.update(result.subject, { valid: 'true' }).then(update => {
-            res.status(200);
-            res.send({ success: 'updated' });
-          });
+          await UserEmails.update(result.subject, { valid: 'true' });
+          res.status(200).json({ success: 'updated' });
         }
       }
     );
