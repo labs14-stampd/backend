@@ -144,7 +144,7 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(CredentialType),
       description: 'Get all credentials associated with a specific email',
       args: { email: { type: new GraphQLNonNull(GraphQLString) } },
-      resolve: async (parent, args) => {
+      resolve: async (parent, args, ctx) => {
         if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
           return new Error('Unauthorized');
         try {
