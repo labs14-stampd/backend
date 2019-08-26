@@ -20,6 +20,7 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(UserType),
       description: 'Gets all users',
       resolve: async (parent, args, ctx) => {
+        // Authorization check
         if (Number(ctx.roleId) !== 1) {
           return new Error('Unauthorized');
         }
@@ -45,6 +46,7 @@ const RootQuery = new GraphQLObjectType({
         }
       },
       resolve: async (parent, args, ctx) => {
+        // Authorization check
         if (!ctx.isAuth) {
           return new Error('Unauthorized');
         }
@@ -69,6 +71,7 @@ const RootQuery = new GraphQLObjectType({
         }
       },
       resolve: async (parent, args, ctx) => {
+        // Authorization check
         if (Number(ctx.roleId) !== 2) {
           return new Error('Unauthorized');
         }
@@ -88,6 +91,7 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(CredentialType),
       description: 'Gets all credentials',
       resolve: async (parent, args, ctx) => {
+        // Authorization check
         if (Number(ctx.roleId) !== 1) {
           return new Error('Unauthorized');
         }
@@ -132,6 +136,7 @@ const RootQuery = new GraphQLObjectType({
         }
       },
       resolve: async (parent, args, ctx) => {
+        // Authorization check
         if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1) {
           return new Error('Unauthorized');
         }
@@ -159,6 +164,7 @@ const RootQuery = new GraphQLObjectType({
       description: 'Get all credentials associated with a specific email',
       args: { email: { type: new GraphQLNonNull(GraphQLString) } },
       resolve: async (parent, args, ctx) => {
+        // Authorization check
         if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1) {
           return new Error('Unauthorized');
         }
