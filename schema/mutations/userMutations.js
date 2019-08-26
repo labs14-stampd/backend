@@ -228,7 +228,7 @@ module.exports = {
       }
 
       try {
-        const res = UserEmails.remove(args.id);
+        const res = await UserEmails.remove(args.id);
         if (res) {
           return {
             id: args.id
