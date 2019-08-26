@@ -16,13 +16,16 @@ server.get('/', (req, res) => {
   res.send('The Stampd Server is alive and well 🎉');
 });
 
-server.get('/verifyCred/:jwt', (req, res) => {
+server.get('/confirmation/:jwt', (req, res) => {
   try {
-    jwt.verify(req.params.jwt, secret, (err, result) => {
+    const verified = jwt.verify(req.params.jwt, secret, (err, result) => {
       if (err) {
         res.send({ error: err });
       } else {
-        res.send({ success: 'validated' });
+        UserEmails.update(result.subject, { valid: 'true' }).then(update => {
+          res.status(200);
+          res.send({ success: 'updated' });
+        });
       }
     });
   } catch (e) {
