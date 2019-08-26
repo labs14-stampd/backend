@@ -48,16 +48,21 @@ module.exports = {
         description: 'The ID of the user associated with the school'
       }
     },
-    async resolve(parent, args, ctx) {
-      if (!ctx.isAuth) return new Error('Unauthorized');
+    resolve: async (parent, args, ctx) => {
+      if (!ctx.isAuth) {
+        return new Error('Unauthorized');
+      }
+
       try {
         const newStudent = await Student.insert(args);
+
         const user = await Users.findById(args.userId);
         const token = jwt({
           userId: newStudent.userId,
           email: user.email,
           roleId: user.roleId
         });
+
         return { ...newStudent, token };
       } catch (error) {
         return new Error('There was an error completing your request.');
@@ -108,22 +113,24 @@ module.exports = {
         description: 'The ID of the student details'
       }
     },
-    resolve(parent, args, ctx) {
-      if (Number(ctx.roleId) !== 3 && Number(ctx.roleId) !== 1)
+    resolve: async (parent, args, ctx) => {
+      if (Number(ctx.roleId) !== 3 && Number(ctx.roleId) !== 1) {
         return new Error('Unauthorized');
+      }
+
       if (!args.id || typeof Number(args.id) !== 'number') {
         return new Error('Please include a StudentDetails ID and try again.');
       }
-      return Student.update(args.id, args)
-        .then(res => {
-          if (res) {
-            return res;
-          }
-          return new Error('The School could not be updated.');
-        })
-        .catch(() => {
-          return new Error('There was an error completing your request.');
-        });
+
+      try {
+        const res = await Student.update(args.id, args);
+        if (res) {
+          return res;
+        }
+        return new Error('The School could not be updated.');
+      } catch {
+        return new Error('There was an error completing your request.');
+      }
     }
   } // Update Student Detail
 };

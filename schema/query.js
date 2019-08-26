@@ -20,7 +20,11 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(UserType),
       description: 'Gets all users',
       resolve: async (parent, args, ctx) => {
-        if (Number(ctx.roleId) !== 1) return new Error('Unauthorized');
+        // Authorization check
+        if (Number(ctx.roleId) !== 1) {
+          return new Error('Unauthorized');
+        }
+
         try {
           const res = await User.find();
           if (res) {
@@ -42,7 +46,11 @@ const RootQuery = new GraphQLObjectType({
         }
       },
       resolve: async (parent, args, ctx) => {
-        if (!ctx.isAuth) return new Error('Unauthorized');
+        // Authorization check
+        if (!ctx.isAuth) {
+          return new Error('Unauthorized');
+        }
+
         try {
           const res = await User.findById(args.id);
           if (res) {
@@ -63,7 +71,11 @@ const RootQuery = new GraphQLObjectType({
         }
       },
       resolve: async (parent, args, ctx) => {
-        if (Number(ctx.roleId) !== 2) return new Error('Unauthorized');
+        // Authorization check
+        if (Number(ctx.roleId) !== 2) {
+          return new Error('Unauthorized');
+        }
+
         try {
           const res = await Schools.findById(args.id);
           if (res) {
@@ -79,7 +91,11 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(CredentialType),
       description: 'Gets all credentials',
       resolve: async (parent, args, ctx) => {
-        if (Number(ctx.roleId) !== 1) return new Error('Unauthorized');
+        // Authorization check
+        if (Number(ctx.roleId) !== 1) {
+          return new Error('Unauthorized');
+        }
+
         try {
           const res = await Credentials.find();
           if (res.length) {
@@ -120,8 +136,11 @@ const RootQuery = new GraphQLObjectType({
         }
       },
       resolve: async (parent, args, ctx) => {
-        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
+        // Authorization check
+        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1) {
           return new Error('Unauthorized');
+        }
+
         try {
           const school = await User.findById(args.id);
           if (!school) {
@@ -145,8 +164,11 @@ const RootQuery = new GraphQLObjectType({
       description: 'Get all credentials associated with a specific email',
       args: { email: { type: new GraphQLNonNull(GraphQLString) } },
       resolve: async (parent, args, ctx) => {
-        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
+        // Authorization check
+        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1) {
           return new Error('Unauthorized');
+        }
+
         try {
           const res = await Credentials.findBy({ studentEmail: args.email });
           return res;
