@@ -15,7 +15,7 @@
     "seed": "npx knex seed:run",
     "redo": "yarn rollback && yarn migrate && yarn seed",
     "test-redo": "npx knex migrate:rollback --env=testing && npx knex migrate:latest --env=testing && npx knex seed:run --env=testing",
-    "test": "cross-env DB_ENV=testing jest --watch --verbose"
+    "test": "cross-env DB_ENV=testing jest --watch --verbose --runInBand"
   },
   "repository": {
     "type": "git",

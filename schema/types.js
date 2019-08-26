@@ -49,6 +49,10 @@ const UserEmailType = new GraphQLObjectType({
     valid: {
       type: GraphQLBoolean,
       description: 'Boolean for whether email was verified.'
+    },
+    credentials: {
+      type: new GraphQLList(CredentialType),
+      description: 'Credentials associated with email address'
     }
   })
 });
@@ -105,13 +109,6 @@ const UserType = new GraphQLObjectType({
         }
         return null;
       }
-    },
-    emailList: {
-      type: new GraphQLList(UserEmailType),
-      description: 'List of additional user emails associated with an account',
-      resolve(parent) {
-        return UserEmails.findByUserId(parent.id);
-      }
     }
   })
 });
@@ -147,6 +144,7 @@ const StudentDetailsType = new GraphQLObjectType({
     city: { type: GraphQLString, description: 'The city of the school' },
     state: { type: GraphQLString, description: 'The state of the school' },
     zip: { type: GraphQLString, description: 'The zip code of the school' },
+    token: { type: GraphQLString, description: 'JWT token for user' },
     phone: {
       type: GraphQLString,
       description: 'The phone number of the school'
@@ -181,6 +179,13 @@ const StudentDetailsType = new GraphQLObjectType({
         );
         return [...creds, ...listCreds];
       }
+    },
+    emailList: {
+      type: new GraphQLList(UserEmailType),
+      description: 'List of additional user emails associated with an account',
+      resolve(parent) {
+        return UserEmails.findByUserId(parent.userId);
+      }
     }
   })
 });
@@ -208,6 +213,7 @@ const SchoolDetailsType = new GraphQLObjectType({
     city: { type: GraphQLString, description: 'The city of the school' },
     state: { type: GraphQLString, description: 'The state of the school' },
     zip: { type: GraphQLString, description: 'The zip code of the school' },
+    token: { type: GraphQLString, description: 'JWT token for user' },
     type: { type: GraphQLString, description: 'The type of the school' },
     phone: {
       type: new GraphQLNonNull(GraphQLString),

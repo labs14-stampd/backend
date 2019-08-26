@@ -1,5 +1,5 @@
-exports.up = function createCredentials(knex) {
-  return knex.schema.createTable('credentials', tbl => {
+exports.up = async knex => {
+  await knex.schema.createTable('credentials', tbl => {
     tbl
       .increments('id')
       .unsigned()
@@ -27,6 +27,6 @@ exports.up = function createCredentials(knex) {
   });
 };
 
-exports.down = function dropCredentials(knex) {
-  return knex.schema.dropTable('credentials');
+exports.down = async knex => {
+  await knex.schema.dropTable('credentials');
 };

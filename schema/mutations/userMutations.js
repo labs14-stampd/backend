@@ -2,6 +2,7 @@ const graphql = require('graphql');
 const jwt = require('../../api/tokenService.js');
 const User = require('../../models/userModel.js');
 const UserEmails = require('../../models/userEmailsModel');
+const Credentials = require('../../models/credentialModel');
 const Student = require('../../models/studentModel');
 const { UserType, UserEmailType } = require('../types.js');
 const getDecoded = require('../../api/getDecoded.js');
@@ -23,18 +24,21 @@ module.exports = {
         description: 'The role associated with the new user'
       }
     },
-    resolve(parent, args) {
-      let token;
+    resolve: async (parent, args) => {
       const { authToken, ...restArgs } = args;
       const { sub, email, username, profilePicture } = getDecoded(authToken);
-      return User.findBy({
-        email
-      }).then(user => {
+
+      try {
+        const user = await User.findBy({ email });
+
+        // If not logged in with a valid account (determined by checking the sub value)
         if (user.sub && user.sub !== sub) {
           return new Error('You must be logged in with a valid account.');
         }
+
+        // If the user specified in the auth token already exists
         if (user[0] && user[0].email) {
-          token = jwt({
+          const token = jwt({
             userId: user[0].id,
             email: user[0].email,
             roleId: user[0].roleId
@@ -47,26 +51,27 @@ module.exports = {
             token
           };
         }
-        return User.insert({
+
+        // If user does not yet exist in the records
+        const res = await User.insert({
           sub,
           email,
           username,
           profilePicture,
           ...restArgs
-        })
-          .then(res => {
-            token = jwt({
-              userId: res.id,
-              email: res.email,
-              roleId: res.roleId
-            });
-            return {
-              ...res,
-              token
-            };
-          })
-          .catch(err => new Error(err));
-      });
+        });
+        const token = jwt({
+          userId: res.id,
+          email: res.email,
+          roleId: res.roleId
+        });
+        return {
+          ...res,
+          token
+        };
+      } catch (err) {
+        return new Error(err);
+      }
     }
   }, // Add User
   updateUser: {
@@ -90,24 +95,22 @@ module.exports = {
         description: 'The new roleId of the user'
       }
     }, // Update User
-    resolve(parent, args) {
-      if (!args.id || typeof Number(args.id) !== 'number') {
-        return new Error('Please include a user ID and try again.');
+    resolve: async (parent, args, ctx) => {
+      // Authorization check
+      if (Number(ctx.roleId) !== 1 && ctx.userId !== Number(args.id)) {
+        return new Error('Unauthorized');
       }
-      return User.update(args.id, args)
-        .then(res => {
-          if (res) {
-            return User.findById(args.id)
-              .then(response => response)
-              .catch(() => {
-                return new Error('There was an error completing your request.');
-              });
-          }
-          return new Error('The user could not be updated.');
-        })
-        .catch(() => {
-          return new Error('There was an error completing your request.');
-        });
+
+      try {
+        const res = await User.update(args.id, args);
+        if (res) {
+          const user = await User.findById(args.id);
+          return user;
+        }
+        return new Error('The user could not be updated.');
+      } catch {
+        return new Error('There was an error completing your request.');
+      }
     }
   }, // Update User
   deleteUser: {
@@ -119,22 +122,25 @@ module.exports = {
         description: 'The unique ID of the user to be deleted'
       }
     },
-    resolve(parent, args) {
-      if (!args.id || typeof Number(args.id) !== 'number') {
-        return new Error('Please include a user ID and try again.');
+    resolve: async (parent, args, ctx) => {
+      // Authorization check
+      if (Number(ctx.roleId) !== 1 && ctx.userId !== Number(args.id)) {
+        return new Error('Unauthorized');
       }
-      return User.remove(args.id)
-        .then(res => {
-          if (res) {
-            return {
-              id: args.id
-            };
-          }
-          return new Error('The user could not be deleted.');
-        })
-        .catch(err => ({
+
+      try {
+        const res = await User.remove(args.id);
+        if (res) {
+          return {
+            id: args.id
+          };
+        }
+        return new Error('The user could not be deleted.');
+      } catch (err) {
+        return {
           error: err
-        }));
+        };
+      }
     }
   }, // Delete User
   addUserEmail: {
@@ -154,41 +160,56 @@ module.exports = {
         description: 'Boolean for whether email was verified.'
       }
     },
-    resolve(parent, args) {
+    resolve: async (parent, args, ctx) => {
+      // Authorization check
+      if (Number(ctx.roleId) !== 1 && ctx.userId !== Number(args.userId)) {
+        return new Error('Unauthorized');
+      }
+
       let fullName = '';
-      Student.findByUserId(args.userId)
-        .then(res => {
-          fullName = res.fullName;
-        })
-        .catch(err => {
-          return {
-            error: err,
-            message: 'error finding user'
-          };
+      try {
+        const res = await Student.findByUserId(args.userId);
+        fullName = res.fullName;
+      } catch (err) {
+        return {
+          error: err,
+          message: 'error finding user'
+        };
+      }
+
+      let res;
+      try {
+        res = await UserEmails.insert(args);
+      } catch (err) {
+        return {
+          error: err,
+          message: 'Unique constraint'
+        };
+      }
+
+      try {
+        res.credentials = await Credentials.findBy({
+          studentEmail: args.email
         });
 
-      return UserEmails.insert(args)
-        .then(res => {
-          console.log('in useremails insert');
-          console.log(res);
-          const linkJwt = jwt({
-            userId: res.id,
-            email: args.email,
-            roleId: 2
-          });
-          sendMail({
-            recipientName: fullName,
-            recipientEmail: args.email,
-            jwt: linkJwt
-          });
-          return res;
-        })
-        .catch(err => {
-          return {
-            error: err,
-            message: 'Unique constraint'
-          };
+        const linkJwt = jwt({
+          userId: res.id,
+          email: args.email,
+          roleId: 2
         });
+        sendMail({
+          recipientName: fullName,
+          recipientEmail: args.email,
+          jwt: linkJwt
+        });
+
+        return res;
+      } catch (err) {
+        return {
+          error: err,
+          message: 'Could not find added email'
+        };
+      }
     }
   }, // Add user email
   deleteUserEmail: {
@@ -200,22 +221,25 @@ module.exports = {
         description: 'The unique ID of the user to be deleted'
       }
     },
-    resolve(parent, args) {
-      if (!args.id || typeof Number(args.id) !== 'number') {
-        return new Error('Please include a user ID and try again.');
+    resolve: async (parent, args, ctx) => {
+      // Authorization check
+      if (Number(ctx.roleId) !== 1 && Number(ctx.roleId) !== 3) {
+        return new Error('Unauthorized');
       }
-      return UserEmails.remove(args.id)
-        .then(res => {
-          if (res) {
-            return {
-              id: args.id
-            };
-          }
-          return new Error('The email could not be deleted.');
-        })
-        .catch(err => ({
+
+      try {
+        const res = await UserEmails.remove(args.id);
+        if (res) {
+          return {
+            id: args.id
+          };
+        }
+        return new Error('The email could not be deleted.');
+      } catch (err) {
+        return {
           error: err
-        }));
+        };
+      }
     }
   } // Delete User Email
 };

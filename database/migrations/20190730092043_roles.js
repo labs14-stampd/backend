@@ -1,5 +1,5 @@
-exports.up = function createRoles(knex) {
-  return knex.schema.createTable('roles', tbl => {
+exports.up = async knex => {
+  await knex.schema.createTable('roles', tbl => {
     tbl
       .increments('id')
       .unsigned()
@@ -8,6 +8,6 @@ exports.up = function createRoles(knex) {
   });
 };
 
-exports.down = function dropRoles(knex) {
-  return knex.schema.dropTableIfExists('roles');
+exports.down = async knex => {
+  await knex.schema.dropTableIfExists('roles');
 };
