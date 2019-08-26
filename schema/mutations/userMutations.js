@@ -155,7 +155,7 @@ module.exports = {
       }
     },
     resolve(parent, args, ctx) {
-      if (Number(ctx.roleId) !== 1 && ctx.userId !== args.userId)
+      if (Number(ctx.roleId) !== 1 && ctx.userId !== Number(args.userId))
         return new Error('Unauthorized');
       let fullName = '';
       Student.findByUserId(args.userId)
