@@ -6,7 +6,7 @@ const expressPlayground = require('graphql-playground-middleware-express')
 const UserEmails = require('../models/userEmailsModel');
 const applyMiddleware = require('./middleware.js');
 const schema = require('../schema/schema.js');
-
+const secret = process.env.PK;
 const server = express();
 applyMiddleware(server);
 
@@ -18,18 +18,16 @@ server.get('/', (req, res) => {
 
 server.get('/confirmation/:jwt', (req, res) => {
   try {
-    const verified = jwt.verify(
-      req.params.jwt,
-      process.env.PK,
-      async (err, result) => {
-        if (err) {
-          res.send({ error: err });
-        } else {
-          await UserEmails.update(result.subject, { valid: 'true' });
-          res.status(200).json({ success: 'updated' });
-        }
+    const verified = jwt.verify(req.params.jwt, secret, (err, result) => {
+      if (err) {
+        res.send({ error: err });
+      } else {
+        UserEmails.update(result.subject, { valid: 'true' }).then(update => {
+          res.status(200);
+          res.send({ success: 'updated' });
+        });
       }
-    );
+    });
   } catch (e) {
     res.send({ error: e });
   }
