@@ -225,7 +225,7 @@ const RootQuery = new GraphQLObjectType({
             student: credential.ownerName,
             jwt: linkJwt
           });
-          return credential.id;
+          return { email: args.email };
         } catch (error) {
           return new Error('Error', error);
         }
