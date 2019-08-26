@@ -1,5 +1,5 @@
-exports.up = function createUsers(knex) {
-  return knex.schema.createTable('users', tbl => {
+exports.up = async knex => {
+  await knex.schema.createTable('users', tbl => {
     tbl
       .increments('id')
       .unsigned()
@@ -23,6 +23,6 @@ exports.up = function createUsers(knex) {
   });
 };
 
-exports.down = function dropUsers(knex) {
-  return knex.schema.dropTableIfExists('users');
+exports.down = async knex => {
+  await knex.schema.dropTableIfExists('users');
 };
