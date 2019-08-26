@@ -373,6 +373,11 @@ describe('updateUser GQL mutation: ', () => {
     }
   `;
 
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
   it("• should return the expected data when updating a user's information", async () => {
     const EXPECTED_UPDATES = {
       id: expectedUserIdToUpdate,
@@ -384,7 +389,8 @@ describe('updateUser GQL mutation: ', () => {
     const res = await graphql(
       schema,
       updateUserMutationWithArgs(EXPECTED_UPDATES),
-      null
+      null,
+      authContext
     );
     const actual = res.data.updateUser;
 
@@ -408,7 +414,12 @@ describe('updateUser GQL mutation: ', () => {
     };
 
     // Initial mutation to update the user
-    await graphql(schema, updateUserMutationWithArgs(EXPECTED_UPDATES), null);
+    await graphql(
+      schema,
+      updateUserMutationWithArgs(EXPECTED_UPDATES),
+      null,
+      authContext
+    );
 
     const actualUpdatedUser = await userDbHelper.findById(
       expectedUserIdToUpdate
@@ -423,6 +434,27 @@ describe('updateUser GQL mutation: ', () => {
 });
 
 describe('updateUser GQL mutation error handling: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
+  test('• when unauthorized', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+
+    const MUTATION = `
+      mutation {
+        updateUser {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.updateUser).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when "id" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE = 'Please include a user ID and try again.';
 
@@ -434,7 +466,7 @@ describe('updateUser GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.updateUser).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -452,7 +484,7 @@ describe('updateUser GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.updateUser).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -475,7 +507,7 @@ describe('updateUser GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addUser).toBeNull();
     expect(res.errors[0].message.startsWith(EXPECTED_ERROR_MESSAGE_START)).toBe(
       true
@@ -499,7 +531,7 @@ describe('updateUser GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.updateUser).isNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -521,7 +553,7 @@ describe('updateUser GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.updateUser).isNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -543,7 +575,7 @@ describe('updateUser GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.updateUser).isNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -565,7 +597,7 @@ describe('updateUser GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.updateUser).isNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -592,11 +624,17 @@ describe('deleteUser GQL mutation: ', () => {
     }
   `;
 
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
   it('• should return the expected data when deleting a user', async () => {
     const res = await graphql(
       schema,
       deleteUserMutationWithId(expectedUserIdToDelete),
-      null
+      null,
+      authContext
     );
     const actual = res.data.deleteUser;
 
@@ -623,7 +661,8 @@ describe('deleteUser GQL mutation: ', () => {
     await graphql(
       schema,
       deleteUserMutationWithId(expectedUserIdToDelete),
-      null
+      null,
+      authContext
     );
 
     // Attempt to find the user if it still exists (should resolve to falsy value - null/undefined - after deletion)
@@ -633,6 +672,27 @@ describe('deleteUser GQL mutation: ', () => {
 });
 
 describe('deleteUser GQL mutation error handling: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
+  test('• when unauthorized', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+
+    const MUTATION = `
+      mutation {
+        deleteUser {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.deleteUser).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when "id" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE = 'Please include a user ID and try again.';
 
@@ -644,7 +704,7 @@ describe('deleteUser GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.deleteUser).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -662,7 +722,7 @@ describe('deleteUser GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.deleteUser).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -700,11 +760,17 @@ describe('addUserEmail GQL mutation: ', () => {
     }
   `;
 
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
   it('• should return the expected data when adding new user email information', async () => {
     const res = await graphql(
       schema,
       addUserEmailMutationWithEmail(EXPECTED_EMAIL),
-      null
+      null,
+      authContext
     );
     const actual = res.data.addUserEmail;
 
@@ -712,12 +778,19 @@ describe('addUserEmail GQL mutation: ', () => {
     expect(actual.email).toBe(EXPECTED_EMAIL);
     expect(actual.valid).toBe(expectedValid);
     expect(actual.userId).toBe(EXPECTED_NEW_USEREMAIL_USER_ID.toString()); // the GraphQL response object will have String-type ID's
-    expect(actual.credentials[0].id).toBe(EXPECTED_ADDED_CREDENTIAL_ID.toString()); // the GraphQL response object will have String-type ID's
+    expect(actual.credentials[0].id).toBe(
+      EXPECTED_ADDED_CREDENTIAL_ID.toString()
+    ); // the GraphQL response object will have String-type ID's
   });
 
   it('• should actually insert the new user email information into the database', async () => {
     // Initial mutation to add the new user email information
-    await graphql(schema, addUserEmailMutationWithEmail(EXPECTED_EMAIL), null);
+    await graphql(
+      schema,
+      addUserEmailMutationWithEmail(EXPECTED_EMAIL),
+      null,
+      authContext
+    );
 
     const actualNewUserEmail = await emailDbHelper.findById(
       // DB helper method to find the newly added user email information by ID
@@ -731,6 +804,27 @@ describe('addUserEmail GQL mutation: ', () => {
 });
 
 describe('addUserEmail GQL mutation error handling: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
+  test('• when unauthorized', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+
+    const MUTATION = `
+      mutation {
+        addUserEmail {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.addUserEmail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when "email" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE =
       'Please supply the text for the email address.';
@@ -743,7 +837,7 @@ describe('addUserEmail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addUserEmail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -762,7 +856,7 @@ describe('addUserEmail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addUserEmail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -782,7 +876,7 @@ describe('addUserEmail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addUserEmail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -809,7 +903,7 @@ describe('addUserEmail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addUserEmail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -836,7 +930,7 @@ describe('addUserEmail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addUserEmail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -862,11 +956,17 @@ describe('deleteUserEmail GQL mutation: ', () => {
     }
   `;
 
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
   it('• should return the expected data when deleting user email information', async () => {
     const res = await graphql(
       schema,
       deleteUserEmailMutationWithId(expectedUserEmailIdToDelete),
-      null
+      null,
+      authContext
     );
     const actual = res.data.deleteUserEmail;
 
@@ -894,7 +994,8 @@ describe('deleteUserEmail GQL mutation: ', () => {
     await graphql(
       schema,
       deleteUserEmailMutationWithId(expectedUserEmailIdToDelete),
-      null
+      null,
+      authContext
     );
 
     // Attempt to find the user email information if it still exists (should resolve to falsy value - null/undefined - after deletion)
@@ -906,6 +1007,27 @@ describe('deleteUserEmail GQL mutation: ', () => {
 });
 
 describe('deleteUserEmail GQL mutation error handling: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
+  test('• when unauthorized', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+
+    const MUTATION = `
+      mutation {
+        deleteUserEmail {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.deleteUserEmail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when "id" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE = 'Please include an email ID and try again.';
 
@@ -917,7 +1039,7 @@ describe('deleteUserEmail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.deleteUserEmail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -935,7 +1057,7 @@ describe('deleteUserEmail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.deleteUserEmail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
