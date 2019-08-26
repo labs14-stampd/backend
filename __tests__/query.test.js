@@ -302,6 +302,11 @@ const CREDENTIALS_DATA = [
 ];
 
 describe('getAllUsers GQL query: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
   it('• should return all user data from test seeds', async () => {
     const QUERY = `
       query {
@@ -316,7 +321,7 @@ describe('getAllUsers GQL query: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getAllUsers).toEqual(USER_DATA);
   });
 
@@ -332,7 +337,7 @@ describe('getAllUsers GQL query: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     res.data.getAllUsers.forEach(user => {
       expect(user.roleId).toEqual(user.role.id);
     });
@@ -353,7 +358,7 @@ describe('getAllUsers GQL query: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     res.data.getAllUsers.forEach(user => {
       if (user.roleId != '2' && user.role.id != '2') {
         // Role ID number for schools is 2
@@ -363,7 +368,30 @@ describe('getAllUsers GQL query: ', () => {
   });
 });
 
+describe('getAllUsers GQL query error handling: ', () => {
+  test('• when unauthorized', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+
+    const MUTATION = `
+      mutation {
+        getAllUsers {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.getAllUsers).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+});
+
 describe('getUserById GQL query: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    isAuth: true
+  };
+
   // Will use randomized test input
   it("• should return the corresponding user's data", async () => {
     const TEST_ID_TO_GET = Math.ceil(Math.random() * 8); // Get a random ID within the range of the seed data
@@ -382,7 +410,7 @@ describe('getUserById GQL query: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getUserById).toEqual(USER_DATA[TEST_ID_TO_GET - 1]); // Subtract the ID by 1 to get the corresponding array index
   });
 
@@ -401,7 +429,7 @@ describe('getUserById GQL query: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getUserById.roleId).toEqual(res.data.getUserById.role.id);
   });
 
@@ -426,12 +454,33 @@ describe('getUserById GQL query: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getUserById.schoolDetails).toBeNull();
   });
 });
 
 describe('getUserById GQL query error handling: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    isAuth: true
+  };
+
+  test('• when unauthorized', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+
+    const MUTATION = `
+      mutation {
+        getUserById {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.getUserById).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when "id" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE = 'Please include a user ID and try again.';
 
@@ -443,7 +492,7 @@ describe('getUserById GQL query error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getUserById).toBeNull();
     expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
@@ -462,57 +511,18 @@ describe('getUserById GQL query error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getUserById).toBeNull();
     expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
 });
 
-describe('getAllSchoolDetails GQL query: ', () => {
-  it('• should return all school details data from test seeds', async () => {
-    const QUERY = `
-      query {
-        getAllSchoolDetails {
-          id
-          name
-          taxId
-          street1
-          street2
-          city
-          state
-          zip
-          type
-          phone
-          url
-          userId
-        }
-      }
-    `;
-
-    const res = await graphql(schema, QUERY, null);
-    expect(res.data.getAllSchoolDetails).toEqual(SCHOOLDETAILS_DATA);
-  });
-
-  it("• should have matching user ID's in both userId and user properties", async () => {
-    const QUERY = `
-      query {
-        getAllSchoolDetails {
-          userId
-          user {
-            id
-          }
-        }
-      }
-    `;
-
-    const res = await graphql(schema, QUERY, null);
-    res.data.getAllSchoolDetails.forEach(schoolDetails => {
-      expect(schoolDetails.userId).toEqual(schoolDetails.user.id);
-    });
-  });
-});
-
 describe('getSchoolDetailsBySchoolId GQL query: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 2
+  };
+
   // Will use randomized test input
   it('• should return the corresponding school details data', async () => {
     const TEST_ID_TO_GET = Math.ceil(Math.random() * 3); // Get a random ID within the range of the seed data
@@ -537,7 +547,7 @@ describe('getSchoolDetailsBySchoolId GQL query: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getSchoolDetailsBySchoolId).toEqual(
       SCHOOLDETAILS_DATA[TEST_ID_TO_GET - 1]
     ); // Subtract the ID by 1 to get the corresponding array index
@@ -558,7 +568,7 @@ describe('getSchoolDetailsBySchoolId GQL query: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getSchoolDetailsBySchoolId.userId).toEqual(
       res.data.getSchoolDetailsBySchoolId.user.id
     );
@@ -566,6 +576,27 @@ describe('getSchoolDetailsBySchoolId GQL query: ', () => {
 });
 
 describe('getSchoolDetailsBySchoolId GQL query error handling: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 2
+  };
+
+  test('• when unauthorized', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+
+    const MUTATION = `
+      mutation {
+        getSchoolDetailsBySchoolId {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.getSchoolDetailsBySchoolId).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when "id" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE =
       'Please include a school details ID and try again.';
@@ -578,7 +609,7 @@ describe('getSchoolDetailsBySchoolId GQL query error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getSchoolDetailsBySchoolId).toBeNull();
     expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
@@ -597,13 +628,18 @@ describe('getSchoolDetailsBySchoolId GQL query error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getSchoolDetailsBySchoolId).toBeNull();
     expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
 });
 
 describe('getAllCredentials GQL query: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
   it('• should return all credentials data from test seeds', async () => {
     const QUERY = `
       query {
@@ -626,7 +662,7 @@ describe('getAllCredentials GQL query: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getAllCredentials).toEqual(CREDENTIALS_DATA);
   });
 
@@ -642,10 +678,28 @@ describe('getAllCredentials GQL query: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     res.data.getAllCredentials.forEach(credentials => {
       expect(credentials.schoolId).toEqual(credentials.schoolsUserInfo.id);
     });
+  });
+});
+
+describe('getAllCredentials GQL query error handling: ', () => {
+  test('• when unauthorized', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+
+    const MUTATION = `
+      mutation {
+        getAllCredentials {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.getAllCredentials).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 });
 
@@ -743,6 +797,11 @@ describe('getCredentialById GQL query error handling: ', () => {
 });
 
 describe('getCredentialsBySchoolId GQL query: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
   it('• should return the corresponding credentials data for a school that has already issued credentials', async () => {
     // Should be based on current seed data
     const TEST_ID_TO_GET = 5;
@@ -771,7 +830,7 @@ describe('getCredentialsBySchoolId GQL query: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getCredentialsBySchoolId.length).toBe(1);
     expect(res.data.getCredentialsBySchoolId[0]).toEqual(
       CREDENTIALS_DATA[EXPECTED_CREDENTIAL_INDEX]
@@ -792,7 +851,7 @@ describe('getCredentialsBySchoolId GQL query: ', () => {
       }
     `; // Query should only ask for ID since the idea is to simply expect an empty list
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getCredentialsBySchoolId.length).toBe(0);
   });
 
@@ -813,7 +872,7 @@ describe('getCredentialsBySchoolId GQL query: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     res.data.getCredentialsBySchoolId.forEach(credentials => {
       expect(credentials.schoolId).toEqual(credentials.schoolsUserInfo.id);
     });
@@ -821,6 +880,27 @@ describe('getCredentialsBySchoolId GQL query: ', () => {
 });
 
 describe('getCredentialsBySchoolId GQL query error handling: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
+  test('• when unauthorized', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+
+    const MUTATION = `
+      mutation {
+        getCredentialsBySchoolId {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.getCredentialsBySchoolId).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when "id" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE = 'Please include a school ID and try again.';
 
@@ -832,7 +912,7 @@ describe('getCredentialsBySchoolId GQL query error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getCredentialsBySchoolId).toBeNull();
     expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
@@ -851,13 +931,18 @@ describe('getCredentialsBySchoolId GQL query error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getCredentialsBySchoolId).toBeNull();
     expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
 });
 
 describe('getCredentialsByEmail GQL query: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
   it('• should return the corresponding credentials data for an email address that has some credentials issued to it', async () => {
     // Should be based on current seed data
     const TEST_EMAIL_TO_GET = 'howdy@neighquestr.com';
@@ -886,7 +971,7 @@ describe('getCredentialsByEmail GQL query: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     const actualCredentials = res.data.getCredentialsByEmail;
 
     expect(actualCredentials.length).toBe(EXPECTED_CREDENTIALS.length);
@@ -909,12 +994,33 @@ describe('getCredentialsByEmail GQL query: ', () => {
       }
     `; // Query should only ask for ID since the idea is to simply expect an empty list
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getCredentialsByEmail.length).toBe(0);
   });
 });
 
 describe('getCredentialsByEmail GQL query error handling: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
+  test('• when unauthorized', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+
+    const MUTATION = `
+      mutation {
+        getCredentialsByEmail {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.getCredentialsByEmail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when "email" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE =
       'Please include an email address and try again.';
@@ -927,7 +1033,7 @@ describe('getCredentialsByEmail GQL query error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, QUERY, null);
+    const res = await graphql(schema, QUERY, null, authContext);
     expect(res.data.getCredentialsByEmail).toBeNull();
     expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
