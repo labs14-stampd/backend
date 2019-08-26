@@ -64,8 +64,13 @@ describe('addSchoolDetail GQL mutation: ', () => {
     }
   `;
 
+  // Context object to provide authorization
+  const authContext = {
+    isAuth: true
+  };
+
   it('• should return the expected data when adding a school details entry', async () => {
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     const actual = res.data.addSchoolDetail;
 
     expect(actual.id).toBe(EXPECTED_NEW_SCHOOLDETAIL_ID.toString()); // the GraphQL response object will have String-type ID's
@@ -84,7 +89,7 @@ describe('addSchoolDetail GQL mutation: ', () => {
 
   it('• should actually insert a new school details entry into the database', async () => {
     // Initial mutation to add the school
-    await graphql(schema, MUTATION, null);
+    await graphql(schema, MUTATION, null, authContext);
 
     const actualNewSchoolDetail = await dbHelper.findById(
       EXPECTED_NEW_SCHOOLDETAIL_ID
@@ -113,6 +118,27 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
   const EXPECTED_URL = 'anavela.bolnamber.nt.fnd';
   const EXPECTED_NEW_SCHOOLDETAIL_USER_ID = USER_COUNT;
 
+  // Context object to provide authorization
+  const authContext = {
+    isAuth: true
+  };
+
+  test('• when unauthorized', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+
+    const MUTATION = `
+      mutation {
+        addSchoolDetail {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.addSchoolDetail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when "name" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE = 'Please add a name for the new school.';
 
@@ -124,7 +150,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addSchoolDetail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -142,7 +168,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addSchoolDetail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -162,7 +188,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addSchoolDetail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -182,7 +208,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addSchoolDetail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -204,7 +230,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addSchoolDetail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -227,7 +253,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addSchoolDetail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -251,7 +277,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addSchoolDetail).isNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -275,7 +301,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addSchoolDetail).isNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -294,6 +320,11 @@ describe('updateSchoolDetail GQL mutation: ', () => {
   const EXPECTED_UPDATED_PHONE = '404-404-0404';
   const EXPECTED_UPDATED_URL = 'anavela.bolnamber.nt.fnd';
   const EXPECTED_UPDATED_SCHOOLDETAIL_USER_ID = USER_COUNT;
+
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
 
   beforeEach(() => {
     // Randomly generate valid test ID's before each test
@@ -341,7 +372,8 @@ describe('updateSchoolDetail GQL mutation: ', () => {
       updateSchoolDetailMutationWithSchoolDetailId(
         expectedSchoolDetailsIdToUpdate
       ),
-      null
+      null,
+      authContext
     );
     const actual = res.data.updateSchoolDetail;
 
@@ -368,7 +400,8 @@ describe('updateSchoolDetail GQL mutation: ', () => {
       updateSchoolDetailMutationWithSchoolDetailId(
         expectedSchoolDetailsIdToUpdate
       ),
-      null
+      null,
+      authContext
     );
 
     const actualUpdatedSchoolDetail = await dbHelper.findById(
@@ -393,6 +426,27 @@ describe('updateSchoolDetail GQL mutation: ', () => {
 });
 
 describe('updateSchoolDetail GQL mutation error handling: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
+  test('• when unauthorized', async () => {
+    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+
+    const MUTATION = `
+      mutation {
+        updateSchoolDetail {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.updateSchoolDetail).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when "id" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE =
       'Please include a school details entry ID and try again.';
@@ -405,7 +459,12 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    // Context object to provide authorization
+    const authContext = {
+      roleId: 1
+    };
+
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.updateSchoolDetail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -424,7 +483,7 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.updateSchoolDetail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -444,7 +503,7 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.updateSchoolDetail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -466,7 +525,7 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.updateSchoolDetail).isNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -488,7 +547,7 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.updateSchoolDetail).isNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
