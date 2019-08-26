@@ -185,11 +185,6 @@ describe('updateStudentDetail GQL mutation: ', () => {
   const EXPECTED_UPDATED_PHONE = '404-404-0404';
   const EXPECTED_UPDATED_STUDENTDETAIL_USER_ID = USER_COUNT;
 
-  // Context object to provide authorization
-  const authContext = {
-    roleId: 1
-  };
-
   beforeEach(() => {
     // Randomly generate valid test ID's before each test
     expectedStudentDetailsIdToUpdate = Math.ceil(
@@ -229,6 +224,11 @@ describe('updateStudentDetail GQL mutation: ', () => {
       }
     }
   `;
+
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
 
   it('• should return the expected data when updating information for a student details entry', async () => {
     const res = await graphql(

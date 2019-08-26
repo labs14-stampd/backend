@@ -321,11 +321,6 @@ describe('updateSchoolDetail GQL mutation: ', () => {
   const EXPECTED_UPDATED_URL = 'anavela.bolnamber.nt.fnd';
   const EXPECTED_UPDATED_SCHOOLDETAIL_USER_ID = USER_COUNT;
 
-  // Context object to provide authorization
-  const authContext = {
-    roleId: 1
-  };
-
   beforeEach(() => {
     // Randomly generate valid test ID's before each test
     expectedSchoolDetailsIdToUpdate = Math.ceil(
@@ -365,6 +360,11 @@ describe('updateSchoolDetail GQL mutation: ', () => {
       }
     }
   `;
+
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
 
   it('• should return the expected data when updating information for a school details entry', async () => {
     const res = await graphql(
@@ -458,11 +458,6 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
         }
       }
     `;
-
-    // Context object to provide authorization
-    const authContext = {
-      roleId: 1
-    };
 
     const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.updateSchoolDetail).toBeNull();
