@@ -11,6 +11,7 @@ const {
   GraphQLObjectType,
   GraphQLList,
   GraphQLID,
+  GraphQLString,
   GraphQLNonNull
 } = graphql;
 

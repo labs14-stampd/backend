@@ -1,12 +1,17 @@
-const jwt = require('jsonwebtoken');
+const secret = process.env.PK;
+
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const expressPlayground = require('graphql-playground-middleware-express')
   .default;
-const UserEmails = require('../models/userEmailsModel');
+
+const jwt = require('jsonwebtoken');
+
 const applyMiddleware = require('./middleware.js');
 const schema = require('../schema/schema.js');
-const secret = process.env.PK;
+
+const UserEmails = require('../models/userEmailsModel');
+
 const server = express();
 applyMiddleware(server);
 
