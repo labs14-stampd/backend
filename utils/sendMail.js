@@ -22,7 +22,7 @@ const sendMail = async ({ recipientName, recipientEmail, jwt }) => {
 
     // plaintext body
     text: `Please click the link below to confirm your email address.
-            http://localhost:4000/confirmation/${jwt}
+            ${process.env.BASE_URL}/confirmation/${jwt}
         `,
 
     html: `<p><b>Hello</b> Please click the link below to confirm your email address.</p><br/><a rel='nofollow' href='http://localhost:4000/confirmation/${jwt}'>CONFIRM.</a>`
@@ -57,7 +57,7 @@ const sendMagicLink = async ({ recipientEmail, student, jwt }) => {
 
     // plaintext body
     text: `Please click the link below to verify ${student}'s credential:
-            http://localhost:8000/verifyCred/${jwt}
+            ${process.env.BASE_URL}/view/${jwt}
         `,
 
     html: `<p><b>Hello</b> Please click the link below to verify ${student}'s credential.</p><br/><a rel='nofollow' href='${process.env.EMAIL_URL}/${jwt}'>VERIFY.</a>`

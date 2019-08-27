@@ -1,12 +1,13 @@
 const graphql = require('graphql');
+const jwt = require('jsonwebtoken');
 const User = require('../models/userModel.js');
 const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
 const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
-const { txFunc, web3, contract } = require('../web3/web3.js');
-const jwt = require('jsonwebtoken');
-const secret = process.env.PK;
+const { contract } = require('../web3/web3.js');
 const { sendMagicLink } = require('../utils/sendMail.js');
+
+const secret = process.env.PK;
 const {
   GraphQLObjectType,
   GraphQLList,
