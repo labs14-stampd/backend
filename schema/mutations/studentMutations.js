@@ -1,10 +1,11 @@
-const graphql = require('graphql');
-const Student = require('../../models/studentModel');
-const Users = require('../../models/userModel.js');
-const { StudentDetailsType } = require('../types.js');
 const jwt = require('../../api/tokenService');
 
-const { GraphQLString, GraphQLNonNull, GraphQLID } = graphql;
+const Student = require('../../models/studentModel');
+const Users = require('../../models/userModel.js');
+
+const { StudentDetailsType } = require('../types.js');
+const errorTypes = require('../errors');
+const { GraphQLString, GraphQLID } = require('graphql');
 
 module.exports = {
   //* *********** Student Details ************/
@@ -44,13 +45,20 @@ module.exports = {
         description: 'The phone number of the school'
       },
       userId: {
-        type: new GraphQLNonNull(GraphQLID),
+        type: GraphQLID,
         description: 'The ID of the user associated with the school'
       }
     },
     resolve: async (parent, args, ctx) => {
-      if (!ctx.isAuth) {
-        return new Error('Unauthorized');
+      // Authorization check
+      if (!ctx || !ctx.isAuth) {
+        // Also account for missing context to ensure error handling for unauthenticated users
+        return new Error(errorTypes.UNAUTHORIZED);
+      }
+
+      // When user ID parameter is missing
+      if (!args.userId) {
+        return new Error(errorTypes.MISSING_PARAMETER.USER.ID);
       }
 
       try {
@@ -65,7 +73,15 @@ module.exports = {
 
         return { ...newStudent, token };
       } catch (error) {
-        return new Error('There was an error completing your request.');
+        if (error.code === '23503') {
+          // When a foreign key constraint is violated (ex.: using a nonexistent foreign key ID value), determine which foreign key value does not exist
+          if (error.constraint === 'studentdetails_userid_foreign') {
+            return new Error(errorTypes.NOT_FOUND.USER);
+          }
+          // If no match for violated foreign key constraint, throw a generic error outside of the if-else block
+        }
+
+        return new Error(errorTypes.GENERIC + error.message);
       }
     }
   }, // Add School Detail
@@ -105,21 +121,24 @@ module.exports = {
         description: 'The phone number of the Student'
       },
       userId: {
-        type: new GraphQLNonNull(GraphQLID),
+        type: GraphQLID,
         description: 'The ID of the user associated with the Student'
       },
       id: {
-        type: new GraphQLNonNull(GraphQLID),
+        type: GraphQLID,
         description: 'The ID of the student details'
       }
     },
     resolve: async (parent, args, ctx) => {
-      if (Number(ctx.roleId) !== 3 && Number(ctx.roleId) !== 1) {
-        return new Error('Unauthorized');
+      // Authorization check
+      if (!ctx || (Number(ctx.roleId) !== 3 && Number(ctx.roleId) !== 1)) {
+        // Also account for missing context to ensure error handling for unauthenticated users
+        return new Error(errorTypes.UNAUTHORIZED);
       }
 
-      if (!args.id || typeof Number(args.id) !== 'number') {
-        return new Error('Please include a StudentDetails ID and try again.');
+      // When ID parameter is missing
+      if (!args.id) {
+        return new Error(errorTypes.MISSING_PARAMETER.STUDENTDETAIL.ID);
       }
 
       try {
@@ -127,9 +146,17 @@ module.exports = {
         if (res) {
           return res;
         }
-        return new Error('The School could not be updated.');
-      } catch {
-        return new Error('There was an error completing your request.');
+        return new Error(errorTypes.NOT_FOUND.STUDENTDETAIL);
+      } catch (error) {
+        if (error.code === '23503') {
+          // When a foreign key constraint is violated (ex.: using a nonexistent foreign key ID value), determine which foreign key value does not exist
+          if (error.constraint === 'studentdetails_userid_foreign') {
+            return new Error(errorTypes.NOT_FOUND.USER);
+          }
+          // If no match for violated foreign key constraint, throw a generic error outside of the if-else block
+        }
+
+        return new Error(errorTypes.GENERIC + error.message);
       }
     }
   } // Update Student Detail

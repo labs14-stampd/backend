@@ -11,13 +11,17 @@ module.exports = {
       PHONE: 'Please include a phone number for the school',
       URL: 'Please include a URL for the school'
     },
+    STUDENTDETAIL: {
+      ID: 'Please include a student ID and try again'
+    },
     USER: {
       ID: 'Please include a user ID and try again'
     }
   },
   NOT_FOUND: {
     CREDENTIAL: 'Credential with the given ID could not be found',
-    SCHOOLDETAIL: 'School details with the given ID could not be found',
+    SCHOOLDETAIL: 'School with the given ID could not be found',
+    STUDENTDETAIL: 'Student with the given ID could not be found',
     USER: 'User with the given ID could not be found'
   },
   NOT_UNIQUE: {
