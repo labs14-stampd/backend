@@ -1,6 +1,6 @@
 const { graphql } = require('graphql');
 const schema = require('../schema/schema');
-const errorTypes = require('../schema/errorTypes');
+const errorTypes = require('../schema/errors');
 
 const db = require('../database/dbConfig');
 
@@ -490,7 +490,7 @@ describe('getUserById GQL query error handling: ', () => {
   });
 
   test('• when "id" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.USER_ID;
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.USER.ID;
 
     const QUERY = `
       query {
@@ -608,8 +608,7 @@ describe('getSchoolDetailsBySchoolId GQL query error handling: ', () => {
   });
 
   test('• when "id" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      errorTypes.MISSING_PARAMETER.SCHOOLDETAILS_ID;
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.ID;
 
     const QUERY = `
       query {
@@ -625,7 +624,7 @@ describe('getSchoolDetailsBySchoolId GQL query error handling: ', () => {
   });
 
   test('• when attempting to get non-existent school details', async () => {
-    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.SCHOOLDETAILS;
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.SCHOOLDETAIL;
 
     const NONEXISTENT_ID_TO_GET = 0;
     const QUERY = `
@@ -911,8 +910,7 @@ describe('getCredentialsBySchoolId GQL query error handling: ', () => {
   });
 
   test('• when "id" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      errorTypes.MISSING_PARAMETER.SCHOOLDETAILS_ID;
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.ID;
 
     const QUERY = `
       query {
@@ -928,7 +926,7 @@ describe('getCredentialsBySchoolId GQL query error handling: ', () => {
   });
 
   test('• when attempting to get credentials issued by a non-existent school', async () => {
-    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.SCHOOLDETAILS;
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.SCHOOLDETAIL;
 
     const NONEXISTENT_ID_TO_GET = 0;
     const QUERY = `

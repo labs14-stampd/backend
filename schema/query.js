@@ -9,7 +9,7 @@ const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
 
 const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
-const errorTypes = require('./errorTypes.js');
+const errorTypes = require('./errors.js');
 const {
   GraphQLObjectType,
   GraphQLList,
@@ -56,7 +56,7 @@ const RootQuery = new GraphQLObjectType({
 
         // When ID parameter is missing
         if (!args.id) {
-          return new Error(errorTypes.MISSING_PARAMETER.USER_ID);
+          return new Error(errorTypes.MISSING_PARAMETER.USER.ID);
         }
 
         try {
@@ -87,7 +87,7 @@ const RootQuery = new GraphQLObjectType({
 
         // When ID parameter is missing
         if (!args.id) {
-          return new Error(errorTypes.MISSING_PARAMETER.SCHOOLDETAILS_ID);
+          return new Error(errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.ID);
         }
 
         try {
@@ -95,7 +95,7 @@ const RootQuery = new GraphQLObjectType({
           if (res) {
             return res;
           }
-          return new Error(errorTypes.NOT_FOUND.SCHOOLDETAILS);
+          return new Error(errorTypes.NOT_FOUND.SCHOOLDETAIL);
         } catch (error) {
           return new Error(errorTypes.GENERIC + error.message);
         }
@@ -113,10 +113,7 @@ const RootQuery = new GraphQLObjectType({
 
         try {
           const res = await Credentials.find();
-          if (res.length) {
-            return res;
-          }
-          return new Error(errorTypes.NOT_FOUND.CREDENTIAL);
+          return res;
         } catch (error) {
           return new Error(errorTypes.GENERIC + error.message);
         }
@@ -164,22 +161,19 @@ const RootQuery = new GraphQLObjectType({
 
         // When ID parameter is missing
         if (!args.id) {
-          return new Error(errorTypes.MISSING_PARAMETER.SCHOOLDETAILS_ID);
+          return new Error(errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.ID);
         }
 
         try {
           const school = await User.findById(args.id);
           if (!school) {
-            return new Error(errorTypes.NOT_FOUND.SCHOOLDETAILS);
+            return new Error(errorTypes.NOT_FOUND.SCHOOLDETAIL);
           }
 
           const res = await Credentials.findBy({
             schoolId: args.id
           });
-          if (res) {
-            return res;
-          }
-          return new Error(errorTypes.NOT_FOUND.BY_SCHOOL);
+          return res;
         } catch (error) {
           return new Error(errorTypes.GENERIC + error.message);
         }
