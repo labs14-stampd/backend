@@ -4,7 +4,9 @@ const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
 const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
 const { txFunc, web3, contract } = require('../web3/web3.js');
-
+const jwt = require('jsonwebtoken');
+const secret = process.env.PK;
+const { sendMagicLink } = require('../utils/sendMail.js');
 const {
   GraphQLObjectType,
   GraphQLList,
@@ -20,7 +22,11 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(UserType),
       description: 'Gets all users',
       resolve: async (parent, args, ctx) => {
-        if (Number(ctx.roleId) !== 1) return new Error('Unauthorized');
+        // Authorization check
+        if (Number(ctx.roleId) !== 1) {
+          return new Error('Unauthorized');
+        }
+
         try {
           const res = await User.find();
           if (res) {
@@ -42,7 +48,11 @@ const RootQuery = new GraphQLObjectType({
         }
       },
       resolve: async (parent, args, ctx) => {
-        if (!ctx.isAuth) return new Error('Unauthorized');
+        // Authorization check
+        if (!ctx.isAuth) {
+          return new Error('Unauthorized');
+        }
+
         try {
           const res = await User.findById(args.id);
           if (res) {
@@ -63,7 +73,11 @@ const RootQuery = new GraphQLObjectType({
         }
       },
       resolve: async (parent, args, ctx) => {
-        if (Number(ctx.roleId) !== 2) return new Error('Unauthorized');
+        // Authorization check
+        if (Number(ctx.roleId) !== 2) {
+          return new Error('Unauthorized');
+        }
+
         try {
           const res = await Schools.findById(args.id);
           if (res) {
@@ -79,7 +93,11 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(CredentialType),
       description: 'Gets all credentials',
       resolve: async (parent, args, ctx) => {
-        if (Number(ctx.roleId) !== 1) return new Error('Unauthorized');
+        // Authorization check
+        if (Number(ctx.roleId) !== 1) {
+          return new Error('Unauthorized');
+        }
+
         try {
           const res = await Credentials.find();
           if (res.length) {
@@ -120,8 +138,11 @@ const RootQuery = new GraphQLObjectType({
         }
       },
       resolve: async (parent, args, ctx) => {
-        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
+        // Authorization check
+        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1) {
           return new Error('Unauthorized');
+        }
+
         try {
           const school = await User.findById(args.id);
           if (!school) {
@@ -144,9 +165,12 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(CredentialType),
       description: 'Get all credentials associated with a specific email',
       args: { email: { type: new GraphQLNonNull(GraphQLString) } },
-      resolve: async (parent, args) => {
-        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
+      resolve: async (parent, args, ctx) => {
+        // Authorization check
+        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1) {
           return new Error('Unauthorized');
+        }
+
         try {
           const res = await Credentials.findBy({ studentEmail: args.email });
           return res;
@@ -176,12 +200,47 @@ const RootQuery = new GraphQLObjectType({
             ...cred
           } = await Credentials.findById(args.id);
 
-          // data will be true or false, depending on validity of credential
+          //data will be true or false, depending on validity of credential
           const data = await contract.methods
             .verifyCredential(cred.credHash)
             .call();
         } catch (error) {
           return error;
+        }
+      }
+    },
+    shareCredential: {
+      type: UserType,
+      description: 'Creates and emails magic link to recipient',
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The unique ID of the credential to be shared'
+        },
+        email: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'The email of the recipient of magic link'
+        }
+      },
+      resolve: async (parent, args) => {
+        try {
+          credential = await Credentials.findById(args.id);
+
+          const payload = {
+            credId: credential.id
+          };
+
+          const options = { expiresIn: '45d' };
+
+          const linkJwt = jwt.sign(payload, secret, options);
+          sendMagicLink({
+            recipientEmail: args.email,
+            student: credential.ownerName,
+            jwt: linkJwt
+          });
+          return { email: args.email };
+        } catch (error) {
+          return new Error('Error', error);
         }
       }
     }

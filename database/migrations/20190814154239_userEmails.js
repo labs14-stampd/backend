@@ -1,5 +1,5 @@
-exports.up = function createSchoolDetails(knex) {
-  return knex.schema.createTable('userEmails', tbl => {
+exports.up = async knex => {
+  await knex.schema.createTable('userEmails', tbl => {
     tbl
       .increments('id')
       .unsigned()
@@ -19,6 +19,6 @@ exports.up = function createSchoolDetails(knex) {
   });
 };
 
-exports.down = function dropSchoolDetails(knex) {
-  return knex.schema.dropTable('userEmails');
+exports.down = async knex => {
+  await knex.schema.dropTable('userEmails');
 };
