@@ -236,7 +236,7 @@ const Mutation = new GraphQLObjectType({
             .removeCredential(args.credHash)
             .encodeABI();
           if (data.length) {
-            const result = await txFunc(data);
+            await txFunc(data);
             return Credential.remove(args.id).then(res => {
               if (res) {
                 return {
@@ -338,14 +338,13 @@ const Mutation = new GraphQLObjectType({
               }
               return new Error('The credential could not be invalidated.');
             });
-          } else {
-            return new Error('The credential could not be invalidated.');
           }
+          return new Error('The credential could not be invalidated.');
         } catch (error) {
           return new Error('There was an error completing your request.');
         }
       }
-    }, //invalidateCredential
+    }, // invalidateCredential
     validateCredential: {
       type: CredentialType,
       description: 'Validates an invalidated Credential',
@@ -432,14 +431,13 @@ const Mutation = new GraphQLObjectType({
               }
               return new Error('The credential could not be validated.');
             });
-          } else {
-            return new Error('The credential could not be validated.');
           }
+          return new Error('The credential could not be validated.');
         } catch (error) {
           return new Error('There was an error completing your request.');
         }
       }
-    } //validateCredential
+    } // validateCredential
   })
 });
 
