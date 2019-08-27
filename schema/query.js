@@ -8,7 +8,6 @@ const jwt = require('jsonwebtoken');
 const secret = process.env.PK;
 const { sendMagicLink } = require('../utils/sendMail.js');
 const {
-  GraphQLString,
   GraphQLObjectType,
   GraphQLList,
   GraphQLID,
