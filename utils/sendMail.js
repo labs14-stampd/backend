@@ -60,7 +60,7 @@ const sendMagicLink = async ({ recipientEmail, student, jwt }) => {
             http://localhost:8000/verifyCred/${jwt}
         `,
 
-    html: `<p><b>Hello</b> Please click the link below to verify ${student}'s credential.</p><br/><a rel='nofollow' href='http://localhost:8000/verifyCred/${jwt}'>VERIFY.</a>`
+    html: `<p><b>Hello</b> Please click the link below to verify ${student}'s credential.</p><br/><a rel='nofollow' href='${process.env.EMAIL_URL}/${jwt}'>VERIFY.</a>`
   };
 
   transporter.sendMail(message, (err, info) => {
