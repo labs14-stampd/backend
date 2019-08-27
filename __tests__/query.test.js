@@ -1,7 +1,13 @@
 const { graphql } = require('graphql');
 const schema = require('../schema/schema');
+const errorTypes = require('../schema/errorTypes');
+
 const db = require('../database/dbConfig');
 
+beforeAll(async () => {
+  // Re-seed before all query tests to ensure that each test will work with a clean set of data
+  await db.seed.run();
+});
 afterAll(async () => {
   await db.destroy(); // Necessary to prevent connections from not closing (which could eventually clog the Postgres database if left unchecked)
 });
@@ -370,17 +376,17 @@ describe('getAllUsers GQL query: ', () => {
 
 describe('getAllUsers GQL query error handling: ', () => {
   test('• when unauthorized', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
 
-    const MUTATION = `
-      mutation {
+    const QUERY = `
+      query {
         getAllUsers {
           id
         }
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, QUERY, null);
     expect(res.data.getAllUsers).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -466,23 +472,25 @@ describe('getUserById GQL query error handling: ', () => {
   };
 
   test('• when unauthorized', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
 
-    const MUTATION = `
-      mutation {
-        getUserById {
+    const QUERY = `
+      query {
+        getUserById (
+          id: ""
+        ) {
           id
         }
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, QUERY, null);
     expect(res.data.getUserById).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when "id" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Please include a user ID and try again.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.USER_ID;
 
     const QUERY = `
       query {
@@ -498,7 +506,7 @@ describe('getUserById GQL query error handling: ', () => {
   });
 
   test('• when attempting to get a non-existent user', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'The user could not be found.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.USER;
 
     const NONEXISTENT_ID_TO_GET = 0;
     const QUERY = `
@@ -582,24 +590,26 @@ describe('getSchoolDetailsBySchoolId GQL query error handling: ', () => {
   };
 
   test('• when unauthorized', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
 
-    const MUTATION = `
-      mutation {
-        getSchoolDetailsBySchoolId {
+    const QUERY = `
+      query {
+        getSchoolDetailsBySchoolId (
+          id: ""
+        ) {
           id
         }
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, QUERY, null);
     expect(res.data.getSchoolDetailsBySchoolId).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when "id" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE =
-      'Please include a school details ID and try again.';
+      errorTypes.MISSING_PARAMETER.SCHOOLDETAILS_ID;
 
     const QUERY = `
       query {
@@ -615,7 +625,7 @@ describe('getSchoolDetailsBySchoolId GQL query error handling: ', () => {
   });
 
   test('• when attempting to get non-existent school details', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'School details could not be found.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.SCHOOLDETAILS;
 
     const NONEXISTENT_ID_TO_GET = 0;
     const QUERY = `
@@ -687,17 +697,17 @@ describe('getAllCredentials GQL query: ', () => {
 
 describe('getAllCredentials GQL query error handling: ', () => {
   test('• when unauthorized', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
 
-    const MUTATION = `
-      mutation {
+    const QUERY = `
+      query {
         getAllCredentials {
           id
         }
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, QUERY, null);
     expect(res.data.getAllCredentials).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
@@ -760,8 +770,7 @@ describe('getCredentialById GQL query: ', () => {
 
 describe('getCredentialById GQL query error handling: ', () => {
   test('• when "id" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'Please include a credential ID and try again.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.CREDENTIAL_ID;
 
     const QUERY = `
       query {
@@ -777,7 +786,7 @@ describe('getCredentialById GQL query error handling: ', () => {
   });
 
   test('• when attempting to get non-existent credentials', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Credential with that ID could not be found';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.CREDENTIAL;
 
     const NONEXISTENT_ID_TO_GET = 0;
     const QUERY = `
@@ -886,23 +895,24 @@ describe('getCredentialsBySchoolId GQL query error handling: ', () => {
   };
 
   test('• when unauthorized', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
 
-    const MUTATION = `
-      mutation {
+    const QUERY = `
+      query {
         getCredentialsBySchoolId {
           id
         }
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, QUERY, null);
     expect(res.data.getCredentialsBySchoolId).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when "id" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Please include a school ID and try again.';
+    const EXPECTED_ERROR_MESSAGE =
+      errorTypes.MISSING_PARAMETER.SCHOOLDETAILS_ID;
 
     const QUERY = `
       query {
@@ -918,7 +928,7 @@ describe('getCredentialsBySchoolId GQL query error handling: ', () => {
   });
 
   test('• when attempting to get credentials issued by a non-existent school', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'School with that ID could not be found';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.SCHOOLDETAILS;
 
     const NONEXISTENT_ID_TO_GET = 0;
     const QUERY = `
@@ -1006,24 +1016,25 @@ describe('getCredentialsByEmail GQL query error handling: ', () => {
   };
 
   test('• when unauthorized', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
 
-    const MUTATION = `
-      mutation {
-        getCredentialsByEmail {
+    const QUERY = `
+      query {
+        getCredentialsByEmail (
+          email: ""
+        ) {
           id
         }
       }
     `;
 
-    const res = await graphql(schema, MUTATION, null);
+    const res = await graphql(schema, QUERY, null);
     expect(res.data.getCredentialsByEmail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when "email" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'Please include an email address and try again.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.EMAIL_ADDRESS;
 
     const QUERY = `
       query {
