@@ -278,7 +278,7 @@ const CredentialType = new GraphQLObjectType({
       description: 'Student email associated with credential'
     },
     imageUrl: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: 'Image URL associated with credential'
     },
     criteria: {
