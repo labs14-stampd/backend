@@ -1,6 +1,6 @@
 const graphql = require('graphql');
 const Credential = require('../models/credentialModel.js');
-const { CredentialType } = require('./types.js');
+const { CredentialType, DeletedCredentialsType } = require('./types.js');
 const { txFunc, web3, contract } = require('../web3/web3.js');
 
 const {
@@ -437,7 +437,69 @@ const Mutation = new GraphQLObjectType({
           return new Error('There was an error completing your request.');
         }
       }
-    } // validateCredential
+    }, // validateCredential
+    addDeletedCredential: {
+      type: DeletedCredentialsType,
+      description: 'Stores invalidated credentials of a student',
+      args: {
+        credName: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'Name of the invalidated credential'
+        },
+        description: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'Description of the invalidated credential'
+        },
+        txHash: {
+          type: GraphQLString,
+          description:
+            'Ethereum transaction hash for the invalidated credential'
+        },
+        credHash: {
+          type: GraphQLString,
+          description: 'Hash of invalidated credential'
+        },
+        type: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'Type of invalidated credential'
+        },
+        ownerName: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'Name associated with invalidated credential'
+        },
+        studentEmail: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'Student email associated with invalidated credential'
+        },
+        imageUrl: {
+          type: GraphQLString,
+          description: 'Image URL associated with invalidated credential'
+        },
+        criteria: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'Criteria required to complete invalidated credential'
+        },
+        valid: {
+          type: GraphQLBoolean,
+          description:
+            'A boolean flag indicating if the invalidated credential is still valid'
+        },
+        issuedOn: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'Date invalidated credential was issued'
+        },
+        expirationDate: {
+          type: GraphQLString,
+          description: 'Date that the invalidated credential will expire'
+        },
+        schoolId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description:
+            'USER id associated with the school issuing the new credential'
+          // ^^^ This is the id in the 'users' table
+        }
+      }
+    }
   })
 });
 
