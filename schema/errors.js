@@ -1,6 +1,6 @@
 // An object containing string constants to be used for uniform error messages
 module.exports = {
-  GENERIC: 'There was an error in completing the request\n',
+  GENERIC: 'There was an error in completing the request',
   INVALID_LOGIN: 'Invalid login - an authentication error occurred',
   MISSING_PARAMETER: {
     AUTH_TOKEN: 'Authentication token missing or invalid.',

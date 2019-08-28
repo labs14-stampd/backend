@@ -91,10 +91,12 @@ module.exports = {
           if (error.constraint === 'users_sub_unique') {
             return new Error(errorTypes.NOT_UNIQUE.USER.SUB);
           }
-          return new Error(errorTypes.NOT_UNIQUE.GENERIC);
+          return new Error(
+            `${errorTypes.NOT_UNIQUE.GENERIC} - violation of ${error.constraint}`
+          );
         }
 
-        return new Error(errorTypes.GENERIC + error.message);
+        return new Error(`${errorTypes.GENERIC} (${error.message})`);
       }
     }
   }, // Add User
@@ -142,7 +144,7 @@ module.exports = {
             return new Error(errorTypes.NOT_UNIQUE.EMAIL_ADDRESS);
           }
         } catch (error) {
-          return new Error(errorTypes.GENERIC + error.message);
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
 
@@ -170,10 +172,12 @@ module.exports = {
           if (error.constraint === 'users_sub_unique') {
             return new Error(errorTypes.NOT_UNIQUE.USER.SUB);
           }
-          return new Error(errorTypes.NOT_UNIQUE.GENERIC);
+          return new Error(
+            `${errorTypes.NOT_UNIQUE.GENERIC} - violation of ${error.constraint}`
+          );
         }
 
-        return new Error(errorTypes.GENERIC + error.message);
+        return new Error(`${errorTypes.GENERIC} (${error.message})`);
       }
     }
   }, // Update User
@@ -210,7 +214,7 @@ module.exports = {
         }
         return new Error(errorTypes.NOT_FOUND.USER);
       } catch (error) {
-        return new Error(errorTypes.GENERIC + error.message);
+        return new Error(`${errorTypes.GENERIC} (${error.message})`);
       }
     }
   }, // Delete User
@@ -258,7 +262,7 @@ module.exports = {
             return new Error(errorTypes.NOT_UNIQUE.EMAIL_ADDRESS);
           }
         } catch (error) {
-          return new Error(errorTypes.GENERIC + error.message);
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
 
@@ -271,7 +275,7 @@ module.exports = {
           return new Error(errorTypes.NOT_FOUND.USER);
         }
       } catch (error) {
-        return new Error(errorTypes.GENERIC + error.message);
+        return new Error(`${errorTypes.GENERIC} (${error.message})`);
       }
 
       let res;
@@ -289,10 +293,12 @@ module.exports = {
           if (error.constraint === 'useremails_email_unique') {
             return new Error(errorTypes.NOT_UNIQUE.EMAIL_ADDRESS);
           }
-          return new Error(errorTypes.NOT_UNIQUE.GENERIC);
+          return new Error(
+            `${errorTypes.NOT_UNIQUE.GENERIC} - violation of ${error.constraint}`
+          );
         }
 
-        return new Error(errorTypes.GENERIC + error.message);
+        return new Error(`${errorTypes.GENERIC} (${error.message})`);
       }
 
       try {
@@ -313,7 +319,7 @@ module.exports = {
 
         return res;
       } catch (error) {
-        return new Error(errorTypes.GENERIC + error.message);
+        return new Error(`${errorTypes.GENERIC} (${error.message})`);
       }
     }
   }, // Add user email
@@ -347,7 +353,7 @@ module.exports = {
         }
         return new Error(errorTypes.NOT_FOUND.USEREMAIL);
       } catch (error) {
-        return new Error(errorTypes.GENERIC + error.message);
+        return new Error(`${errorTypes.GENERIC} (${error.message})`);
       }
     }
   } // Delete User Email

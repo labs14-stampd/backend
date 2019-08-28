@@ -81,7 +81,7 @@ module.exports = {
           // If no match for violated foreign key constraint, throw a generic error outside of the if-else block
         }
 
-        return new Error(errorTypes.GENERIC + error.message);
+        return new Error(`${errorTypes.GENERIC} (${error.message})`);
       }
     }
   }, // Add School Detail
@@ -156,7 +156,7 @@ module.exports = {
           // If no match for violated foreign key constraint, throw a generic error outside of the if-else block
         }
 
-        return new Error(errorTypes.GENERIC + error.message);
+        return new Error(`${errorTypes.GENERIC} (${error.message})`);
       }
     }
   } // Update Student Detail

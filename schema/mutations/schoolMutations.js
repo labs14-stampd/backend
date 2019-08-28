@@ -100,10 +100,12 @@ module.exports = {
           if (error.constraint === 'schooldetails_taxid_unique') {
             return new Error(errorTypes.NOT_UNIQUE.SCHOOLDETAIL.TAX_ID);
           }
-          return new Error(errorTypes.NOT_UNIQUE.GENERIC);
+          return new Error(
+            `${errorTypes.NOT_UNIQUE.GENERIC} - violation of ${error.constraint}`
+          );
         }
 
-        return new Error(errorTypes.GENERIC + error.message);
+        return new Error(`${errorTypes.GENERIC} (${error.message})`);
       }
     }
   }, // Add School Detail
@@ -181,10 +183,12 @@ module.exports = {
           if (error.constraint === 'schooldetails_taxid_unique') {
             return new Error(errorTypes.NOT_UNIQUE.SCHOOLDETAIL.TAX_ID);
           }
-          return new Error(errorTypes.NOT_UNIQUE.GENERIC);
+          return new Error(
+            `${errorTypes.NOT_UNIQUE.GENERIC} - violation of ${error.constraint}`
+          );
         }
 
-        return new Error(errorTypes.GENERIC + error.message);
+        return new Error(`${errorTypes.GENERIC} (${error.message})`);
       }
     }
   } // Update School Detail

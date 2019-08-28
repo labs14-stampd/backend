@@ -34,7 +34,7 @@ const RootQuery = new GraphQLObjectType({
           const res = await User.find();
           return res;
         } catch (error) {
-          return new Error(errorTypes.GENERIC + error.message);
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
@@ -66,7 +66,7 @@ const RootQuery = new GraphQLObjectType({
           }
           return new Error(errorTypes.NOT_FOUND.USER);
         } catch (error) {
-          return new Error(errorTypes.GENERIC + error.message);
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
@@ -97,7 +97,7 @@ const RootQuery = new GraphQLObjectType({
           }
           return new Error(errorTypes.NOT_FOUND.SCHOOLDETAIL);
         } catch (error) {
-          return new Error(errorTypes.GENERIC + error.message);
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
@@ -115,7 +115,7 @@ const RootQuery = new GraphQLObjectType({
           const res = await Credentials.find();
           return res;
         } catch (error) {
-          return new Error(errorTypes.GENERIC + error.message);
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
@@ -140,7 +140,7 @@ const RootQuery = new GraphQLObjectType({
           }
           return new Error(errorTypes.NOT_FOUND.CREDENTIAL);
         } catch (error) {
-          return new Error(errorTypes.GENERIC + error.message);
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
@@ -175,7 +175,7 @@ const RootQuery = new GraphQLObjectType({
           });
           return res;
         } catch (error) {
-          return new Error(errorTypes.GENERIC + error.message);
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
@@ -199,7 +199,7 @@ const RootQuery = new GraphQLObjectType({
           const res = await Credentials.findBy({ studentEmail: args.email });
           return res;
         } catch (error) {
-          return new Error(errorTypes.GENERIC + error.message);
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
@@ -229,7 +229,7 @@ const RootQuery = new GraphQLObjectType({
             .verifyCredential(cred.credHash)
             .call();
         } catch (error) {
-          return new Error(errorTypes.GENERIC + error.message);
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
