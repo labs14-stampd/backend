@@ -1,5 +1,6 @@
 const graphql = require('graphql');
 const Credential = require('../models/credentialModel.js');
+const uuid = require('uuid/v1');
 const { CredentialType } = require('./types.js');
 const { txFunc, web3, contract } = require('../web3/web3.js');
 
@@ -92,6 +93,10 @@ const Mutation = new GraphQLObjectType({
           type: GraphQLString,
           description: 'Date that the new credential will expire'
         },
+        credentialId: {
+          type: GraphQLString,
+          description: 'Unique identifier for credential'
+        },
         schoolId: {
           type: new GraphQLNonNull(GraphQLID),
           description:
@@ -103,6 +108,7 @@ const Mutation = new GraphQLObjectType({
         if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
           return new Error('Unauthorized');
         try {
+          args.credentialId = uuid();
           const credentialHash = web3.utils.sha3(JSON.stringify(args));
           args.credHash = credentialHash;
           const data = contract.methods
