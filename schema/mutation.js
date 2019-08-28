@@ -248,6 +248,7 @@ const Mutation = new GraphQLObjectType({
                 return new Error('The credential could not be deleted.');
               })
               .then(() => {
+                // when deleted, adds deleted credentials to the deletedCredentials table
                 return DeletedCredentials.insert(args);
               });
           }
