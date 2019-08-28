@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel.js');
 const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
-const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
+const DeletedCredentials = require('../models/deletedCredentialModel')
+const { UserType, SchoolDetailsType, CredentialType, DeletedCredentialsType } = require('./types.js');
 const { contract } = require('../web3/web3.js');
 const { sendMagicLink } = require('../utils/sendMail.js');
 
@@ -242,6 +243,38 @@ const RootQuery = new GraphQLObjectType({
           return { email: args.email };
         } catch (error) {
           return new Error('Error', error);
+        }
+      }
+    },
+    getDeletedCredentialsBySchoolId: {
+      type: new GraphQLList(DeletedCredentialsType),
+      description: 'Get all of a schools deleted credentials',
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID)
+        }
+      },
+      resolve: async (parent, args, ctx) => {
+        // Authorization check
+        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1) {
+          return new Error('Unauthorized');
+        }
+
+        try {
+          const school = await User.findById(args.id);
+          if (!school) {
+            return new Error('School with that ID could not be found');
+          }
+
+          const res = await DeletedCredentials.findBy({
+            schoolId: args.id
+          });
+          if (res) {
+            return res;
+          }
+          return new Error('School with that ID could not be found');
+        } catch (error) {
+          return new Error('there was an error completing your request.');
         }
       }
     }
