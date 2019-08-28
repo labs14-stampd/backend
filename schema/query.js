@@ -226,7 +226,7 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve: async (parent, args) => {
         try {
-          credential = await Credentials.findById(args.id);
+          const credential = await Credentials.findById(args.id);
 
           const payload = {
             credId: credential.id
