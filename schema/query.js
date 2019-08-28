@@ -201,7 +201,7 @@ const RootQuery = new GraphQLObjectType({
             ...cred
           } = await Credentials.findById(args.id);
 
-          //data will be true or false, depending on validity of credential
+          // data will be true or false, depending on validity of credential
           const data = await contract.methods
             .verifyCredential(cred.credHash)
             .call();
@@ -225,7 +225,7 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve: async (parent, args) => {
         try {
-          credential = await Credentials.findById(args.id);
+          const credential = await Credentials.findById(args.id);
 
           const payload = {
             credId: credential.id
