@@ -5,6 +5,7 @@ const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
 const Students = require('../models/studentModel');
 const UserEmails = require('../models/userEmailsModel');
+const DeletedCredentials = require('../models/deletedCredentialModel');
 
 const {
   GraphQLObjectType,
@@ -312,11 +313,78 @@ const CredentialType = new GraphQLObjectType({
   })
 });
 
+const DeletedCredentialsType = new GraphQLObjectType({
+  name: 'Credential',
+  fields: () => ({
+    id: { type: GraphQLID, description: 'The unique ID of a credential' },
+    credName: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Name of the credential'
+    },
+    description: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Description of the credential'
+    },
+    credHash: {
+      type: GraphQLString,
+      description: 'Hash of credential information to be stored on blockchain'
+    },
+    txHash: {
+      type: GraphQLString,
+      description: 'Ethereum transaction hash for the credential'
+    },
+    type: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Type of credential'
+    },
+    ownerName: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Name associated with credential'
+    },
+    studentEmail: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Student email associated with credential'
+    },
+    imageUrl: {
+      type: GraphQLString,
+      description: 'Image URL associated with credential'
+    },
+    criteria: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Criteria required to complete credential'
+    },
+    valid: {
+      type: GraphQLBoolean,
+      description: 'A boolean flag indicating if the credential is still valid'
+    },
+    issuedOn: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Date credential was issued'
+    },
+    expirationDate: {
+      type: GraphQLString,
+      description: 'Date that the credential will expire'
+    },
+    schoolId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'USER id associated with the school issuing the credential'
+    },
+    schoolsUserInfo: {
+      type: UserType, // eslint-disable-line no-use-before-define
+      description: 'The user associated with the school',
+      resolve(parent) {
+        return Users.findById(parent.schoolId);
+      }
+    }
+  })
+});
+
 module.exports = {
   UserType,
   RoleType,
   SchoolDetailsType,
   CredentialType,
   UserEmailType,
-  StudentDetailsType
+  StudentDetailsType,
+  DeletedCredentialsType
 };
