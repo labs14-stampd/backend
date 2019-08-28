@@ -1,7 +1,8 @@
 const graphql = require('graphql');
 const Credential = require('../models/credentialModel.js');
+const DeletedCredentials = require('../models/deletedCredentialModel');
+const { CredentialType, DeletedCredentialsType } = require('./types.js');
 const uuid = require('uuid/v1');
-const { CredentialType } = require('./types.js');
 const { txFunc, web3, contract } = require('../web3/web3.js');
 
 const {
@@ -243,14 +244,34 @@ const Mutation = new GraphQLObjectType({
             .encodeABI();
           if (data.length) {
             await txFunc(data);
-            return Credential.remove(args.id).then(res => {
-              if (res) {
-                return {
-                  id: args.id
-                };
-              }
-              return new Error('The credential could not be deleted.');
-            });
+            return Credential.findBy({ id: args.id })
+              .then(([res])=> {
+                delete res.id;
+                delete res.created_at;
+                delete res.updated_at;
+                return DeletedCredentials.insert(res)
+                  .then(cred => {
+                    return cred
+                  })
+                  .catch((error) => {
+                    return new Error('The credential could not be deleted1.')
+                  });
+              })
+              .then(() => {
+                return Credential.remove(args.id).then(res => {
+                  if (res) {
+                    return {
+                      id: args.id
+                    };
+                  }
+                  return new Error('The credential could not be deleted.');
+                });
+              })
+              .catch(() => {
+                return new Error(
+                  'The credential could not be inserted to the deleted table.'
+                );
+              });
           }
         } catch (error) {
           return new Error('There was an error completing your request.');
