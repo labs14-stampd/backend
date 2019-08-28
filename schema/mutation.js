@@ -238,18 +238,33 @@ const Mutation = new GraphQLObjectType({
             .encodeABI();
           if (data.length) {
             await txFunc(data);
-            return Credential.remove(args.id)
-              .then(res => {
-                if (res) {
-                  return {
-                    id: args.id
-                  };
-                }
-                return new Error('The credential could not be deleted.');
+            return Credential.findBy({ id: args.id })
+              .then(([res])=> {
+                delete res.id;
+                delete res.created_at;
+                delete res.updated_at;
+                return DeletedCredentials.insert(res)
+                  .then(cred => {
+                    return cred
+                  })
+                  .catch((error) => {
+                    return new Error('The credential could not be deleted1.')
+                  });
               })
               .then(() => {
-                // when deleted, adds deleted credentials to the deletedCredentials table
-                return DeletedCredentials.insert(args);
+                return Credential.remove(args.id).then(res => {
+                  if (res) {
+                    return {
+                      id: args.id
+                    };
+                  }
+                  return new Error('The credential could not be deleted.');
+                });
+              })
+              .catch(() => {
+                return new Error(
+                  'The credential could not be inserted to the deleted table.'
+                );
               });
           }
         } catch (error) {

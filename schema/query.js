@@ -3,8 +3,13 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel.js');
 const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
-const DeletedCredentials = require('../models/deletedCredentialModel')
-const { UserType, SchoolDetailsType, CredentialType, DeletedCredentialsType } = require('./types.js');
+const DeletedCredentials = require('../models/deletedCredentialModel');
+const {
+  UserType,
+  SchoolDetailsType,
+  CredentialType,
+  DeletedCredentialsType
+} = require('./types.js');
 const { contract } = require('../web3/web3.js');
 const { sendMagicLink } = require('../utils/sendMail.js');
 
@@ -202,7 +207,7 @@ const RootQuery = new GraphQLObjectType({
             ...cred
           } = await Credentials.findById(args.id);
 
-          //data will be true or false, depending on validity of credential
+          // data will be true or false, depending on validity of credential
           const data = await contract.methods
             .verifyCredential(cred.credHash)
             .call();
@@ -269,6 +274,7 @@ const RootQuery = new GraphQLObjectType({
           const res = await DeletedCredentials.findBy({
             schoolId: args.id
           });
+          console.log(res);
           if (res) {
             return res;
           }
