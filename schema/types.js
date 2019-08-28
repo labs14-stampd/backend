@@ -314,7 +314,7 @@ const CredentialType = new GraphQLObjectType({
 });
 
 const DeletedCredentialsType = new GraphQLObjectType({
-  name: 'Credential',
+  name: 'DeletedCredential',
   fields: () => ({
     id: { type: GraphQLID, description: 'The unique ID of a credential' },
     credName: {
