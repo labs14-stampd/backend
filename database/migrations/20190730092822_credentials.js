@@ -16,6 +16,7 @@ exports.up = async knex => {
     tbl.text('criteria').notNull();
     tbl.string('issuedOn', 128).notNull();
     tbl.string('expirationDate', 128);
+    tbl.string('credentialId', 128);
     tbl.timestamps(true, true);
     tbl
       .integer('schoolId')
