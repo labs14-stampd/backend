@@ -438,6 +438,7 @@ const Mutation = new GraphQLObjectType({
         }
       }
     }, // validateCredential
+    //* *********** Deleted Credential Details ************/
     addDeletedCredential: {
       type: DeletedCredentialsType,
       description: 'Stores invalidated credentials of a student',
@@ -497,6 +498,27 @@ const Mutation = new GraphQLObjectType({
           description:
             'USER id associated with the school issuing the new credential'
           // ^^^ This is the id in the 'users' table
+        }
+      },
+      async resolve(parent, args, ctx) {
+        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
+          return new Error('Unauthorized');
+        try {
+          const credentialHash = web3.utils.sha3(JSON.stringify(args));
+          args.credHash = credentialHash;
+          const data = contract.methods
+            .addCredential(credentialHash)
+            .encodeABI();
+          if (data.length) {
+            args.txHash = await txFunc(data);
+            args.valid = true;
+            return Credential.insert(args).then(res => {
+              return res;
+            });
+          }
+          return new Error('The credential could not be created.');
+        } catch (error) {
+          return new Error('There was an error completing your request.');
         }
       }
     }
