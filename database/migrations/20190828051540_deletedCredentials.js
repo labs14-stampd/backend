@@ -1,5 +1,5 @@
 exports.up = async knex => {
-  await knex.schema.createTable('credentials', tbl => {
+  await knex.schema.createTable('deletedCredentials', tbl => {
     tbl
       .increments('id')
       .unsigned()
@@ -16,7 +16,6 @@ exports.up = async knex => {
     tbl.text('criteria').notNull();
     tbl.string('issuedOn', 128).notNull();
     tbl.string('expirationDate', 128);
-    tbl.string('credentialId', 128);
     tbl.timestamps(true, true);
     tbl
       .integer('schoolId')
@@ -24,10 +23,10 @@ exports.up = async knex => {
       .references('id')
       .inTable('users')
       .onDelete('CASCADE')
-      .notNull(); // Need to reference id in "users" => schoolDetails
+      .notNull();
   });
 };
 
 exports.down = async knex => {
-  await knex.schema.dropTable('credentials');
+  await knex.schema.dropTable('deletedCredentials');
 };

@@ -1,12 +1,19 @@
 const graphql = require('graphql');
+const jwt = require('jsonwebtoken');
 const User = require('../models/userModel.js');
 const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
-const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
-const { txFunc, web3, contract } = require('../web3/web3.js');
-const jwt = require('jsonwebtoken');
-const secret = process.env.PK;
+const DeletedCredentials = require('../models/deletedCredentialModel');
+const {
+  UserType,
+  SchoolDetailsType,
+  CredentialType,
+  DeletedCredentialsType
+} = require('./types.js');
+const { contract } = require('../web3/web3.js');
 const { sendMagicLink } = require('../utils/sendMail.js');
+
+const secret = process.env.PK;
 const {
   GraphQLObjectType,
   GraphQLList,
@@ -200,7 +207,7 @@ const RootQuery = new GraphQLObjectType({
             ...cred
           } = await Credentials.findById(args.id);
 
-          //data will be true or false, depending on validity of credential
+          // data will be true or false, depending on validity of credential
           const data = await contract.methods
             .verifyCredential(cred.credHash)
             .call();
@@ -224,7 +231,7 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve: async (parent, args) => {
         try {
-          credential = await Credentials.findById(args.id);
+          const credential = await Credentials.findById(args.id);
 
           const payload = {
             credId: credential.id
@@ -241,6 +248,39 @@ const RootQuery = new GraphQLObjectType({
           return { email: args.email };
         } catch (error) {
           return new Error('Error', error);
+        }
+      }
+    },
+    getDeletedCredentialsBySchoolId: {
+      type: new GraphQLList(DeletedCredentialsType),
+      description: 'Get all of a schools deleted credentials',
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID)
+        }
+      },
+      resolve: async (parent, args, ctx) => {
+        // Authorization check
+        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1) {
+          return new Error('Unauthorized');
+        }
+
+        try {
+          const school = await User.findById(args.id);
+          if (!school) {
+            return new Error('School with that ID could not be found');
+          }
+
+          const res = await DeletedCredentials.findBy({
+            schoolId: args.id
+          });
+          console.log(res);
+          if (res) {
+            return res;
+          }
+          return new Error('School with that ID could not be found');
+        } catch (error) {
+          return new Error('there was an error completing your request.');
         }
       }
     }
