@@ -1,13 +1,15 @@
+const getDecoded = require('../api/getDecoded');
+
 const { graphql } = require('graphql');
 const schema = require('../schema/schema');
-const db = require('../database/dbConfig');
+const errorTypes = require('../schema/errors');
 
-const decoded = require('../api/getDecoded');
+const db = require('../database/dbConfig');
 const userDbHelper = require('../models/userModel');
 const emailDbHelper = require('../models/userEmailsModel');
 
 beforeEach(async () => {
-  // Re-seed before all mutation tests to ensure that each test will work with a clean set of data
+  // Re-seed before each mutation test to ensure that each test will work with a clean set of data
   await db.seed.run();
 });
 afterAll(async () => {
@@ -72,7 +74,7 @@ describe('addUser GQL mutation: ', () => {
       null
     );
     const actual = res.data.addUser;
-    const decodedActualToken = decoded(actual.token);
+    const decodedActualToken = getDecoded(actual.token);
 
     expect(actual.id).toBe(EXPECTED_NEW_USER_ID.toString()); // the GraphQL response object will have String-type ID's
     expect(actual.email).toBe(EXPECTED_EMAIL);
@@ -117,7 +119,7 @@ describe('addUser GQL mutation: ', () => {
       null
     );
     const actual = res.data.addUser;
-    const decodedActualToken = decoded(actual.token);
+    const decodedActualToken = getDecoded(actual.token);
 
     expect(actual.id).toBe(EXPECTED_NEW_USER_ID.toString()); // the GraphQL response object will have String-type ID's
     expect(actual.email).toBe(EXPECTED_EMAIL);
@@ -132,8 +134,7 @@ describe('addUser GQL mutation: ', () => {
 
 describe('addUser GQL mutation error handling: ', () => {
   test('• when "authToken" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'Authentication token not found or is invalid.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.AUTH_TOKEN;
 
     const MUTATION = `
       mutation {
@@ -168,9 +169,66 @@ describe('addUser GQL mutation error handling: ', () => {
     );
   });
 
+  test('• when login is invalid', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.INVALID_LOGIN;
+
+    const mutationWithAuthToken = authToken => `
+      mutation {
+        addUser (
+          authToken: "${authToken}",
+          roleId: 1
+        ) {
+          id
+        }
+      }
+    `;
+
+    /*
+      Decoded token contents:
+      {
+        "name": "johndoe@ymail.com",
+        "picture": "https://s.gravatar.com/avatar/7b83367dff0ee92c931ae39590fd839d?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fjo.png",
+        "updated_at": "2019-08-14T15:44:04.256Z",
+        "email": "johndoe@ymail.com",
+        "email_verified": false,
+        "sub": "auth0|5d542c449ad8300dae000bbf",
+        "username": "johndoe",
+        "iat": 1565800780
+      } 
+    */
+    const TEST_AUTH_TOKEN =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiam9obmRvZUB5bWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvN2I4MzM2N2RmZjBlZTkyYzkzMWFlMzk1OTBmZDgzOWQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZqby5wbmciLCJ1cGRhdGVkX2F0IjoiMjAxOS0wOC0xNFQxNTo0NDowNC4yNTZaIiwiZW1haWwiOiJqb2huZG9lQHltYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYXV0aDB8NWQ1NDJjNDQ5YWQ4MzAwZGFlMDAwYmJmIiwidXNlcm5hbWUiOiJqb2huZG9lIiwiaWF0IjoxNTY1ODAwNzgwfQ.t9OTsUOHmAigoRqIiL1l2bjmnKeW60dTtBEjNBOTINM';
+
+    // Initial mutation to add the user
+    await graphql(schema, mutationWithAuthToken(TEST_AUTH_TOKEN), null);
+
+    /*
+      Decoded token contents:
+      {
+        "name": "johndoe@ymail.com",
+        "picture": "https://s.gravatar.com/avatar/7b83367dff0ee92c931ae39590fd839d?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fjo.png",
+        "updated_at": "2019-08-14T15:44:04.256Z",
+        "email": "johndoe@ymail.com",
+        "email_verified": false,
+        "sub": "[FAKE SUB]",
+        "username": "johndoe",
+        "iat": 1565800780
+      } 
+    */
+    const INVALID_AUTH_TOKEN =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiam9obmRvZUB5bWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvN2I4MzM2N2RmZjBlZTkyYzkzMWFlMzk1OTBmZDgzOWQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZqby5wbmciLCJ1cGRhdGVkX2F0IjoiMjAxOS0wOC0xNFQxNTo0NDowNC4yNTZaIiwiZW1haWwiOiJqb2huZG9lQHltYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiW0ZBS0UgU1VCXSIsInVzZXJuYW1lIjoiam9obmRvZSIsImlhdCI6MTU2NTgwMDc4MH0.f9BbuPtQb5L9XzK-LWtTF-A6unolGpeDi8H2jj-cG4k';
+
+    const res = await graphql(
+      schema,
+      mutationWithAuthToken(INVALID_AUTH_TOKEN),
+      null
+    );
+    expect(res.data.addUser).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when provided role ID does not point to an existing role', async () => {
-    const EXPECTED_ERROR_MESSAGE_START =
-      'The given role ID does not match any existing role.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.ROLE;
 
     /*
       Decoded token contents:
@@ -202,13 +260,11 @@ describe('addUser GQL mutation error handling: ', () => {
 
     const res = await graphql(schema, MUTATION, null);
     expect(res.data.addUser).toBeNull();
-    expect(res.errors[0].message.startsWith(EXPECTED_ERROR_MESSAGE_START)).toBe(
-      true
-    );
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when provided username is not unique', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Username must be unique';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_UNIQUE.USER.USERNAME;
 
     /*
       Decoded token contents:
@@ -237,80 +293,12 @@ describe('addUser GQL mutation error handling: ', () => {
     `;
 
     const res = await graphql(schema, MUTATION, null);
-    expect(res.data.addUser).isNull();
-    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
-  });
-
-  test('• when provided email is not unique (within "users" table)', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Email address must be unique';
-
-    /*
-      Decoded token contents:
-      {
-        "name": "johndoe@ymail.com",
-        "picture": "https://s.gravatar.com/avatar/7b83367dff0ee92c931ae39590fd839d?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fjo.png",
-        "updated_at": "2019-08-14T15:44:04.256Z",
-        "email": "skollboii@studytest.edu",
-        "email_verified": false,
-        "sub": "auth0|5d542c449ad8300dae000bbf",
-        "username": "johndoe",
-        "iat": 1565800780
-      } 
-    */
-    const TEST_AUTH_TOKEN =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiam9obmRvZUB5bWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvN2I4MzM2N2RmZjBlZTkyYzkzMWFlMzk1OTBmZDgzOWQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZqby5wbmciLCJ1cGRhdGVkX2F0IjoiMjAxOS0wOC0xNFQxNTo0NDowNC4yNTZaIiwiZW1haWwiOiJza29sbGJvaWlAc3R1ZHl0ZXN0LmVkdSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYXV0aDB8NWQ1NDJjNDQ5YWQ4MzAwZGFlMDAwYmJmIiwidXNlcm5hbWUiOiJqb2huZG9lIiwiaWF0IjoxNTY1ODAwNzgwfQ.F3SmBxn_tKj2VqRFo2McFFuOn2JM-vOfkXr_xrFdv94';
-
-    const MUTATION = `
-      mutation {
-        addUser (
-          authToken: "${TEST_AUTH_TOKEN}"
-        ) {
-          id
-        }
-      }
-    `;
-
-    const res = await graphql(schema, MUTATION, null);
-    expect(res.data.addUser).isNull();
-    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
-  });
-
-  test('• when provided email is not unique (within "userEmails" table)', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Email address must be unique';
-
-    /*
-      Decoded token contents:
-      {
-        "name": "johndoe@ymail.com",
-        "picture": "https://s.gravatar.com/avatar/7b83367dff0ee92c931ae39590fd839d?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fjo.png",
-        "updated_at": "2019-08-14T15:44:04.256Z",
-        "email": "trufflin.waffles@gmail.com",
-        "email_verified": false,
-        "sub": "auth0|5d542c449ad8300dae000bbf",
-        "username": "johndoe",
-        "iat": 1565800780
-      } 
-    */
-    const TEST_AUTH_TOKEN =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiam9obmRvZUB5bWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvN2I4MzM2N2RmZjBlZTkyYzkzMWFlMzk1OTBmZDgzOWQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZqby5wbmciLCJ1cGRhdGVkX2F0IjoiMjAxOS0wOC0xNFQxNTo0NDowNC4yNTZaIiwiZW1haWwiOiJ0cnVmZmxpbi53YWZmbGVzQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYXV0aDB8NWQ1NDJjNDQ5YWQ4MzAwZGFlMDAwYmJmIiwidXNlcm5hbWUiOiJqb2huZG9lIiwiaWF0IjoxNTY1ODAwNzgwfQ.kNo99_NM_t76XWRkwTCae_RDDQ49RmwF_wjZIgx8B8k';
-
-    const MUTATION = `
-      mutation {
-        addUser (
-          authToken: "${TEST_AUTH_TOKEN}"
-        ) {
-          id
-        }
-      }
-    `;
-
-    const res = await graphql(schema, MUTATION, null);
-    expect(res.data.addUser).isNull();
+    expect(res.data.addUser).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when provided sub value is not unique', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Sub value must be unique';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_UNIQUE.USER.SUB;
 
     /*
       Decoded token contents:
@@ -339,7 +327,7 @@ describe('addUser GQL mutation error handling: ', () => {
     `;
 
     const res = await graphql(schema, MUTATION, null);
-    expect(res.data.addUser).isNull();
+    expect(res.data.addUser).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 });
@@ -440,7 +428,7 @@ describe('updateUser GQL mutation error handling: ', () => {
   };
 
   test('• when unauthorized', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
 
     const MUTATION = `
       mutation {
@@ -456,7 +444,7 @@ describe('updateUser GQL mutation error handling: ', () => {
   });
 
   test('• when "id" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Please include a user ID and try again.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.USER.ID;
 
     const MUTATION = `
       mutation {
@@ -472,7 +460,7 @@ describe('updateUser GQL mutation error handling: ', () => {
   });
 
   test('• when attempting to update a non-existent user', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'User with the given ID not found';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.USER;
 
     const MUTATION = `
       mutation {
@@ -490,15 +478,14 @@ describe('updateUser GQL mutation error handling: ', () => {
   });
 
   test('• when provided role ID does not point to an existing role', async () => {
-    const EXPECTED_ERROR_MESSAGE_START =
-      'The given role ID does not match any existing role.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.ROLE;
 
     const TEST_ID_TO_UPDATE = 1;
     const TEST_NONEXISTENT_ROLE_ID = 0;
 
     const MUTATION = `
       mutation {
-        addUser (
+        updateUser (
           id: ${TEST_ID_TO_UPDATE}
           roleId: ${TEST_NONEXISTENT_ROLE_ID}
         ) {
@@ -508,14 +495,12 @@ describe('updateUser GQL mutation error handling: ', () => {
     `;
 
     const res = await graphql(schema, MUTATION, null, authContext);
-    expect(res.data.addUser).toBeNull();
-    expect(res.errors[0].message.startsWith(EXPECTED_ERROR_MESSAGE_START)).toBe(
-      true
-    );
+    expect(res.data.updateUser).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when provided username is not unique', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Username must be unique';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_UNIQUE.USER.USERNAME;
 
     // Should be based on current seed data
     const TEST_ID_TO_UPDATE = 1;
@@ -532,12 +517,12 @@ describe('updateUser GQL mutation error handling: ', () => {
     `;
 
     const res = await graphql(schema, MUTATION, null, authContext);
-    expect(res.data.updateUser).isNull();
+    expect(res.data.updateUser).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when provided email is not unique (within "users" table)', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Email address must be unique';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_UNIQUE.EMAIL_ADDRESS;
 
     // Should be based on current seed data
     const TEST_ID_TO_UPDATE = 1;
@@ -554,12 +539,12 @@ describe('updateUser GQL mutation error handling: ', () => {
     `;
 
     const res = await graphql(schema, MUTATION, null, authContext);
-    expect(res.data.updateUser).isNull();
+    expect(res.data.updateUser).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when provided email is not unique (within "userEmails" table)', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Email address must be unique';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_UNIQUE.EMAIL_ADDRESS;
 
     // Should be based on current seed data
     const TEST_ID_TO_UPDATE = 1;
@@ -576,29 +561,7 @@ describe('updateUser GQL mutation error handling: ', () => {
     `;
 
     const res = await graphql(schema, MUTATION, null, authContext);
-    expect(res.data.updateUser).isNull();
-    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
-  });
-
-  test('• when provided sub value is not unique', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Sub value must be unique';
-
-    // Should be based on current seed data
-    const TEST_ID_TO_UPDATE = 1;
-    const EXISTING_SUB = '9';
-    const MUTATION = `
-      mutation {
-        updateUser (
-          id: ${TEST_ID_TO_UPDATE}
-          sub: "${EXISTING_SUB}"
-        ) {
-          id
-        }
-      }
-    `;
-
-    const res = await graphql(schema, MUTATION, null, authContext);
-    expect(res.data.updateUser).isNull();
+    expect(res.data.updateUser).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 });
@@ -678,7 +641,7 @@ describe('deleteUser GQL mutation error handling: ', () => {
   };
 
   test('• when unauthorized', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
 
     const MUTATION = `
       mutation {
@@ -694,7 +657,7 @@ describe('deleteUser GQL mutation error handling: ', () => {
   });
 
   test('• when "id" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Please include a user ID and try again.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.USER.ID;
 
     const MUTATION = `
       mutation {
@@ -710,7 +673,7 @@ describe('deleteUser GQL mutation error handling: ', () => {
   });
 
   test('• when attempting to delete a non-existent user', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'User with the given ID not found';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.USER;
 
     const MUTATION = `
       mutation {
@@ -737,8 +700,7 @@ describe('addUserEmail GQL mutation: ', () => {
 
   beforeEach(() => {
     // Randomize field values of the incoming user email entry
-    expectedValid = Boolean(Math.floor(Math.random() * 2));
-    expectedNewUserId = Math.ceil(Math.random() * USER_COUNT);
+    expectedValid = Boolean((Math.random() * 2) | 0);
   });
 
   // The mutation string below will be reused for this group of tests
@@ -810,7 +772,7 @@ describe('addUserEmail GQL mutation error handling: ', () => {
   };
 
   test('• when unauthorized', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
 
     const MUTATION = `
       mutation {
@@ -826,8 +788,7 @@ describe('addUserEmail GQL mutation error handling: ', () => {
   });
 
   test('• when "email" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'Please supply the text for the email address.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.USEREMAIL.EMAIL;
 
     const MUTATION = `
       mutation {
@@ -843,8 +804,7 @@ describe('addUserEmail GQL mutation error handling: ', () => {
   });
 
   test('• when "userId" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'Please add an available user ID to assign the new email address to.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.USER.ID;
 
     const MUTATION = `
       mutation {
@@ -862,15 +822,14 @@ describe('addUserEmail GQL mutation error handling: ', () => {
   });
 
   test('• when provided user ID does not belong to an existing user', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'The provided user ID does not correspond to any existing user.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.USER;
 
     const MUTATION = `
       mutation {
-        addUserEmail {
+        addUserEmail (
           email: "test@test.test"
           userId: 0
-        } {
+        ) {
           id
         }
       }
@@ -882,21 +841,19 @@ describe('addUserEmail GQL mutation error handling: ', () => {
   });
 
   test('• when provided email is not unique (within "userEmails" table)', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Email address must be unique';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_UNIQUE.EMAIL_ADDRESS;
 
     // Should be based on current seed data (specifically the email addresses in the "userEmails" table)
     const EXISTING_EMAIL = 'trufflin.waffles@gmail.com';
 
     // Randomize field values of the incoming user email entry
-    const expectedValid = Boolean(Math.floor(Math.random() * 2));
-    const expectedNewUserId = Math.ceil(Math.random() * USER_COUNT);
+    const expectedNewUserId = [6, 7, 8][(Math.random() * 3) | 0];
 
     const MUTATION = `
       mutation {
         addUserEmail (
           email: "${EXISTING_EMAIL}"
-          valid: ${expectedValid}
-          userID: ${expectedNewUserId}
+          userId: ${expectedNewUserId}
         ) {
           id
         }
@@ -909,21 +866,19 @@ describe('addUserEmail GQL mutation error handling: ', () => {
   });
 
   test('• when provided email is not unique (within "users" table)', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Email address must be unique';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_UNIQUE.EMAIL_ADDRESS;
 
     // Should be based on current seed data (specifically the email addresses in the "users" table)
     const EXISTING_EMAIL = 'notadud@yandex.com';
 
     // Randomize field values of the incoming user email entry
-    const expectedValid = Boolean(Math.floor(Math.random() * 2));
-    const expectedNewUserId = Math.ceil(Math.random() * USER_COUNT);
+    const expectedNewUserId = [6, 7, 8][(Math.random() * 3) | 0];
 
     const MUTATION = `
       mutation {
         addUserEmail (
           email: "${EXISTING_EMAIL}"
-          valid: ${expectedValid}
-          userID: ${expectedNewUserId}
+          userId: ${expectedNewUserId}
         ) {
           id
         }
@@ -1013,7 +968,7 @@ describe('deleteUserEmail GQL mutation error handling: ', () => {
   };
 
   test('• when unauthorized', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
 
     const MUTATION = `
       mutation {
@@ -1029,7 +984,7 @@ describe('deleteUserEmail GQL mutation error handling: ', () => {
   });
 
   test('• when "id" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Please include an email ID and try again.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.USEREMAIL.ID;
 
     const MUTATION = `
       mutation {
@@ -1045,7 +1000,7 @@ describe('deleteUserEmail GQL mutation error handling: ', () => {
   });
 
   test('• when attempting to delete non-existent user email information', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Email with the given ID not found';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.USEREMAIL;
 
     const MUTATION = `
       mutation {

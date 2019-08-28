@@ -6,7 +6,7 @@ const db = require('../database/dbConfig');
 const dbHelper = require('../models/studentModel');
 
 beforeEach(async () => {
-  // Re-seed before each mutation tests to ensure that each test will work with a clean set of data
+  // Re-seed before each mutation test to ensure that each test will work with a clean set of data
   await db.seed.run();
 });
 afterAll(async () => {
@@ -316,7 +316,8 @@ describe('updateStudentDetail GQL mutation error handling: ', () => {
   });
 
   test('• when "id" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.STUDENTDETAIL.ID;
+    const EXPECTED_ERROR_MESSAGE =
+      errorTypes.MISSING_PARAMETER.STUDENTDETAIL.ID;
 
     const MUTATION = `
       mutation {
