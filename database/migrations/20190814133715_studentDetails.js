@@ -13,7 +13,7 @@ exports.up = async knex => {
     tbl.string('city', 256);
     tbl.string('state', 50);
     tbl.string('zip', 128);
-    tbl.string('phone', 256).notNull();
+    tbl.string('phone', 256);
     tbl
       .integer('userId')
       .unsigned()

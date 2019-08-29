@@ -68,6 +68,10 @@ const contractABI = [
       {
         name: '_credHash',
         type: 'bytes32'
+      },
+      {
+        name: '_credTimestamp',
+        type: 'string'
       }
     ],
     name: 'addCredential',

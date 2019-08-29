@@ -107,7 +107,7 @@ const Mutation = new GraphQLObjectType({
           const credentialHash = web3.utils.sha3(JSON.stringify(args));
           args.credHash = credentialHash;
           const data = contract.methods
-            .addCredential(credentialHash)
+            .addCredential(credentialHash, new Date().toUTCString()) // Throw in UTC timestamp to indicate when the credential object was created
             .encodeABI();
           if (data.length) {
             args.txHash = await txFunc(data);

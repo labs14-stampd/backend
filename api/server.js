@@ -1,12 +1,17 @@
-const jwt = require('jsonwebtoken');
+const secret = process.env.PK;
+
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const expressPlayground = require('graphql-playground-middleware-express')
   .default;
-const UserEmails = require('../models/userEmailsModel');
+
+const jwt = require('jsonwebtoken');
+
 const applyMiddleware = require('./middleware.js');
 const schema = require('../schema/schema.js');
-const secret = process.env.PK;
+
+const UserEmails = require('../models/userEmailsModel');
+
 const server = express();
 applyMiddleware(server);
 
@@ -18,14 +23,12 @@ server.get('/', (req, res) => {
 
 server.get('/confirmation/:jwt', (req, res) => {
   try {
-    const verified = jwt.verify(req.params.jwt, secret, (err, result) => {
+    const verified = jwt.verify(req.params.jwt, secret, async (err, result) => {
       if (err) {
         res.send({ error: err });
       } else {
-        UserEmails.update(result.subject, { valid: 'true' }).then(update => {
-          res.status(200);
-          res.send({ success: 'updated' });
-        });
+        await UserEmails.update(result.subject, { valid: 'true' });
+        res.status(200).json({ success: 'updated' });
       }
     });
   } catch (e) {

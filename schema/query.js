@@ -1,26 +1,27 @@
-const graphql = require('graphql');
+const secret = process.env.PK;
+
 const jwt = require('jsonwebtoken');
+const { contract } = require('../web3/web3.js');
+const { sendMagicLink } = require('../utils/sendMail.js');
+
 const User = require('../models/userModel.js');
 const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
 const DeletedCredentials = require('../models/deletedCredentialModel');
+
 const {
   UserType,
   SchoolDetailsType,
   CredentialType,
   DeletedCredentialsType
 } = require('./types.js');
-const { contract } = require('../web3/web3.js');
-const { sendMagicLink } = require('../utils/sendMail.js');
-
-const secret = process.env.PK;
+const errorTypes = require('./errors.js');
 const {
   GraphQLObjectType,
   GraphQLList,
   GraphQLID,
-  GraphQLNonNull,
   GraphQLString
-} = graphql;
+} = require('graphql');
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
@@ -30,18 +31,16 @@ const RootQuery = new GraphQLObjectType({
       description: 'Gets all users',
       resolve: async (parent, args, ctx) => {
         // Authorization check
-        if (Number(ctx.roleId) !== 1) {
-          return new Error('Unauthorized');
+        if (!ctx || Number(ctx.roleId) !== 1) {
+          // Also account for missing context to ensure error handling for unauthenticated users
+          return new Error(errorTypes.UNAUTHORIZED);
         }
 
         try {
           const res = await User.find();
-          if (res) {
-            return res;
-          }
-          return new Error('The users could not be found.');
+          return res;
         } catch (error) {
-          return new Error('There was an error completing your request.');
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
@@ -50,14 +49,25 @@ const RootQuery = new GraphQLObjectType({
       description: 'Gets a user by user ID',
       args: {
         id: {
-          type: new GraphQLNonNull(GraphQLID),
+          type: GraphQLID,
           description: 'ID of the user'
         }
       },
       resolve: async (parent, args, ctx) => {
         // Authorization check
-        if (!ctx.isAuth) {
-          return new Error('Unauthorized');
+        if (!ctx || !ctx.isAuth) {
+          // Also account for missing context to ensure error handling for unauthenticated users
+          return new Error(errorTypes.UNAUTHORIZED);
+        }
+
+        // When ID parameter is missing
+        if (!args.id) {
+          return new Error(errorTypes.MISSING_PARAMETER.USER.ID);
+        }
+
+        // When data input type of ID parameter is incorrect (not a number)
+        if (isNaN(args.id)) {
+          return new Error(errorTypes.TYPE_MISMATCH.USER.ID);
         }
 
         try {
@@ -65,9 +75,9 @@ const RootQuery = new GraphQLObjectType({
           if (res) {
             return res;
           }
-          return new Error('The user could not be found.');
+          return new Error(errorTypes.NOT_FOUND.USER);
         } catch (error) {
-          return new Error('There was an error completing your request.');
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
@@ -76,13 +86,24 @@ const RootQuery = new GraphQLObjectType({
       description: 'Gets school by school ID',
       args: {
         id: {
-          type: new GraphQLNonNull(GraphQLID)
+          type: GraphQLID
         }
       },
       resolve: async (parent, args, ctx) => {
         // Authorization check
-        if (Number(ctx.roleId) !== 2) {
-          return new Error('Unauthorized');
+        if (!ctx || Number(ctx.roleId) !== 2) {
+          // Also account for missing context to ensure error handling for unauthenticated users
+          return new Error(errorTypes.UNAUTHORIZED);
+        }
+
+        // When ID parameter is missing
+        if (!args.id) {
+          return new Error(errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.ID);
+        }
+
+        // When data input type of ID parameter is incorrect (not a number)
+        if (isNaN(args.id)) {
+          return new Error(errorTypes.TYPE_MISMATCH.SCHOOLDETAIL.ID);
         }
 
         try {
@@ -90,9 +111,9 @@ const RootQuery = new GraphQLObjectType({
           if (res) {
             return res;
           }
-          return new Error('School details could not be found.');
+          return new Error(errorTypes.NOT_FOUND.SCHOOLDETAIL);
         } catch (error) {
-          return new Error('there was an error completing your request.');
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
@@ -101,18 +122,16 @@ const RootQuery = new GraphQLObjectType({
       description: 'Gets all credentials',
       resolve: async (parent, args, ctx) => {
         // Authorization check
-        if (Number(ctx.roleId) !== 1) {
-          return new Error('Unauthorized');
+        if (!ctx || Number(ctx.roleId) !== 1) {
+          // Also account for missing context to ensure error handling for unauthenticated users
+          return new Error(errorTypes.UNAUTHORIZED);
         }
 
         try {
           const res = await Credentials.find();
-          if (res.length) {
-            return res;
-          }
-          return new Error('No credentials could be found');
+          return res;
         } catch (error) {
-          return new Error('there was an error completing your request.');
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
@@ -121,18 +140,28 @@ const RootQuery = new GraphQLObjectType({
       description: 'Get a credential by ID',
       args: {
         id: {
-          type: new GraphQLNonNull(GraphQLID)
+          type: GraphQLID
         }
       },
       resolve: async (parent, args) => {
+        // When ID parameter is missing
+        if (!args.id) {
+          return new Error(errorTypes.MISSING_PARAMETER.CREDENTIAL.ID);
+        }
+
+        // When data input type of ID parameter is incorrect (not a number)
+        if (isNaN(args.id)) {
+          return new Error(errorTypes.TYPE_MISMATCH.CREDENTIAL.ID);
+        }
+
         try {
           const res = await Credentials.findById(args.id);
           if (res) {
             return res;
           }
-          return new Error('Credential with that ID could not be found');
+          return new Error(errorTypes.NOT_FOUND.CREDENTIAL);
         } catch (error) {
-          return new Error('there was an error completing your request.');
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
@@ -141,48 +170,102 @@ const RootQuery = new GraphQLObjectType({
       description: 'Get all of a schools credentials',
       args: {
         id: {
-          type: new GraphQLNonNull(GraphQLID)
+          type: GraphQLID
         }
       },
       resolve: async (parent, args, ctx) => {
         // Authorization check
-        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1) {
-          return new Error('Unauthorized');
+        if (!ctx || (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)) {
+          // Also account for missing context to ensure error handling for unauthenticated users
+          return new Error(errorTypes.UNAUTHORIZED);
+        }
+
+        // When ID parameter is missing
+        if (!args.id) {
+          return new Error(errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.ID);
+        }
+
+        // When data input type of ID parameter is incorrect (not a number)
+        if (isNaN(args.id)) {
+          return new Error(errorTypes.TYPE_MISMATCH.SCHOOLDETAIL.ID);
         }
 
         try {
           const school = await User.findById(args.id);
           if (!school) {
-            return new Error('School with that ID could not be found');
+            return new Error(errorTypes.NOT_FOUND.SCHOOLDETAIL);
           }
 
           const res = await Credentials.findBy({
             schoolId: args.id
           });
-          if (res) {
-            return res;
-          }
-          return new Error('School with that ID could not be found');
+          return res;
         } catch (error) {
-          return new Error('there was an error completing your request.');
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
     getCredentialsByEmail: {
       type: new GraphQLList(CredentialType),
       description: 'Get all credentials associated with a specific email',
-      args: { email: { type: new GraphQLNonNull(GraphQLString) } },
+      args: { email: { type: GraphQLString } },
       resolve: async (parent, args, ctx) => {
         // Authorization check
-        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1) {
-          return new Error('Unauthorized');
+        if (!ctx || (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)) {
+          // Also account for missing context to ensure error handling for unauthenticated users
+          return new Error(errorTypes.UNAUTHORIZED);
+        }
+
+        // When email parameter is missing
+        if (!args.email) {
+          return new Error(errorTypes.MISSING_PARAMETER.EMAIL_ADDRESS);
         }
 
         try {
           const res = await Credentials.findBy({ studentEmail: args.email });
           return res;
         } catch (error) {
-          return new Error('there was an error completing your request.');
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
+        }
+      }
+    },
+    getDeletedCredentialsBySchoolId: {
+      type: new GraphQLList(DeletedCredentialsType),
+      description: 'Get all of a schools deleted credentials',
+      args: {
+        id: {
+          type: GraphQLID
+        }
+      },
+      resolve: async (parent, args, ctx) => {
+        // Authorization check
+        if (!ctx || (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)) {
+          // Also account for missing context to ensure error handling for unauthenticated users
+          return new Error(errorTypes.UNAUTHORIZED);
+        }
+
+        // When ID parameter is missing
+        if (!args.id) {
+          return new Error(errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.ID);
+        }
+
+        // When data input type of ID parameter is incorrect (not a number)
+        if (isNaN(args.id)) {
+          return new Error(errorTypes.TYPE_MISMATCH.SCHOOLDETAIL.ID);
+        }
+
+        try {
+          const school = await User.findById(args.id);
+          if (!school) {
+            return new Error(errorTypes.NOT_FOUND.SCHOOLDETAIL);
+          }
+
+          const res = await DeletedCredentials.findBy({
+            schoolId: args.id
+          });
+          return res;
+        } catch (error) {
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
@@ -191,7 +274,7 @@ const RootQuery = new GraphQLObjectType({
       description: 'Checks that a credential exists and is currently valid',
       args: {
         id: {
-          type: new GraphQLNonNull(GraphQLID),
+          type: GraphQLID,
           description: 'The unique ID of the credential to be validated'
         }
       },
@@ -212,7 +295,7 @@ const RootQuery = new GraphQLObjectType({
             .verifyCredential(cred.credHash)
             .call();
         } catch (error) {
-          return error;
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
         }
       }
     },
@@ -221,11 +304,11 @@ const RootQuery = new GraphQLObjectType({
       description: 'Creates and emails magic link to recipient',
       args: {
         id: {
-          type: new GraphQLNonNull(GraphQLID),
+          type: GraphQLID,
           description: 'The unique ID of the credential to be shared'
         },
         email: {
-          type: new GraphQLNonNull(GraphQLString),
+          type: GraphQLString,
           description: 'The email of the recipient of magic link'
         }
       },
@@ -247,40 +330,7 @@ const RootQuery = new GraphQLObjectType({
           });
           return { email: args.email };
         } catch (error) {
-          return new Error('Error', error);
-        }
-      }
-    },
-    getDeletedCredentialsBySchoolId: {
-      type: new GraphQLList(DeletedCredentialsType),
-      description: 'Get all of a schools deleted credentials',
-      args: {
-        id: {
-          type: new GraphQLNonNull(GraphQLID)
-        }
-      },
-      resolve: async (parent, args, ctx) => {
-        // Authorization check
-        if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1) {
-          return new Error('Unauthorized');
-        }
-
-        try {
-          const school = await User.findById(args.id);
-          if (!school) {
-            return new Error('School with that ID could not be found');
-          }
-
-          const res = await DeletedCredentials.findBy({
-            schoolId: args.id
-          });
-          console.log(res);
-          if (res) {
-            return res;
-          }
-          return new Error('School with that ID could not be found');
-        } catch (error) {
-          return new Error('there was an error completing your request.');
+          return new Error(errorTypes.GENERIC);
         }
       }
     }
