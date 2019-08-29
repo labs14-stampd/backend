@@ -59,6 +59,11 @@ const RootQuery = new GraphQLObjectType({
           return new Error(errorTypes.MISSING_PARAMETER.USER.ID);
         }
 
+        // When data input type of ID parameter is incorrect (not a number)
+        if (isNaN(args.id)) {
+          return new Error(errorTypes.TYPE_MISMATCH.USER.ID);
+        }
+
         try {
           const res = await User.findById(args.id);
           if (res) {
@@ -88,6 +93,11 @@ const RootQuery = new GraphQLObjectType({
         // When ID parameter is missing
         if (!args.id) {
           return new Error(errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.ID);
+        }
+
+        // When data input type of ID parameter is incorrect (not a number)
+        if (isNaN(args.id)) {
+          return new Error(errorTypes.TYPE_MISMATCH.SCHOOLDETAIL.ID);
         }
 
         try {
@@ -130,7 +140,12 @@ const RootQuery = new GraphQLObjectType({
       resolve: async (parent, args) => {
         // When ID parameter is missing
         if (!args.id) {
-          return new Error(errorTypes.MISSING_PARAMETER.CREDENTIAL_ID);
+          return new Error(errorTypes.MISSING_PARAMETER.CREDENTIAL.ID);
+        }
+
+        // When data input type of ID parameter is incorrect (not a number)
+        if (isNaN(args.id)) {
+          return new Error(errorTypes.TYPE_MISMATCH.CREDENTIAL.ID);
         }
 
         try {
@@ -162,6 +177,11 @@ const RootQuery = new GraphQLObjectType({
         // When ID parameter is missing
         if (!args.id) {
           return new Error(errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.ID);
+        }
+
+        // When data input type of ID parameter is incorrect (not a number)
+        if (isNaN(args.id)) {
+          return new Error(errorTypes.TYPE_MISMATCH.SCHOOLDETAIL.ID);
         }
 
         try {

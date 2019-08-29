@@ -5,7 +5,9 @@ module.exports = {
   MISSING_PARAMETER: {
     AUTH_TOKEN: 'Authentication token missing or invalid.',
     EMAIL_ADDRESS: 'Please include an email address and try again',
-    CREDENTIAL_ID: 'Please include a credential ID and try again',
+    CREDENTIAL: {
+      ID: 'Please include a credential ID and try again'
+    },
     SCHOOLDETAIL: {
       ID: 'Please include a school ID and try again',
       NAME: 'Please include a name for the school',
@@ -42,6 +44,20 @@ module.exports = {
     USER: {
       USERNAME: 'Username is already taken',
       SUB: 'An error occurred when attempting to add the new user' // Purposefully ambiguous for security reasons
+    }
+  },
+  TYPE_MISMATCH: {
+    CREDENTIAL: {
+      ID: 'Credential ID is invalid (type mismatch)'
+    },
+    SCHOOLDETAIL: {
+      ID: 'School ID is invalid (type mismatch)'
+    },
+    STUDENTDETAIL: {
+      ID: 'Student ID is invalid (type mismatch)'
+    },
+    USER: {
+      ID: 'User ID is invalid (type mismatch)'
     }
   },
   UNAUTHORIZED: 'Unauthorized'

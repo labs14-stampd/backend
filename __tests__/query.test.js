@@ -505,6 +505,24 @@ describe('getUserById GQL query error handling: ', () => {
     expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
 
+  test('• when data input type of "id" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.USER.ID;
+
+    const QUERY = `
+      query {
+        getUserById (
+          id: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null, authContext);
+    expect(res.data.getUserById).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when attempting to get a non-existent user', async () => {
     const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.USER;
 
@@ -613,6 +631,24 @@ describe('getSchoolDetailsBySchoolId GQL query error handling: ', () => {
     const QUERY = `
       query {
         getSchoolDetailsBySchoolId {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null, authContext);
+    expect(res.data.getSchoolDetailsBySchoolId).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when data input type of "id" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.SCHOOLDETAIL.ID;
+
+    const QUERY = `
+      query {
+        getSchoolDetailsBySchoolId (
+          id: "[INVALID NUMBER]"
+        ) {
           id
         }
       }
@@ -769,11 +805,29 @@ describe('getCredentialById GQL query: ', () => {
 
 describe('getCredentialById GQL query error handling: ', () => {
   test('• when "id" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.CREDENTIAL_ID;
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.CREDENTIAL.ID;
 
     const QUERY = `
       query {
         getCredentialById {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getCredentialById).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when data input type of "id" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.CREDENTIAL.ID;
+
+    const QUERY = `
+      query {
+        getCredentialById (
+          id: "[INVALID NUMBER]"
+        ) {
           id
         }
       }
@@ -915,6 +969,24 @@ describe('getCredentialsBySchoolId GQL query error handling: ', () => {
     const QUERY = `
       query {
         getCredentialsBySchoolId {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null, authContext);
+    expect(res.data.getCredentialsBySchoolId).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when data input type of "id" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.SCHOOLDETAIL.ID;
+
+    const QUERY = `
+      query {
+        getCredentialsBySchoolId (
+          id: "[INVALID NUMBER]"
+        ) {
           id
         }
       }
