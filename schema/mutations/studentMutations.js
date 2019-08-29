@@ -61,6 +61,11 @@ module.exports = {
         return new Error(errorTypes.MISSING_PARAMETER.USER.ID);
       }
 
+      // When data input type of user ID parameter is incorrect (not a number)
+      if (isNaN(args.userId)) {
+        return new Error(errorTypes.TYPE_MISMATCH.USER.ID);
+      }
+
       try {
         const newStudent = await Student.insert(args);
 
@@ -139,6 +144,15 @@ module.exports = {
       // When ID parameter is missing
       if (!args.id) {
         return new Error(errorTypes.MISSING_PARAMETER.STUDENTDETAIL.ID);
+      }
+
+      // When data input type of ID parameter is incorrect (not a number)
+      if (isNaN(args.id)) {
+        return new Error(errorTypes.TYPE_MISMATCH.STUDENTDETAIL.ID);
+      }
+      // When user ID parameter is provided but data input type is incorrect (not a number)
+      if (args.userId && isNaN(args.userId)) {
+        return new Error(errorTypes.TYPE_MISMATCH.USER.ID);
       }
 
       try {

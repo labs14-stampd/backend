@@ -151,6 +151,24 @@ describe('addStudentDetail GQL mutation error handling: ', () => {
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
+  test('• when data input type of "userId" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.USER.ID;
+
+    const MUTATION = `
+      mutation {
+        addStudentDetail (
+          userId: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.addStudentDetail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when provided user ID does not belong to an existing user', async () => {
     const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.USER;
 
@@ -330,6 +348,43 @@ describe('updateStudentDetail GQL mutation error handling: ', () => {
     const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.updateStudentDetail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when data input type of "id" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.STUDENTDETAIL.ID;
+
+    const MUTATION = `
+      mutation {
+        updateStudentDetail (
+          id: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.updateStudentDetail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when data input type of "userId" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.USER.ID;
+
+    const MUTATION = `
+      mutation {
+        updateStudentDetail (
+          id: 1
+          userId: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.updateStudentDetail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when attempting to update a non-existent student details entry', async () => {
