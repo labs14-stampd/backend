@@ -11,12 +11,11 @@ exports.up = async knex => {
     tbl.string('type', 128).notNull();
     tbl.string('ownerName', 256).notNull();
     tbl.string('studentEmail', 128).notNull();
-    tbl.string('imageUrl', 256).notNull();
+    tbl.string('imageUrl', 256);
     tbl.bool('valid').defaultTo(true);
     tbl.text('criteria').notNull();
     tbl.string('issuedOn', 128).notNull();
     tbl.string('expirationDate', 128);
-    tbl.string('credentialId', 128);
     tbl.timestamps(true, true);
     tbl
       .integer('schoolId')
