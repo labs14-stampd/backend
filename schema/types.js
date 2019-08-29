@@ -1,4 +1,3 @@
-const graphql = require('graphql');
 const Users = require('../models/userModel.js');
 const Roles = require('../models/roleModel.js');
 const Schools = require('../models/schoolModel.js');
@@ -14,7 +13,7 @@ const {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLInt
-} = graphql;
+} = require('graphql');
 
 const RoleType = new GraphQLObjectType({
   name: 'Role',
@@ -27,8 +26,9 @@ const RoleType = new GraphQLObjectType({
     users: {
       type: new GraphQLList(UserType), // eslint-disable-line no-use-before-define
       description: 'Returns all users of specific role',
-      resolve(parent) {
-        return Users.findBy({ roleId: parent.id });
+      resolve: async parent => {
+        const users = await Users.findBy({ roleId: parent.id });
+        return users;
       }
     }
   })
@@ -86,16 +86,18 @@ const UserType = new GraphQLObjectType({
     role: {
       type: RoleType,
       description: 'The role associated with the user',
-      resolve(parent) {
-        return Roles.findById(parent.roleId);
+      resolve: async parent => {
+        const roles = await Roles.findById(parent.roleId);
+        return roles;
       }
     },
     schoolDetails: {
       type: SchoolDetailsType, // eslint-disable-line no-use-before-define
       description: 'The school details associated with the user',
-      resolve(parent) {
+      resolve: async parent => {
         if (parent.roleId === 2) {
-          return Schools.findByUserId(parent.id);
+          const schools = await Schools.findByUserId(parent.id);
+          return schools;
         }
         return null;
       }
@@ -103,9 +105,10 @@ const UserType = new GraphQLObjectType({
     studentDetails: {
       type: StudentDetailsType, // eslint-disable-line no-use-before-define
       description: 'The school details associated with the user',
-      resolve(parent) {
+      resolve: async parent => {
         if (parent.roleId === 3) {
-          return Students.findByUserId(parent.id);
+          const students = await Students.findByUserId(parent.id);
+          return students;
         }
         return null;
       }
@@ -156,17 +159,19 @@ const StudentDetailsType = new GraphQLObjectType({
     user: {
       type: UserType,
       description: 'The user associated with the school',
-      resolve(parent) {
-        return Users.findById(parent.userId);
+      resolve: async parent => {
+        const users = await Users.findById(parent.userId);
+        return users;
       }
     },
     credentials: {
       type: new GraphQLList(CredentialType), // eslint-disable-line no-use-before-define
       description: 'The credentials associated with the school',
-      async resolve(parent) {
-        const user = await Users.findById(parent.userId);
+      resolve: async parent => {
+        const users = await Users.findById(parent.userId);
         const emailList = await UserEmails.findBy({ userId: parent.userId });
-        const creds = await Credentials.findBy({ studentEmail: user.email });
+        const creds = await Credentials.findBy({ studentEmail: users.email });
+
         // This is the email of the corresponding student account
         let listCreds = [];
         await Promise.all(
@@ -177,14 +182,16 @@ const StudentDetailsType = new GraphQLObjectType({
             listCreds = [...listCreds, ...mapCreds];
           })
         );
+
         return [...creds, ...listCreds];
       }
     },
     emailList: {
       type: new GraphQLList(UserEmailType),
       description: 'List of additional user emails associated with an account',
-      resolve(parent) {
-        return UserEmails.findByUserId(parent.userId);
+      resolve: async parent => {
+        const emailList = await UserEmails.findByUserId(parent.userId);
+        return emailList;
       }
     }
   })
@@ -230,16 +237,18 @@ const SchoolDetailsType = new GraphQLObjectType({
     user: {
       type: UserType,
       description: 'The user associated with the school',
-      resolve(parent) {
-        return Users.findById(parent.userId);
+      resolve: async parent => {
+        const users = await Users.findById(parent.userId);
+        return users;
       }
     },
     credentials: {
       type: new GraphQLList(CredentialType), // eslint-disable-line no-use-before-define
       description: 'The credentials associated with the school',
-      resolve(parent) {
-        return Credentials.findBySchoolId(parent.userId);
+      resolve: async parent => {
         // This is the user ID of the corresponding school account
+        const creds = await Credentials.findBySchoolId(parent.userId);
+        return creds;
       }
     }
   })
@@ -305,8 +314,76 @@ const CredentialType = new GraphQLObjectType({
     schoolsUserInfo: {
       type: UserType, // eslint-disable-line no-use-before-define
       description: 'The user associated with the school',
-      resolve(parent) {
-        return Users.findById(parent.schoolId);
+      resolve: async parent => {
+        const users = await Users.findById(parent.schoolId);
+        return users;
+      }
+    }
+  })
+});
+
+const DeletedCredentialsType = new GraphQLObjectType({
+  name: 'DeletedCredential',
+  fields: () => ({
+    id: { type: GraphQLID, description: 'The unique ID of a credential' },
+    credName: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Name of the credential'
+    },
+    description: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Description of the credential'
+    },
+    credHash: {
+      type: GraphQLString,
+      description: 'Hash of credential information to be stored on blockchain'
+    },
+    txHash: {
+      type: GraphQLString,
+      description: 'Ethereum transaction hash for the credential'
+    },
+    type: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Type of credential'
+    },
+    ownerName: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Name associated with credential'
+    },
+    studentEmail: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Student email associated with credential'
+    },
+    imageUrl: {
+      type: GraphQLString,
+      description: 'Image URL associated with credential'
+    },
+    criteria: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Criteria required to complete credential'
+    },
+    valid: {
+      type: GraphQLBoolean,
+      description: 'A boolean flag indicating if the credential is still valid'
+    },
+    issuedOn: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Date credential was issued'
+    },
+    expirationDate: {
+      type: GraphQLString,
+      description: 'Date that the credential will expire'
+    },
+    schoolId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'USER id associated with the school issuing the credential'
+    },
+    schoolsUserInfo: {
+      type: UserType, // eslint-disable-line no-use-before-define
+      description: 'The user associated with the school',
+      resolve: async parent => {
+        const users = await Users.findById(parent.schoolId);
+        return users;
       }
     }
   })
@@ -318,5 +395,6 @@ module.exports = {
   SchoolDetailsType,
   CredentialType,
   UserEmailType,
-  StudentDetailsType
+  StudentDetailsType,
+  DeletedCredentialsType
 };

@@ -7,8 +7,14 @@ const { sendMagicLink } = require('../utils/sendMail.js');
 const User = require('../models/userModel.js');
 const Schools = require('../models/schoolModel.js');
 const Credentials = require('../models/credentialModel.js');
+const DeletedCredentials = require('../models/deletedCredentialModel');
 
-const { UserType, SchoolDetailsType, CredentialType } = require('./types.js');
+const {
+  UserType,
+  SchoolDetailsType,
+  CredentialType,
+  DeletedCredentialsType
+} = require('./types.js');
 const errorTypes = require('./errors.js');
 const {
   GraphQLObjectType,
@@ -223,6 +229,46 @@ const RootQuery = new GraphQLObjectType({
         }
       }
     },
+    getDeletedCredentialsBySchoolId: {
+      type: new GraphQLList(DeletedCredentialsType),
+      description: 'Get all of a schools deleted credentials',
+      args: {
+        id: {
+          type: GraphQLID
+        }
+      },
+      resolve: async (parent, args, ctx) => {
+        // Authorization check
+        if (!ctx || (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)) {
+          // Also account for missing context to ensure error handling for unauthenticated users
+          return new Error(errorTypes.UNAUTHORIZED);
+        }
+
+        // When ID parameter is missing
+        if (!args.id) {
+          return new Error(errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.ID);
+        }
+
+        // When data input type of ID parameter is incorrect (not a number)
+        if (isNaN(args.id)) {
+          return new Error(errorTypes.TYPE_MISMATCH.SCHOOLDETAIL.ID);
+        }
+
+        try {
+          const school = await User.findById(args.id);
+          if (!school) {
+            return new Error(errorTypes.NOT_FOUND.SCHOOLDETAIL);
+          }
+
+          const res = await DeletedCredentials.findBy({
+            schoolId: args.id
+          });
+          return res;
+        } catch (error) {
+          return new Error(`${errorTypes.GENERIC} (${error.message})`);
+        }
+      }
+    },
     verifyCredential: {
       type: CredentialType,
       description: 'Checks that a credential exists and is currently valid',
@@ -244,7 +290,7 @@ const RootQuery = new GraphQLObjectType({
             ...cred
           } = await Credentials.findById(args.id);
 
-          //data will be true or false, depending on validity of credential
+          // data will be true or false, depending on validity of credential
           const data = await contract.methods
             .verifyCredential(cred.credHash)
             .call();
@@ -268,7 +314,7 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve: async (parent, args) => {
         try {
-          credential = await Credentials.findById(args.id);
+          const credential = await Credentials.findById(args.id);
 
           const payload = {
             credId: credential.id

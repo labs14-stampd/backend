@@ -1119,3 +1119,127 @@ describe('getCredentialsByEmail GQL query error handling: ', () => {
     expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
 });
+
+describe('getDeletedCredentialsBySchoolId GQL query: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
+  it('• should return the corresponding deleted credentials data for a school that has not deleted any credentials', async () => {
+    // Should be based on current seed data
+    const TEST_ID_TO_GET = 6;
+
+    const QUERY = `
+      query {
+        getDeletedCredentialsBySchoolId (
+          id: ${TEST_ID_TO_GET}
+        ) {
+          id
+        }
+      }
+    `; // Query should only ask for ID since the idea is to simply expect an empty list
+
+    const res = await graphql(schema, QUERY, null, authContext);
+    expect(res.data.getDeletedCredentialsBySchoolId.length).toBe(0);
+  });
+
+  it("• should have matching school user ID's in both schoolId and schoolsUserInfo properties", async () => {
+    // Should be based on current seed data
+    const TEST_ID_TO_GET = 4;
+
+    const QUERY = `
+      query {
+        getDeletedCredentialsBySchoolId (
+          id: ${TEST_ID_TO_GET}
+        ) {
+          schoolId
+          schoolsUserInfo {
+            id
+          }
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null, authContext);
+    res.data.getDeletedCredentialsBySchoolId.forEach(credentials => {
+      expect(credentials.schoolId).toEqual(credentials.schoolsUserInfo.id);
+    });
+  });
+});
+
+describe('getDeletedCredentialsBySchoolId GQL query error handling: ', () => {
+  // Context object to provide authorization
+  const authContext = {
+    roleId: 1
+  };
+
+  test('• when unauthorized', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
+
+    const QUERY = `
+      query {
+        getDeletedCredentialsBySchoolId {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null);
+    expect(res.data.getDeletedCredentialsBySchoolId).toBeNull();
+    expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when "id" parameter is missing', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.ID;
+
+    const QUERY = `
+      query {
+        getDeletedCredentialsBySchoolId {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null, authContext);
+    expect(res.data.getDeletedCredentialsBySchoolId).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when data input type of "id" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.SCHOOLDETAIL.ID;
+
+    const QUERY = `
+      query {
+        getDeletedCredentialsBySchoolId (
+          id: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null, authContext);
+    expect(res.data.getDeletedCredentialsBySchoolId).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when attempting to get deleted credentials from a non-existent school', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.SCHOOLDETAIL;
+
+    const NONEXISTENT_ID_TO_GET = 0;
+    const QUERY = `
+      query {
+        getDeletedCredentialsBySchoolId (
+          id: ${NONEXISTENT_ID_TO_GET}
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, QUERY, null, authContext);
+    expect(res.data.getDeletedCredentialsBySchoolId).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+});
