@@ -1,11 +1,12 @@
 const { graphql } = require('graphql');
 const schema = require('../schema/schema');
-const db = require('../database/dbConfig');
+const errorTypes = require('../schema/errors');
 
+const db = require('../database/dbConfig');
 const dbHelper = require('../models/studentModel');
 
 beforeEach(async () => {
-  // Re-seed before all mutation tests to ensure that each test will work with a clean set of data
+  // Re-seed before each mutation test to ensure that each test will work with a clean set of data
   await db.seed.run();
 });
 afterAll(async () => {
@@ -119,7 +120,7 @@ describe('addStudentDetail GQL mutation error handling: ', () => {
   };
 
   test('• when unauthorized', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
 
     const MUTATION = `
       mutation {
@@ -135,8 +136,7 @@ describe('addStudentDetail GQL mutation error handling: ', () => {
   });
 
   test('• when "userId" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'Please add an available user ID to assign to the new student.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.USER.ID;
 
     const MUTATION = `
       mutation {
@@ -151,9 +151,26 @@ describe('addStudentDetail GQL mutation error handling: ', () => {
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
+  test('• when data input type of "userId" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.USER.ID;
+
+    const MUTATION = `
+      mutation {
+        addStudentDetail (
+          userId: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.addStudentDetail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when provided user ID does not belong to an existing user', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'The provided user ID does not correspond to any existing user.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.USER;
 
     const MUTATION = `
       mutation {
@@ -301,7 +318,7 @@ describe('updateStudentDetail GQL mutation error handling: ', () => {
   };
 
   test('• when unauthorized', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
 
     const MUTATION = `
       mutation {
@@ -318,7 +335,7 @@ describe('updateStudentDetail GQL mutation error handling: ', () => {
 
   test('• when "id" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE =
-      'Please include a student details entry ID and try again.';
+      errorTypes.MISSING_PARAMETER.STUDENTDETAIL.ID;
 
     const MUTATION = `
       mutation {
@@ -333,9 +350,45 @@ describe('updateStudentDetail GQL mutation error handling: ', () => {
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
+  test('• when data input type of "id" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.STUDENTDETAIL.ID;
+
+    const MUTATION = `
+      mutation {
+        updateStudentDetail (
+          id: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.updateStudentDetail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when data input type of "userId" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.USER.ID;
+
+    const MUTATION = `
+      mutation {
+        updateStudentDetail (
+          id: 1
+          userId: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.updateStudentDetail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when attempting to update a non-existent student details entry', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'Student details entry with the given ID not found';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.STUDENTDETAIL;
 
     const MUTATION = `
       mutation {
@@ -353,8 +406,7 @@ describe('updateStudentDetail GQL mutation error handling: ', () => {
   });
 
   test('• when provided user ID does not belong to an existing user', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'The provided user ID does not correspond to any existing user.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.USER;
 
     const MUTATION = `
       mutation {

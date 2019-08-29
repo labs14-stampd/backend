@@ -1,11 +1,12 @@
 const { graphql } = require('graphql');
 const schema = require('../schema/schema');
-const db = require('../database/dbConfig');
+const errorTypes = require('../schema/errors');
 
+const db = require('../database/dbConfig');
 const dbHelper = require('../models/schoolModel');
 
 beforeEach(async () => {
-  // Re-seed before all mutation tests to ensure that each test will work with a clean set of data
+  // Re-seed before each mutation test to ensure that each test will work with a clean set of data
   await db.seed.run();
 });
 afterAll(async () => {
@@ -124,7 +125,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
   };
 
   test('• when unauthorized', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
 
     const MUTATION = `
       mutation {
@@ -140,7 +141,8 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
   });
 
   test('• when "name" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Please add a name for the new school.';
+    const EXPECTED_ERROR_MESSAGE =
+      errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.NAME;
 
     const MUTATION = `
       mutation {
@@ -156,7 +158,8 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
   });
 
   test('• when "taxId" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Please add a tax ID for the new school.';
+    const EXPECTED_ERROR_MESSAGE =
+      errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.TAX_ID;
 
     const MUTATION = `
       mutation {
@@ -175,7 +178,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
 
   test('• when "phone" parameter is missing', async () => {
     const EXPECTED_ERROR_MESSAGE =
-      'Please add a phone number for the new school.';
+      errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.PHONE;
 
     const MUTATION = `
       mutation {
@@ -194,7 +197,8 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
   });
 
   test('• when "url" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Please add the URL of the new school.';
+    const EXPECTED_ERROR_MESSAGE =
+      errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.URL;
 
     const MUTATION = `
       mutation {
@@ -214,8 +218,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
   });
 
   test('• when "userId" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'Please add an available user ID to assign to the new school.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.USER.ID;
 
     const MUTATION = `
       mutation {
@@ -235,9 +238,30 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
+  test('• when data input type of "userId" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.USER.ID;
+
+    const MUTATION = `
+      mutation {
+        addSchoolDetail (
+          name: "${EXPECTED_NAME}"
+          taxId: "${EXPECTED_TAX_ID}"
+          phone: "${EXPECTED_PHONE}"
+          url: "${EXPECTED_URL}"
+          userId: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.addSchoolDetail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when provided user ID does not belong to an existing user', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'The provided user ID does not correspond to any existing user.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.USER;
 
     const MUTATION = `
       mutation {
@@ -259,7 +283,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
   });
 
   test('• when provided school name is not unique', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'School name must be unique.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_UNIQUE.SCHOOLDETAIL.NAME;
 
     // Should be based on current seed data
     const EXISTING_NAME = 'School of the East';
@@ -267,7 +291,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
       mutation {
         addSchoolDetail (
           name: "${EXISTING_NAME}"
-          taxID: "${EXPECTED_TAX_ID}"
+          taxId: "${EXPECTED_TAX_ID}"
           phone: "${EXPECTED_PHONE}"
           url: "${EXPECTED_URL}"
           userId: ${EXPECTED_NEW_SCHOOLDETAIL_USER_ID}
@@ -278,12 +302,11 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
     `;
 
     const res = await graphql(schema, MUTATION, null, authContext);
-    expect(res.data.addSchoolDetail).isNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when provided tax ID is not unique', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Tax ID must be unique';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_UNIQUE.SCHOOLDETAIL.TAX_ID;
 
     // Should be based on current seed data
     const EXISTING_TAX_ID = '000000000';
@@ -291,7 +314,7 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
       mutation {
         addSchoolDetail (
           name: "${EXPECTED_NAME}"
-          taxID: "${EXISTING_TAX_ID}"
+          taxId: "${EXISTING_TAX_ID}"
           phone: "${EXPECTED_PHONE}"
           url: "${EXPECTED_URL}"
           userId: ${EXPECTED_NEW_SCHOOLDETAIL_USER_ID}
@@ -302,7 +325,6 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
     `;
 
     const res = await graphql(schema, MUTATION, null, authContext);
-    expect(res.data.addSchoolDetail).isNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 });
@@ -432,7 +454,7 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
   };
 
   test('• when unauthorized', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Unauthorized';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.UNAUTHORIZED;
 
     const MUTATION = `
       mutation {
@@ -448,8 +470,7 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
   });
 
   test('• when "id" parameter is missing', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'Please include a school details entry ID and try again.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.MISSING_PARAMETER.SCHOOLDETAIL.ID;
 
     const MUTATION = `
       mutation {
@@ -464,9 +485,45 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
+  test('• when data input type of "id" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.SCHOOLDETAIL.ID;
+
+    const MUTATION = `
+      mutation {
+        updateSchoolDetail (
+          id: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.updateSchoolDetail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when data input type of "userId" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.USER.ID;
+
+    const MUTATION = `
+      mutation {
+        updateSchoolDetail (
+          id: 1
+          userId: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.updateSchoolDetail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when attempting to update a non-existent school details entry', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'School details entry with the given ID not found';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.SCHOOLDETAIL;
 
     const MUTATION = `
       mutation {
@@ -484,8 +541,7 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
   });
 
   test('• when provided user ID does not belong to an existing user', async () => {
-    const EXPECTED_ERROR_MESSAGE =
-      'The provided user ID does not correspond to any existing user.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.USER;
 
     const MUTATION = `
       mutation {
@@ -504,7 +560,7 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
   });
 
   test('• when provided school name is not unique', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'School name must be unique.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_UNIQUE.SCHOOLDETAIL.NAME;
 
     // Should be based on current seed data
     const TEST_ID_TO_UPDATE = 1;
@@ -521,12 +577,11 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
     `;
 
     const res = await graphql(schema, MUTATION, null, authContext);
-    expect(res.data.updateSchoolDetail).isNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when provided tax ID is not unique', async () => {
-    const EXPECTED_ERROR_MESSAGE = 'Tax ID must be unique.';
+    const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_UNIQUE.SCHOOLDETAIL.TAX_ID;
 
     // Should be based on current seed data
     const TEST_ID_TO_UPDATE = 1;
@@ -543,7 +598,6 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
     `;
 
     const res = await graphql(schema, MUTATION, null, authContext);
-    expect(res.data.updateSchoolDetail).isNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 });
