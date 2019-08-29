@@ -238,6 +238,28 @@ describe('addSchoolDetail GQL mutation error handling: ', () => {
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
+  test('• when data input type of "userId" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.USER.ID;
+
+    const MUTATION = `
+      mutation {
+        addSchoolDetail (
+          name: "${EXPECTED_NAME}"
+          taxId: "${EXPECTED_TAX_ID}"
+          phone: "${EXPECTED_PHONE}"
+          url: "${EXPECTED_URL}"
+          userId: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.addSchoolDetail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when provided user ID does not belong to an existing user', async () => {
     const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.USER;
 
@@ -461,6 +483,43 @@ describe('updateSchoolDetail GQL mutation error handling: ', () => {
     const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.updateSchoolDetail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when data input type of "id" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.SCHOOLDETAIL.ID;
+
+    const MUTATION = `
+      mutation {
+        updateSchoolDetail (
+          id: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.updateSchoolDetail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when data input type of "userId" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.USER.ID;
+
+    const MUTATION = `
+      mutation {
+        updateSchoolDetail (
+          id: 1
+          userId: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.updateSchoolDetail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when attempting to update a non-existent school details entry', async () => {
