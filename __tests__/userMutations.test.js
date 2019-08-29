@@ -149,6 +149,41 @@ describe('addUser GQL mutation error handling: ', () => {
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
+  test('• when data input type of "roleId" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.ROLE.ID;
+
+    /*
+      Decoded token contents:
+      {
+        "name": "johndoe@ymail.com",
+        "picture": "https://s.gravatar.com/avatar/7b83367dff0ee92c931ae39590fd839d?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fjo.png",
+        "updated_at": "2019-08-14T15:44:04.256Z",
+        "email": "johndoe@ymail.com",
+        "email_verified": false,
+        "sub": "auth0|5d542c449ad8300dae000bbf",
+        "username": "johndoe",
+        "iat": 1565800780
+      } 
+     */
+    const TEST_AUTH_TOKEN =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiam9obmRvZUB5bWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvN2I4MzM2N2RmZjBlZTkyYzkzMWFlMzk1OTBmZDgzOWQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZqby5wbmciLCJ1cGRhdGVkX2F0IjoiMjAxOS0wOC0xNFQxNTo0NDowNC4yNTZaIiwiZW1haWwiOiJqb2huZG9lQHltYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiYXV0aDB8NWQ1NDJjNDQ5YWQ4MzAwZGFlMDAwYmJmIiwidXNlcm5hbWUiOiJqb2huZG9lIiwiaWF0IjoxNTY1ODAwNzgwfQ.t9OTsUOHmAigoRqIiL1l2bjmnKeW60dTtBEjNBOTINM';
+
+    const MUTATION = `
+      mutation {
+        addUser (
+          authToken: "${TEST_AUTH_TOKEN}"
+          roleId: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null);
+    expect(res.data.addUser).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when authentication token does not hold valid data', async () => {
     const EXPECTED_ERROR_MESSAGE_START = 'Invalid token specified';
 
@@ -459,6 +494,43 @@ describe('updateUser GQL mutation error handling: ', () => {
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
+  test('• when data input type of "id" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.USER.ID;
+
+    const MUTATION = `
+      mutation {
+        updateUser (
+          id: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.updateUser).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when data input type of "roleId" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.ROLE.ID;
+
+    const MUTATION = `
+      mutation {
+        updateUser (
+          id: 1
+          roleId: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.updateUser).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when attempting to update a non-existent user', async () => {
     const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.USER;
 
@@ -672,6 +744,24 @@ describe('deleteUser GQL mutation error handling: ', () => {
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
   });
 
+  test('• when data input type of "id" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.USER.ID;
+
+    const MUTATION = `
+      mutation {
+        deleteUser (
+          id: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.deleteUser).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
+  });
+
   test('• when attempting to delete a non-existent user', async () => {
     const EXPECTED_ERROR_MESSAGE = errorTypes.NOT_FOUND.USER;
 
@@ -819,6 +909,25 @@ describe('addUserEmail GQL mutation error handling: ', () => {
     const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.addUserEmail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when data input type of "userId" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.USER.ID;
+
+    const MUTATION = `
+      mutation {
+        addUserEmail (
+          email: "test@test.test"
+          userId: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.addUserEmail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when provided user ID does not belong to an existing user', async () => {
@@ -997,6 +1106,24 @@ describe('deleteUserEmail GQL mutation error handling: ', () => {
     const res = await graphql(schema, MUTATION, null, authContext);
     expect(res.data.deleteUserEmail).toBeNull();
     expect(res.errors[0].message).toBe(EXPECTED_ERROR_MESSAGE);
+  });
+
+  test('• when data input type of "id" parameter is incorrect', async () => {
+    const EXPECTED_ERROR_MESSAGE = errorTypes.TYPE_MISMATCH.USEREMAIL.ID;
+
+    const MUTATION = `
+      mutation {
+        deleteUserEmail (
+          id: "[INVALID NUMBER]"
+        ) {
+          id
+        }
+      }
+    `;
+
+    const res = await graphql(schema, MUTATION, null, authContext);
+    expect(res.data.deleteUserEmail).toBeNull();
+    expect(res.errors[0].message).toEqual(EXPECTED_ERROR_MESSAGE);
   });
 
   test('• when attempting to delete non-existent user email information', async () => {

@@ -27,9 +27,15 @@ module.exports = {
     },
     resolve: async (parent, args) => {
       const { authToken, ...restArgs } = args;
+
       // When authToken parameter is missing
       if (!authToken) {
         return new Error(errorTypes.MISSING_PARAMETER.AUTH_TOKEN);
+      }
+
+      // When role ID parameter is provided but data input type is incorrect (not a number)
+      if (args.roleId && isNaN(args.roleId)) {
+        return new Error(errorTypes.TYPE_MISMATCH.ROLE.ID);
       }
 
       const { sub, email, username, profilePicture } = getDecoded(authToken);
@@ -136,6 +142,15 @@ module.exports = {
         return new Error(errorTypes.MISSING_PARAMETER.USER.ID);
       }
 
+      // When data input type of ID parameter is incorrect (not a number)
+      if (isNaN(args.id)) {
+        return new Error(errorTypes.TYPE_MISMATCH.USER.ID);
+      }
+      // When role ID parameter is provided but data input type is incorrect (not a number)
+      if (args.roleId && isNaN(args.roleId)) {
+        return new Error(errorTypes.TYPE_MISMATCH.ROLE.ID);
+      }
+
       // Check if email is already taken in userEmails table
       if (args.email) {
         try {
@@ -205,6 +220,11 @@ module.exports = {
         return new Error(errorTypes.MISSING_PARAMETER.USER.ID);
       }
 
+      // When data input type of ID parameter is incorrect (not a number)
+      if (isNaN(args.id)) {
+        return new Error(errorTypes.TYPE_MISMATCH.USER.ID);
+      }
+
       try {
         const res = await User.remove(args.id);
         if (res) {
@@ -252,6 +272,11 @@ module.exports = {
       // When user ID parameter is missing
       if (!args.userId) {
         return new Error(errorTypes.MISSING_PARAMETER.USER.ID);
+      }
+
+      // When data input type of user ID parameter is incorrect (not a number)
+      if (isNaN(args.userId)) {
+        return new Error(errorTypes.TYPE_MISMATCH.USER.ID);
       }
 
       // Check if email is already taken in users table
@@ -342,6 +367,11 @@ module.exports = {
       // When ID parameter is missing
       if (!args.id) {
         return new Error(errorTypes.MISSING_PARAMETER.USEREMAIL.ID);
+      }
+
+      // When data input type of ID parameter is incorrect (not a number)
+      if (isNaN(args.id)) {
+        return new Error(errorTypes.TYPE_MISMATCH.USEREMAIL.ID);
       }
 
       try {

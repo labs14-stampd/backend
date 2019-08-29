@@ -50,6 +50,9 @@ module.exports = {
     CREDENTIAL: {
       ID: 'Credential ID is invalid (type mismatch)'
     },
+    ROLE: {
+      ID: 'Role ID is invalid (type mismatch)'
+    },
     SCHOOLDETAIL: {
       ID: 'School ID is invalid (type mismatch)'
     },
@@ -58,6 +61,9 @@ module.exports = {
     },
     USER: {
       ID: 'User ID is invalid (type mismatch)'
+    },
+    USEREMAIL: {
+      ID: 'Email address ID is invalid (type mismatch)'
     }
   },
   UNAUTHORIZED: 'Unauthorized'
