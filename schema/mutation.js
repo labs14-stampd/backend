@@ -2,7 +2,6 @@ const graphql = require('graphql');
 const Credential = require('../models/credentialModel.js');
 const DeletedCredentials = require('../models/deletedCredentialModel');
 const { CredentialType, DeletedCredentialsType } = require('./types.js');
-const uuid = require('uuid/v1');
 const { txFunc, web3, contract } = require('../web3/web3.js');
 
 const {
@@ -94,10 +93,6 @@ const Mutation = new GraphQLObjectType({
           type: GraphQLString,
           description: 'Date that the new credential will expire'
         },
-        credentialId: {
-          type: GraphQLString,
-          description: 'Unique identifier for credential'
-        },
         schoolId: {
           type: new GraphQLNonNull(GraphQLID),
           description:
@@ -109,7 +104,6 @@ const Mutation = new GraphQLObjectType({
         if (Number(ctx.roleId) !== 2 && Number(ctx.roleId) !== 1)
           return new Error('Unauthorized');
         try {
-          args.credentialId = uuid();
           const credentialHash = web3.utils.sha3(JSON.stringify(args));
           args.credHash = credentialHash;
           const data = contract.methods
@@ -245,16 +239,16 @@ const Mutation = new GraphQLObjectType({
           if (data.length) {
             await txFunc(data);
             return Credential.findBy({ id: args.id })
-              .then(([res])=> {
+              .then(([res]) => {
                 delete res.id;
                 delete res.created_at;
                 delete res.updated_at;
                 return DeletedCredentials.insert(res)
                   .then(cred => {
-                    return cred
+                    return cred;
                   })
-                  .catch((error) => {
-                    return new Error('The credential could not be deleted1.')
+                  .catch(error => {
+                    return new Error('The credential could not be deleted1.');
                   });
               })
               .then(() => {
